@@ -1,0 +1,2700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Milestack: Secure Milestones. Trusted Payments.</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+/* ============ RESET & BASE ============ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+:root{
+  --navy:#0F172A;
+  --navy-2:#1E293B;
+  --navy-soft:#334155;
+  --emerald:#10B981;
+  --emerald-light:#34D399;
+  --emerald-dark:#059669;
+  --bg:#FFFFFF;
+  --neutral:#F8FAFC;
+  --text:#111827;
+  --text-muted:#5B6472;
+  --text-faint:#94A3B8;
+  --border:#E6E9EF;
+  --border-soft:#EEF1F5;
+  --radius-sm:10px;
+  --radius-md:16px;
+  --radius-lg:24px;
+  --shadow-sm:0 1px 2px rgba(15,23,42,0.05);
+  --shadow-md:0 8px 24px rgba(15,23,42,0.08);
+  --shadow-lg:0 24px 60px rgba(15,23,42,0.12);
+  --font-display:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --font-mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,monospace;
+  --grad-primary:linear-gradient(135deg, var(--emerald-light) 0%, var(--emerald) 48%, var(--emerald-dark) 100%);
+  --grad-primary-hover:linear-gradient(135deg, var(--emerald) 0%, var(--emerald-dark) 60%, #047a57 100%);
+  --grad-navy:linear-gradient(155deg, #16223C 0%, var(--navy) 50%, #060A14 100%);
+  --grad-navy-soft:linear-gradient(135deg, var(--navy-soft) 0%, var(--navy) 100%);
+  --grad-card:linear-gradient(165deg, #FFFFFF 0%, #FAFBFD 100%);
+  --grad-tint:linear-gradient(180deg, #FAFBFD 0%, var(--neutral) 45%, #F1F5FA 100%);
+  --grad-emerald-soft:linear-gradient(135deg, #ECFDF5 0%, #D5F7E8 100%);
+}
+body{
+  font-family:var(--font-display);
+  color:var(--text);
+  background:var(--bg);
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+img,svg{display:block;max-width:100%;}
+a{color:inherit;text-decoration:none;}
+button{font-family:inherit;cursor:pointer;border:none;background:none;}
+ul{list-style:none;}
+.container{
+  max-width:1180px;
+  margin:0 auto;
+  padding:0 32px;
+}
+.section{padding:120px 0;background:linear-gradient(180deg,#FFFFFF 0%, #FBFEFD 55%, #FFFFFF 100%);position:relative;}
+.section-glow{position:relative;overflow:hidden;}
+.section-glow::before{
+  content:'';position:absolute;top:-160px;right:-140px;width:620px;height:620px;border-radius:50%;
+  background:radial-gradient(circle, rgba(16,185,129,0.10), transparent 70%);
+  pointer-events:none;z-index:0;
+}
+.section-glow::after{
+  content:'';position:absolute;bottom:-180px;left:-160px;width:560px;height:560px;border-radius:50%;
+  background:radial-gradient(circle, rgba(15,23,42,0.05), transparent 70%);
+  pointer-events:none;z-index:0;
+}
+.section-glow > .container{position:relative;z-index:1;}
+.section-head{max-width:640px;margin:0 0 64px;}
+.section-head.center{margin-left:auto;margin-right:auto;text-align:center;}
+.eyebrow{
+  font-family:var(--font-mono);
+  font-size:12.5px;
+  font-weight:600;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:var(--emerald-dark);
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:18px;
+}
+.eyebrow::before{
+  content:'';
+  width:6px;height:6px;border-radius:50%;
+  background:var(--emerald);
+  box-shadow:0 0 0 3px rgba(16,185,129,0.18);
+}
+h1,h2,h3,h4{
+  font-weight:700;
+  letter-spacing:-0.02em;
+  color:var(--navy);
+  line-height:1.1;
+}
+.section-head h2{
+  font-size:clamp(28px,3.4vw,42px);
+  margin-bottom:16px;
+}
+.section-head p{
+  font-size:18px;
+  color:var(--text-muted);
+  line-height:1.6;
+}
+.text-muted{color:var(--text-muted);}
+
+/* ============ BUTTONS ============ */
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  font-size:15px;
+  font-weight:600;
+  padding:13px 24px;
+  border-radius:10px;
+  transition:transform .18s ease, box-shadow .18s ease, background .18s ease, border-color .18s ease, color .18s ease;
+  white-space:nowrap;
+}
+.btn-primary{
+  background:var(--grad-primary);
+  color:#fff;
+  box-shadow:0 1px 2px rgba(5,150,105,0.2), 0 8px 20px rgba(16,185,129,0.22);
+}
+.btn-primary:hover{background:var(--grad-primary-hover);transform:translateY(-1px);box-shadow:0 8px 24px rgba(16,185,129,0.32);}
+.btn-secondary{
+  background:var(--grad-navy-soft);
+  color:#fff;
+}
+.btn-secondary:hover{background:var(--navy-2);transform:translateY(-1px);}
+.btn-ghost{
+  background:transparent;
+  color:var(--navy);
+  border:1.5px solid var(--border);
+}
+.btn-ghost:hover{border-color:var(--navy);background:var(--neutral);}
+.btn-sm{padding:9px 16px;font-size:13.5px;border-radius:8px;}
+.btn-block{width:100%;}
+
+/* ============ NAV ============ */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(255,255,255,0.7);
+  backdrop-filter:blur(14px) saturate(160%);
+  border-bottom:1px solid transparent;
+  transition:border-color .25s ease, background .25s ease;
+}
+.nav::after{
+  content:'';position:absolute;left:0;right:0;bottom:-1px;height:2px;
+  background:var(--grad-primary);opacity:0;transition:opacity .3s ease;
+}
+.nav.scrolled{
+  background:rgba(255,255,255,0.92);
+  border-bottom-color:var(--border);
+}
+.nav.scrolled::after{opacity:0.55;}
+.nav-inner{
+  max-width:1180px;margin:0 auto;padding:0 32px;
+  height:72px;display:flex;align-items:center;justify-content:space-between;
+}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px;color:var(--navy);letter-spacing:-0.01em;}
+.logo-mark{width:34px;height:34px;border-radius:9px;background:var(--grad-navy-soft);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.nav-links{display:flex;align-items:center;gap:36px;}
+.nav-links a{font-size:14.5px;font-weight:500;color:var(--navy-soft);transition:color .15s;}
+.nav-links a:hover{color:var(--navy);}
+.nav-actions{display:flex;align-items:center;gap:14px;}
+.nav-actions a.login-link{font-size:14.5px;font-weight:600;color:var(--navy);padding:10px 6px;}
+.nav-burger{display:none;flex-direction:column;gap:5px;width:28px;height:22px;justify-content:center;}
+.nav-burger span{display:block;height:2px;width:100%;background:var(--navy);border-radius:2px;transition:transform .25s, opacity .25s;}
+.nav-mobile{
+  display:none;position:fixed;top:72px;left:0;right:0;background:#fff;
+  border-bottom:1px solid var(--border);padding:20px 32px 28px;flex-direction:column;gap:18px;z-index:99;
+  box-shadow:0 16px 30px rgba(15,23,42,0.08);
+}
+.nav-mobile a{font-size:15.5px;font-weight:500;color:var(--navy-soft);}
+.nav-mobile.open{display:flex;}
+.nav-mobile .nav-mobile-actions{display:flex;flex-direction:column;gap:10px;margin-top:6px;}
+
+/* ============ HERO ============ */
+.hero{
+  position:relative;
+  padding:170px 0 110px;
+  overflow:hidden;
+  background:
+    radial-gradient(1000px 560px at 80% -12%, rgba(16,185,129,0.18), transparent 62%),
+    radial-gradient(760px 480px at -4% 8%, rgba(15,23,42,0.07), transparent 60%),
+    radial-gradient(640px 420px at 30% 100%, rgba(16,185,129,0.07), transparent 65%),
+    linear-gradient(165deg, #FFFFFF 0%, #FBFDFD 50%, #F2FAF6 100%);
+}
+.hero::after{
+  content:'';position:absolute;top:8%;right:4%;width:380px;height:380px;border-radius:50%;
+  background:conic-gradient(from 200deg, rgba(16,185,129,0.14), rgba(15,23,42,0.05), transparent 60%);
+  filter:blur(40px);pointer-events:none;
+}
+.hero-grid{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(to right, rgba(15,23,42,0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15,23,42,0.035) 1px, transparent 1px);
+  background-size:48px 48px;
+  mask-image:radial-gradient(700px 500px at 70% 10%, rgba(0,0,0,0.7), transparent 75%);
+  pointer-events:none;
+}
+.hero-inner{
+  position:relative;z-index:1;
+  display:grid;grid-template-columns:1.05fr 0.95fr;gap:56px;align-items:center;
+}
+.hero-copy h1{
+  font-size:clamp(42px,5.6vw,70px);
+  line-height:1.06;
+  margin-bottom:24px;
+}
+.hero-copy h1 .hl{
+  background:linear-gradient(100deg, var(--emerald-dark), var(--emerald-light));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero-copy p.lede{
+  font-size:20px;color:var(--text-muted);max-width:420px;margin-bottom:36px;line-height:1.55;
+}
+.hero-ctas{display:flex;align-items:center;gap:16px;margin-bottom:30px;flex-wrap:wrap;}
+.btn-secondary.with-icon svg{width:16px;height:16px;}
+.hero-microtrust{display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--text-faint);}
+.hero-microtrust .avatars{display:flex;}
+.hero-microtrust .avatars span{
+  width:26px;height:26px;border-radius:50%;border:2px solid #fff;
+  background:linear-gradient(140deg,var(--navy),var(--navy-soft));margin-left:-8px;
+  display:flex;align-items:center;justify-content:center;color:#fff;font-size:9px;font-weight:700;font-family:var(--font-mono);
+}
+.hero-microtrust .avatars span:first-child{margin-left:0;}
+
+/* ---- Hero visual: milestone stack mock ---- */
+.hero-visual{position:relative;height:480px;}
+.stackcard{
+  position:absolute;left:0;width:100%;
+  background:#fff;border:1px solid var(--border);border-radius:14px;
+  padding:16px 18px;box-shadow:var(--shadow-md);
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  animation:floaty 6s ease-in-out infinite;
+}
+.stackcard .sc-left{display:flex;align-items:center;gap:12px;}
+.stackcard .sc-icon{
+  width:34px;height:34px;border-radius:9px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+}
+.stackcard .sc-title{font-size:13.5px;font-weight:600;color:var(--navy);}
+.stackcard .sc-amount{font-family:var(--font-mono);font-size:12px;color:var(--text-faint);margin-top:2px;}
+.pill{
+  font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:0.02em;
+  padding:5px 10px;border-radius:999px;white-space:nowrap;
+}
+.pill-released{background:var(--grad-emerald-soft);color:var(--emerald-dark);}
+.pill-approved{background:#EFF6FF;color:#2563EB;}
+.pill-progress{background:#FFF7ED;color:#C2660D;}
+.pill-funded{background:#F1F5F9;color:var(--navy-soft);}
+.pill-draft{background:#F8FAFC;color:var(--text-faint);border:1px solid var(--border);}
+.pill-disputed{background:#FEF2F2;color:#DC2626;}
+.pill-submitted{background:#F5F3FF;color:#7C3AED;}
+
+.card-1{top:0;z-index:4;animation-delay:0s;}
+.card-2{top:108px;z-index:3;animation-delay:1.2s;}
+.card-3{top:216px;z-index:2;animation-delay:2.1s;}
+.card-4{top:324px;z-index:1;animation-delay:0.6s;}
+
+.escrow-floater{
+  position:absolute;bottom:6px;right:6px;z-index:5;
+  background:var(--grad-navy);color:#fff;border-radius:14px;padding:14px 18px;
+  box-shadow:0 16px 40px rgba(15,23,42,0.28);
+  display:flex;align-items:center;gap:12px;
+  animation:pulseglow 3.4s ease-in-out infinite;
+}
+.escrow-floater .lock{
+  width:30px;height:30px;border-radius:8px;background:rgba(16,185,129,0.18);
+  display:flex;align-items:center;justify-content:center;
+}
+.escrow-floater .ef-label{font-size:10.5px;color:#94A3B8;font-family:var(--font-mono);letter-spacing:0.04em;}
+.escrow-floater .ef-amount{font-size:16px;font-weight:700;font-family:var(--font-mono);}
+
+@keyframes floaty{
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-7px);}
+}
+@keyframes pulseglow{
+  0%,100%{box-shadow:0 16px 40px rgba(15,23,42,0.28),0 0 0 0 rgba(16,185,129,0.25);}
+  50%{box-shadow:0 16px 40px rgba(15,23,42,0.28),0 0 0 8px rgba(16,185,129,0);}
+}
+
+/* ============ TRUST BAR ============ */
+.trustbar{background:var(--grad-navy);padding:26px 0;}
+.trustbar-inner{
+  display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;
+}
+.trust-item{display:flex;align-items:center;gap:10px;color:#CBD5E1;font-size:13.5px;font-weight:500;}
+.trust-item svg{width:18px;height:18px;color:var(--emerald-light);flex-shrink:0;}
+
+/* ============ KEY MESSAGE BANNER ============ */
+.keymsg{
+  background:linear-gradient(180deg, #F2FAF6 0%, #FFFFFF 100%);
+  padding:56px 0;text-align:center;border-bottom:1px solid var(--border-soft);
+}
+.keymsg-inner h2{
+  font-size:clamp(24px,3vw,34px);margin-bottom:10px;
+}
+.keymsg-inner h2 .hl{
+  background:linear-gradient(100deg, var(--emerald-dark), var(--emerald-light));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.keymsg-inner p{font-size:16px;color:var(--text-muted);}
+
+/* ============ HOW IT WORKS (timeline) ============ */
+.howitworks{background:var(--grad-tint);}
+.timeline{position:relative;max-width:760px;margin:0 auto;}
+.timeline::before{
+  content:'';position:absolute;left:27px;top:8px;bottom:8px;width:2px;
+  background:linear-gradient(to bottom, var(--emerald) 0%, var(--border) 100%);
+}
+.tstep{
+  position:relative;display:flex;gap:26px;padding-bottom:48px;
+}
+.tstep:last-child{padding-bottom:0;}
+.tstep .tnum{
+  flex-shrink:0;width:56px;height:56px;border-radius:50%;
+  background:var(--grad-primary);border:none;color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-mono);font-weight:700;font-size:15px;
+  position:relative;z-index:1;
+  box-shadow:0 8px 20px rgba(16,185,129,0.28), 0 0 0 5px #FAFBFD;
+}
+.tstep .tbody{padding-top:8px;}
+.tstep .tbody h3{font-size:19px;margin-bottom:8px;}
+.tstep .tbody p{color:var(--text-muted);font-size:15.5px;max-width:480px;}
+
+/* ============ FEATURES (bento) ============ */
+.features-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:1fr;gap:20px;
+}
+.feature-card{
+  background:var(--grad-card);border:1px solid var(--border);border-radius:var(--radius-md);
+  padding:28px;display:flex;flex-direction:column;gap:16px;position:relative;overflow:hidden;
+  transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+.feature-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--grad-primary);transform:scaleX(0);transform-origin:left;
+  transition:transform .3s ease;
+}
+.feature-card:hover::before{transform:scaleX(1);}
+.feature-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);border-color:#D8DEE7;}
+.feature-card.big{grid-column:span 2;grid-row:span 2;background:var(--grad-navy);border-color:var(--navy);}
+.feature-card.big::before{background:linear-gradient(90deg, var(--emerald-light), var(--emerald-dark));}
+.feature-card.big h3,.feature-card.big p{color:#fff;}
+.feature-card.big p{color:#A9B6CC;}
+.feature-card.big .ficon{background:rgba(16,185,129,0.18);}
+.ficon{
+  width:42px;height:42px;border-radius:10px;background:var(--grad-emerald-soft);
+  display:flex;align-items:center;justify-content:center;
+}
+.ficon svg{width:21px;height:21px;color:var(--emerald-dark);}
+.feature-card.big .ficon svg{color:var(--emerald-light);}
+.feature-card h3{font-size:16.5px;}
+.feature-card p{font-size:14px;color:var(--text-muted);line-height:1.55;}
+.feature-card.big h3{font-size:21px;}
+.feature-card.big p{font-size:15px;margin-top:2px;}
+.feature-card.big .biginner{margin-top:auto;display:flex;gap:8px;flex-wrap:wrap;}
+.minitag{font-family:var(--font-mono);font-size:11px;background:linear-gradient(135deg, rgba(16,185,129,0.20), rgba(255,255,255,0.06));color:#E2E8F0;padding:5px 9px;border-radius:6px;border:1px solid rgba(16,185,129,0.18);}
+
+/* ============ AUDIENCE ============ */
+.audience-row{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:16px;
+}
+.aud-card{
+  border:1px solid var(--border);border-radius:var(--radius-md);padding:24px 20px;
+  display:flex;flex-direction:column;gap:14px;transition:border-color .2s,transform .2s,box-shadow .2s;
+  background:var(--grad-card);
+}
+.aud-card:hover{border-color:var(--emerald);transform:translateY(-3px);box-shadow:0 12px 28px rgba(16,185,129,0.12);}
+.aud-icon{
+  width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,#F8FAFC 0%,#EAF6F0 100%);
+  display:flex;align-items:center;justify-content:center;transition:background .2s;
+}
+.aud-card:hover .aud-icon{background:var(--grad-emerald-soft);}
+.aud-icon svg{width:19px;height:19px;color:var(--navy);}
+.aud-card h4{font-size:15.5px;}
+.aud-card p{font-size:13px;color:var(--text-muted);}
+
+/* ============ DASHBOARD PREVIEW ============ */
+.dash-wrap{
+  background:var(--grad-navy);border-radius:28px;padding:48px;position:relative;overflow:hidden;
+}
+.dash-wrap::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(600px 300px at 90% 0%, rgba(16,185,129,0.16), transparent 70%),
+    radial-gradient(500px 320px at 5% 100%, rgba(16,185,129,0.08), transparent 65%);
+  pointer-events:none;
+}
+.dash-tabs{
+  display:flex;gap:6px;margin-bottom:28px;flex-wrap:wrap;position:relative;z-index:1;
+}
+.dash-tab{
+  font-size:13.5px;font-weight:600;color:#94A3B8;padding:10px 16px;border-radius:9px;
+  transition:background .2s,color .2s;
+}
+.dash-tab.active{background:linear-gradient(135deg, rgba(16,185,129,0.30), rgba(255,255,255,0.06));color:#fff;box-shadow:inset 0 0 0 1px rgba(16,185,129,0.35);}
+.dash-tab:hover{color:#fff;}
+.dash-screen{
+  background:var(--grad-card);border-radius:18px;padding:28px;min-height:380px;position:relative;z-index:1;
+  box-shadow:0 30px 70px rgba(0,0,0,0.35);
+}
+.dash-panel{display:none;}
+.dash-panel.active{display:block;animation:fadeIn .35s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+.dash-header-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;}
+.dash-header-row h4{font-size:17px;}
+.dash-header-row .ws-meta{font-size:13px;color:var(--text-faint);}
+.progressbar{height:8px;background:var(--border-soft);border-radius:99px;overflow:hidden;margin:14px 0 22px;}
+.progressbar > div{height:100%;background:linear-gradient(90deg,var(--emerald-dark),var(--emerald-light));border-radius:99px;}
+
+.mini-row{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--border-soft);}
+.mini-row:last-child{border-bottom:none;}
+.mini-row .mr-left{display:flex;align-items:center;gap:12px;}
+.mini-row .mr-dot{width:8px;height:8px;border-radius:50%;}
+.mini-row .mr-title{font-size:14px;font-weight:500;color:var(--navy);}
+.mini-row .mr-amount{font-family:var(--font-mono);font-size:13px;color:var(--text-faint);}
+
+.avatar-group{display:flex;margin-top:18px;}
+.avatar-group span{
+  width:30px;height:30px;border-radius:50%;border:2px solid #fff;margin-left:-9px;
+  background:linear-gradient(140deg,var(--navy),var(--navy-soft));color:#fff;font-size:10px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);
+}
+.avatar-group span:first-child{margin-left:0;}
+
+.mtable{width:100%;min-width:540px;border-collapse:collapse;}
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.mtable th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-faint);font-weight:600;padding:0 0 12px;border-bottom:1px solid var(--border-soft);}
+.mtable td{padding:14px 0;border-bottom:1px solid var(--border-soft);font-size:14px;color:var(--navy);}
+.mtable td.mono{font-family:var(--font-mono);font-size:13px;color:var(--text-muted);}
+.mtable tr:last-child td{border-bottom:none;}
+
+.statgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;}
+.statbox{background:var(--grad-card);border:1px solid var(--border-soft);border-radius:14px;padding:18px;position:relative;overflow:hidden;}
+.statbox::before{content:'';position:absolute;top:0;left:0;width:100%;height:3px;background:var(--grad-primary);opacity:0.7;}
+.statbox .sl{font-size:12px;color:var(--text-faint);font-family:var(--font-mono);margin-bottom:6px;}
+.statbox .sv{font-size:22px;font-weight:700;color:var(--navy);font-family:var(--font-mono);}
+
+.chat-bubble{max-width:70%;padding:12px 16px;border-radius:14px;font-size:14px;margin-bottom:12px;line-height:1.5;}
+.chat-bubble.them{background:var(--neutral);color:var(--navy);border-bottom-left-radius:4px;}
+.chat-bubble.me{background:var(--navy);color:#fff;margin-left:auto;border-bottom-right-radius:4px;}
+.chat-meta{font-family:var(--font-mono);font-size:11px;color:var(--text-faint);margin-top:-6px;margin-bottom:14px;}
+.chat-meta.right{text-align:right;}
+.attach-chip{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--border);padding:8px 12px;border-radius:9px;font-size:12.5px;margin-bottom:18px;}
+
+.file-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.file-card{border:1px solid var(--border-soft);border-radius:12px;padding:16px;text-align:center;}
+.file-card .fticon{width:38px;height:38px;border-radius:9px;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;}
+.file-card .fname{font-size:12.5px;font-weight:600;color:var(--navy);margin-bottom:3px;word-break:break-all;}
+.file-card .fmeta{font-size:11px;color:var(--text-faint);font-family:var(--font-mono);}
+
+.approval-card{border:1px dashed var(--border);border-radius:14px;padding:22px;display:flex;gap:18px;align-items:flex-start;}
+.approval-thumb{width:64px;height:64px;border-radius:10px;background:var(--neutral);flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.approval-card h5{font-size:15px;margin-bottom:6px;}
+.approval-card p{font-size:13.5px;color:var(--text-muted);margin-bottom:14px;}
+.approval-actions{display:flex;gap:10px;flex-wrap:wrap;}
+
+/* ============ TESTIMONIALS ============ */
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+.testi-card{
+  background:linear-gradient(165deg, #FFFFFF 0%, #F4FBF8 100%);
+  border:1px solid var(--border-soft);
+  border-radius:var(--radius-md);padding:30px;
+  display:flex;flex-direction:column;gap:18px;
+  box-shadow:0 1px 2px rgba(15,23,42,0.04);
+  position:relative;
+}
+.testi-quote{font-size:15.5px;line-height:1.65;color:var(--navy);}
+.testi-quote::before{
+  content:'“';font-size:32px;font-weight:800;display:block;margin-bottom:2px;line-height:0.6;
+  background:var(--grad-primary);-webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.testi-person{display:flex;align-items:center;gap:12px;margin-top:auto;}
+.testi-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(140deg,var(--navy),var(--navy-soft));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;font-family:var(--font-mono);}
+.testi-name{font-size:14px;font-weight:600;color:var(--navy);}
+.testi-role{font-size:12.5px;color:var(--text-faint);font-family:var(--font-mono);}
+
+/* ============ PRICING ============ */
+.pricing-cards{
+  display:grid;grid-template-columns:1.15fr 0.85fr;gap:24px;
+  max-width:980px;margin:0 auto;align-items:stretch;
+}
+.pfee-card{
+  background:linear-gradient(155deg, #FAFBFD 0%, #EFF8F3 100%);
+  border:1px solid var(--border);border-radius:var(--radius-lg);padding:40px;
+  position:relative;box-shadow:0 24px 60px rgba(15,23,42,0.08);
+  display:flex;flex-direction:column;
+}
+.pfee-amount{
+  font-size:42px;font-weight:800;font-family:var(--font-mono);letter-spacing:-0.02em;margin-top:14px;line-height:1.1;
+  background:linear-gradient(135deg, var(--navy) 0%, var(--emerald-dark) 120%);-webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.pfee-amount span{display:block;font-size:13.5px;font-weight:500;color:var(--text-muted);font-family:var(--font-display);margin-top:8px;-webkit-text-fill-color:var(--text-muted);}
+
+.membership-card{
+  background:var(--grad-navy);border-radius:var(--radius-lg);padding:40px;color:#fff;
+  position:relative;overflow:hidden;display:flex;flex-direction:column;
+  box-shadow:0 24px 60px rgba(15,23,42,0.22);
+}
+.membership-card::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(420px 280px at 100% 0%, rgba(16,185,129,0.22), transparent 70%);
+  pointer-events:none;
+}
+.membership-card > *{position:relative;z-index:1;}
+.membership-amount{font-size:38px;font-weight:800;font-family:var(--font-mono);letter-spacing:-0.02em;margin:12px 0 2px;}
+.membership-amount span{font-size:14px;font-weight:500;color:#A9B6CC;font-family:var(--font-display);}
+.membership-card .price-feats li{color:#E2E8F0;}
+.membership-card .price-feats svg{color:var(--emerald-light);}
+
+.price-badge{font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:0.04em;color:var(--emerald-dark);background:var(--grad-emerald-soft);display:inline-flex;padding:5px 10px;border-radius:99px;width:fit-content;}
+.price-desc{font-size:14px;color:var(--text-muted);line-height:1.55;}
+.price-feats{display:flex;flex-direction:column;gap:11px;}
+.price-feats li{display:flex;align-items:flex-start;gap:10px;font-size:14px;}
+.price-feats svg{width:17px;height:17px;color:var(--emerald);flex-shrink:0;margin-top:2px;}
+.pricing-footnote{text-align:center;font-size:14.5px;color:var(--text-muted);margin-top:32px;}
+.pricing-footnote a{color:var(--navy);font-weight:600;text-decoration:underline;}
+
+/* ============ FAQ ============ */
+.faq-list{max-width:760px;margin:0 auto;}
+.faq-item{border-bottom:1px solid var(--border);}
+.faq-q{
+  width:100%;display:flex;align-items:center;justify-content:space-between;
+  padding:22px 4px;font-size:16.5px;font-weight:600;color:var(--navy);text-align:left;
+}
+.faq-q .fplus{width:20px;height:20px;flex-shrink:0;position:relative;transition:transform .25s;}
+.faq-q .fplus::before,.faq-q .fplus::after{content:'';position:absolute;background:var(--navy);border-radius:2px;transition:background .25s;}
+.faq-q .fplus::before{width:14px;height:2px;top:9px;left:3px;}
+.faq-q .fplus::after{width:2px;height:14px;top:3px;left:9px;transition:transform .25s;}
+.faq-item.open .fplus::before,.faq-item.open .fplus::after{background:var(--emerald);}
+.faq-item.open .fplus::after{transform:rotate(90deg);}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease;}
+.faq-a p{font-size:15px;color:var(--text-muted);padding:0 4px 22px;line-height:1.65;max-width:660px;}
+
+/* ============ FINAL CTA ============ */
+.finalcta{
+  background:var(--grad-navy);border-radius:28px;padding:64px 48px;text-align:center;position:relative;overflow:hidden;
+}
+.finalcta::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(500px 260px at 50% 0%, rgba(16,185,129,0.24), transparent 70%),
+    radial-gradient(420px 240px at 100% 100%, rgba(16,185,129,0.10), transparent 65%),
+    radial-gradient(380px 220px at 0% 100%, rgba(255,255,255,0.04), transparent 65%);
+}
+.finalcta h2{color:#fff;font-size:clamp(26px,3.2vw,38px);margin-bottom:14px;position:relative;z-index:1;}
+.finalcta p{color:#A9B6CC;font-size:16.5px;margin-bottom:30px;position:relative;z-index:1;}
+.finalcta .ctas{display:flex;justify-content:center;gap:14px;position:relative;z-index:1;flex-wrap:wrap;}
+
+/* ============ FOOTER ============ */
+footer{background:var(--grad-navy);padding:80px 0 32px;color:#94A3B8;position:relative;}
+footer::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg, transparent, rgba(16,185,129,0.5), transparent);
+}
+.footer-top{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr 1fr;gap:40px;padding-bottom:56px;border-bottom:1px solid rgba(255,255,255,0.08);}
+.footer-brand p{font-size:14px;color:#7E8BA3;margin-top:14px;max-width:240px;line-height:1.6;}
+.footer-col h5{color:#fff;font-size:13px;letter-spacing:0.03em;text-transform:uppercase;margin-bottom:18px;font-family:var(--font-mono);font-weight:600;}
+.footer-col a{display:block;font-size:14.5px;color:#94A3B8;margin-bottom:13px;transition:color .15s;}
+.footer-col a:hover{color:#fff;}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:28px;font-size:13px;color:#64748B;flex-wrap:wrap;gap:12px;}
+.footer-socials{display:flex;gap:14px;}
+.footer-socials a{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg, rgba(16,185,129,0.14), rgba(255,255,255,0.04));display:flex;align-items:center;justify-content:center;transition:background .2s;}
+.footer-socials a:hover{background:linear-gradient(135deg, rgba(16,185,129,0.28), rgba(255,255,255,0.06));}
+.footer-socials svg{width:16px;height:16px;color:#CBD5E1;}
+
+/* ============ REVEAL ANIM ============ */
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .6s ease, transform .6s ease;}
+.reveal.in{opacity:1;transform:translateY(0);}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation:none !important;transition:none !important;}
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width:1024px){
+  .hero-inner{grid-template-columns:1fr;}
+  .hero-visual{height:420px;max-width:480px;margin:0 auto;}
+  .features-grid{grid-template-columns:repeat(2,1fr);}
+  .feature-card.big{grid-column:span 2;grid-row:span 1;}
+  .audience-row{grid-template-columns:repeat(2,1fr);}
+  .pricing-cards{grid-template-columns:1fr;max-width:480px;margin:0 auto;}
+  .testi-grid{grid-template-columns:1fr;}
+  .footer-top{grid-template-columns:1fr 1fr;gap:32px;}
+  .statgrid{grid-template-columns:1fr;}
+  .file-grid{grid-template-columns:repeat(2,1fr);}
+}
+@media (max-width:768px){
+  .nav-links{display:none;}
+  .nav-actions .login-link{display:none;}
+  .nav-burger{display:flex;}
+  .section{padding:80px 0;}
+  .hero{padding:130px 0 70px;}
+  .container{padding:0 22px;}
+  .dash-wrap{padding:24px;border-radius:20px;}
+  .dash-screen{padding:18px;}
+  .trustbar-inner{justify-content:flex-start;gap:18px 28px;}
+  .timeline::before{left:23px;}
+  .tstep .tnum{width:48px;height:48px;font-size:13px;}
+  .finalcta{padding:48px 26px;}
+}
+@media (max-width:600px){
+  .container{padding:0 16px;}
+  .features-grid{grid-template-columns:1fr;}
+  .feature-card.big{grid-column:span 1;}
+  .audience-row{grid-template-columns:1fr;}
+  .file-grid{grid-template-columns:1fr 1fr;}
+  .dash-header-row{flex-direction:column;align-items:flex-start;}
+  .footer-top{grid-template-columns:1fr;}
+  .hero-ctas{flex-direction:column;align-items:stretch;}
+  .hero-ctas .btn{width:100%;}
+}
+
+/* ============ SCREEN SYSTEM ============ */
+.screen{display:none;}
+.screen.active{display:block;}
+.back-pill{
+  position:fixed;top:20px;left:20px;z-index:200;
+  display:inline-flex;align-items:center;gap:8px;
+  background:#fff;border:1px solid var(--border);border-radius:999px;
+  padding:9px 16px 9px 12px;font-size:13px;font-weight:600;color:var(--navy);
+  box-shadow:var(--shadow-md);
+}
+.back-pill svg{width:15px;height:15px;}
+
+/* ============ AUTH SCREENS ============ */
+.auth-shell{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:var(--neutral);padding:60px 24px;
+  background-image:linear-gradient(to right, rgba(15,23,42,0.035) 1px, transparent 1px),linear-gradient(to bottom, rgba(15,23,42,0.035) 1px, transparent 1px);
+  background-size:42px 42px;
+}
+.auth-card{
+  width:100%;max-width:440px;background:#fff;border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:44px 40px;box-shadow:var(--shadow-lg);
+}
+.auth-card.wide{max-width:600px;}
+.auth-logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px;color:var(--navy);margin-bottom:30px;}
+.auth-card h2{font-size:24px;margin-bottom:8px;}
+.auth-card .sub{font-size:14.5px;color:var(--text-muted);margin-bottom:28px;}
+.role-tabs{display:flex;gap:8px;margin-bottom:24px;background:var(--neutral);padding:5px;border-radius:11px;}
+.role-tab{flex:1;text-align:center;font-size:13.5px;font-weight:600;color:var(--text-muted);padding:9px 0;border-radius:8px;transition:background .2s,color .2s;}
+.role-tab.active{background:#fff;color:var(--navy);box-shadow:var(--shadow-sm);}
+.field{margin-bottom:18px;}
+.field label{display:block;font-size:13px;font-weight:600;color:var(--navy);margin-bottom:7px;}
+.field input{
+  width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:9px;
+  font-size:14.5px;font-family:var(--font-display);color:var(--text);transition:border-color .15s;
+}
+.field input:focus{outline:none;border-color:var(--emerald);}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.auth-foot{text-align:center;font-size:13.5px;color:var(--text-muted);margin-top:20px;}
+.auth-foot a{color:var(--emerald-dark);font-weight:600;}
+.auth-divider{display:flex;align-items:center;gap:12px;margin:22px 0;color:var(--text-faint);font-size:12px;font-family:var(--font-mono);}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.code-inputs{display:flex;gap:10px;margin-bottom:24px;}
+.code-inputs input{
+  flex:1;min-width:0;aspect-ratio:1/1.1;text-align:center;font-size:22px;font-family:var(--font-mono);font-weight:700;
+  border:1.5px solid var(--border);border-radius:10px;color:var(--navy);
+}
+.code-inputs input:focus{outline:none;border-color:var(--emerald);}
+
+/* ---- Onboarding ---- */
+.onb-steps{display:flex;align-items:center;gap:8px;margin-bottom:30px;}
+.onb-dot{width:30px;height:30px;border-radius:50%;background:var(--neutral);color:var(--text-faint);font-family:var(--font-mono);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.onb-dot.active{background:var(--emerald);color:#fff;}
+.onb-dot.done{background:var(--navy);color:#fff;}
+.onb-line{flex:1;height:2px;background:var(--border);}
+.onb-line.done{background:var(--navy);}
+
+/* ============ APP SHELL ============ */
+.app-shell{display:flex;min-height:100vh;background:var(--grad-tint);}
+.app-sidebar{
+  width:240px;flex-shrink:0;background:var(--grad-navy);color:#CBD5E1;
+  display:flex;flex-direction:column;padding:22px 14px;position:sticky;top:0;height:100vh;
+}
+.app-sidebar-logo{display:flex;align-items:center;gap:10px;color:#fff;font-weight:800;font-size:16.5px;padding:8px 10px 26px;}
+.app-nav{display:flex;flex-direction:column;gap:2px;flex:1;}
+.app-nav-item{
+  display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:9px;
+  font-size:14px;font-weight:500;color:#94A3B8;transition:background .15s,color .15s;cursor:pointer;
+}
+.app-nav-item svg{width:17px;height:17px;flex-shrink:0;}
+.app-nav-item:hover{background:rgba(255,255,255,0.05);color:#fff;}
+.app-nav-item.active{background:rgba(16,185,129,0.16);color:#fff;}
+.app-nav-item.active svg{color:var(--emerald-light);}
+.app-nav-divider{height:1px;background:rgba(255,255,255,0.08);margin:14px 4px;}
+.app-user-card{
+  display:flex;align-items:center;gap:10px;padding:12px;border-radius:10px;
+  background:rgba(255,255,255,0.05);margin-top:10px;
+}
+.app-user-card .au-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(140deg,var(--emerald-dark),var(--emerald-light));display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;font-family:var(--font-mono);flex-shrink:0;}
+.app-user-card .au-name{font-size:13px;font-weight:600;color:#fff;}
+.app-user-card .au-role{font-size:11px;color:#94A3B8;}
+.app-main{flex:1;min-width:0;}
+.app-topbar{
+  height:72px;background:#fff;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;padding:0 32px;position:sticky;top:0;z-index:5;
+}
+.app-topbar h1{font-size:19px;}
+.app-topbar-right{display:flex;align-items:center;gap:14px;}
+.icon-btn{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;color:var(--navy-soft);border:1px solid var(--border);}
+.icon-btn svg{width:17px;height:17px;}
+.app-content{padding:36px;}
+.app-burger{display:none;align-items:center;justify-content:center;width:36px;height:36px;border-radius:9px;border:1px solid var(--border);color:var(--navy-soft);flex-shrink:0;}
+.app-burger svg{width:18px;height:18px;}
+.sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(15,23,42,0.4);z-index:49;}
+.sidebar-backdrop.open{display:block;}
+.app-panel{display:none;}
+.app-panel.active{display:block;animation:fadeIn .3s ease;}
+.panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;}
+.panel-head h2{font-size:21px;}
+.panel-head p{font-size:13.5px;color:var(--text-muted);margin-top:4px;}
+.card-block{background:var(--grad-card);border:1px solid var(--border);border-radius:var(--radius-md);padding:26px;}
+.card-block + .card-block{margin-top:20px;}
+
+/* ---- Workspaces grid ---- */
+.ws-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+.ws-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:14px;transition:box-shadow .2s,transform .2s;}
+.ws-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px);}
+.ws-card h4{font-size:15.5px;}
+.ws-card .ws-client{font-size:12.5px;color:var(--text-faint);font-family:var(--font-mono);}
+.ws-card .ws-budget{font-size:13px;color:var(--text-muted);}
+
+/* ---- Filter pills ---- */
+.filter-pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
+.filter-pill{font-size:12.5px;font-weight:600;padding:7px 14px;border-radius:999px;border:1px solid var(--border);color:var(--text-muted);}
+.filter-pill.active{background:var(--navy);border-color:var(--navy);color:#fff;}
+
+/* ===== Dashboard - order-centric (Fiverr/Upwork style) ===== */
+.dash-greet{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px;}
+.dash-greet h2{font-size:21px;}
+.dash-greet p{font-size:13.5px;color:var(--text-muted);margin-top:4px;}
+.seller-badge{display:flex;align-items:center;gap:13px;font-size:13px;color:var(--text-muted);background:var(--neutral);border:1px solid var(--border-soft);border-radius:999px;padding:9px 18px;white-space:nowrap;}
+.seller-badge b{color:var(--navy);font-weight:700;}
+.seller-badge .sb-star{color:#F59E0B;}
+.seller-badge .sb-sep{width:1px;height:14px;background:var(--border);}
+
+.attn{display:flex;align-items:center;gap:12px;background:#FEF2F2;border:1px solid #FECACA;color:#B91C1C;border-radius:var(--radius-md);padding:14px 18px;font-size:13.5px;margin-bottom:22px;}
+.attn svg{width:19px;height:19px;flex-shrink:0;}
+.attn a{margin-left:auto;font-weight:700;color:#B91C1C;text-decoration:underline;white-space:nowrap;}
+
+.earn-card{background:var(--grad-navy);border-radius:var(--radius-lg);padding:30px 34px;color:#fff;display:flex;align-items:center;gap:36px;flex-wrap:wrap;margin-bottom:26px;position:relative;overflow:hidden;}
+.earn-card::before{content:'';position:absolute;top:-130px;right:-70px;width:360px;height:360px;border-radius:50%;background:radial-gradient(circle,rgba(16,185,129,0.22),transparent 70%);pointer-events:none;}
+.earn-main{position:relative;z-index:1;}
+.earn-main .el{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:#94A3B8;font-family:var(--font-mono);margin-bottom:9px;}
+.earn-main .ev{font-size:40px;font-weight:800;font-family:var(--font-mono);letter-spacing:-.5px;line-height:1;}
+.earn-main .btn{margin-top:18px;}
+.earn-secs{display:flex;gap:34px;margin-left:auto;position:relative;z-index:1;flex-wrap:wrap;}
+.earn-sec .el{font-size:11.5px;letter-spacing:.04em;color:#94A3B8;font-family:var(--font-mono);margin-bottom:7px;}
+.earn-sec .ev{font-size:19px;font-weight:700;font-family:var(--font-mono);color:#fff;}
+
+.orders-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.orders-head h2{font-size:16px;}
+.orders-head a{font-size:13px;font-weight:600;color:var(--emerald-dark);}
+.order-row{display:flex;align-items:center;gap:16px;padding:16px 0;border-bottom:1px solid var(--border-soft);}
+.order-row:last-child{border-bottom:none;padding-bottom:2px;}
+.order-av{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;font-family:var(--font-mono);flex-shrink:0;}
+.order-info{min-width:0;flex:1;}
+.order-info h5{font-size:14.5px;font-weight:600;color:var(--navy);}
+.order-info .om{font-size:12.5px;color:var(--text-muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.order-due{font-size:12.5px;color:var(--text-faint);font-family:var(--font-mono);white-space:nowrap;}
+.order-act{flex-shrink:0;}
+@media(max-width:640px){
+  .earn-card{flex-direction:column;align-items:flex-start;gap:22px;padding:24px;}
+  .earn-secs{margin-left:0;gap:28px;}
+  .earn-main .ev{font-size:34px;}
+  .order-due{display:none;}
+}
+
+/* ---- Contracts ---- */
+.contract-row{display:flex;align-items:center;justify-content:space-between;padding:18px 0;border-bottom:1px solid var(--border-soft);gap:14px;flex-wrap:wrap;}
+.contract-row:last-child{border-bottom:none;}
+.contract-row .cr-left{display:flex;align-items:center;gap:14px;}
+.contract-icon{width:38px;height:38px;border-radius:9px;background:var(--neutral);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.contract-icon svg{width:18px;height:18px;color:var(--navy);}
+.contract-row h5{font-size:14.5px;margin-bottom:3px;}
+.contract-row .cr-meta{font-size:12.5px;color:var(--text-faint);font-family:var(--font-mono);}
+
+/* ---- Messages ---- */
+.msg-shell{display:grid;grid-template-columns:280px 1fr;border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden;background:#fff;height:560px;}
+.msg-list{border-right:1px solid var(--border);overflow-y:auto;}
+.msg-item{display:flex;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid var(--border-soft);cursor:pointer;}
+.msg-item.active{background:var(--neutral);}
+.msg-item .mi-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(140deg,var(--navy),var(--navy-soft));color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;font-family:var(--font-mono);flex-shrink:0;}
+.msg-item h5{font-size:13.5px;}
+.msg-item p{font-size:12px;color:var(--text-faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:170px;}
+.msg-thread{display:flex;flex-direction:column;min-height:0;overflow:hidden;}
+.msg-thread-head{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 18px;border-bottom:1px solid var(--border);}
+.msg-thread-body{flex:1;padding:24px;overflow-y:auto;min-height:0;}
+.msg-thread-input{display:flex;gap:10px;padding:16px;border-top:1px solid var(--border);}
+.msg-thread-input input{flex:1;border:1.5px solid var(--border);border-radius:9px;padding:10px 14px;font-size:14px;}
+.msg-thread-input input:focus{outline:none;border-color:var(--emerald);}
+
+/* ===== Messages: project hub (calls, in-chat actions, project code) ===== */
+.mi-code{display:block;font-family:var(--font-mono);font-size:9.5px;font-weight:600;color:var(--navy-soft);margin:3px 0;letter-spacing:.01em;}
+.mt-id{display:flex;align-items:center;gap:12px;min-width:0;}
+.msg-back{display:none;width:36px;height:36px;border-radius:50%;align-items:center;justify-content:center;border:1px solid var(--border);background:#fff;color:var(--navy);flex-shrink:0;}
+.msg-back svg{width:19px;height:19px;}
+.mt-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(140deg,var(--navy),var(--navy-soft));color:#fff;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:700;font-family:var(--font-mono);flex-shrink:0;}
+.mt-name{font-size:14.5px;font-weight:700;color:var(--navy);line-height:1.2;}
+.mt-sub{font-size:11.5px;color:var(--text-faint);margin-top:3px;display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.mt-sub .dot{width:3px;height:3px;border-radius:50%;background:var(--text-faint);}
+.mt-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.mt-iconbtn{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);background:#fff;color:var(--navy);transition:background .15s,border-color .15s,color .15s;}
+.mt-iconbtn:hover{background:var(--emerald);border-color:var(--emerald);color:#fff;}
+.mt-iconbtn svg{width:18px;height:18px;}
+
+.code-chip{display:inline-flex;align-items:center;gap:5px;font-family:var(--font-mono);font-size:11px;font-weight:600;color:var(--navy-soft);background:#F1F5F9;border:1px solid var(--border);border-radius:6px;padding:2px 7px;letter-spacing:.02em;}
+.code-chip svg{width:11px;height:11px;color:var(--emerald-dark);}
+
+.proj-strip{display:flex;align-items:center;gap:11px;padding:11px 18px;background:var(--neutral);border-bottom:1px solid var(--border-soft);font-size:13px;flex-wrap:wrap;}
+.proj-strip .ps-name{font-weight:600;color:var(--navy);}
+.proj-strip .ps-view{margin-left:auto;font-weight:600;color:var(--emerald-dark);white-space:nowrap;cursor:pointer;}
+
+.chat-event{display:flex;gap:12px;background:#fff;border:1px solid var(--border);border-left:3px solid var(--emerald);border-radius:12px;padding:14px 16px;margin:6px auto 18px;max-width:90%;box-shadow:var(--shadow-sm);}
+.chat-event.warn{border-left-color:#C2660D;}
+.ce-ic{width:34px;height:34px;border-radius:9px;background:var(--grad-emerald-soft);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ce-ic svg{width:17px;height:17px;color:var(--emerald-dark);}
+.chat-event.warn .ce-ic{background:#FFF7ED;}
+.chat-event.warn .ce-ic svg{color:#C2660D;}
+.ce-body{flex:1;min-width:0;}
+.ce-title{font-size:13.5px;font-weight:600;color:var(--navy);}
+.ce-meta{font-size:12px;color:var(--text-muted);font-family:var(--font-mono);margin-top:3px;}
+.ce-actions{margin-top:11px;display:flex;gap:8px;flex-wrap:wrap;}
+
+.msg-thread-input{border-top:none;padding:14px 16px;align-items:center;}
+.composer{border-top:1px solid var(--border);background:#fff;}
+.quick-actions{display:flex;gap:8px;padding:13px 16px 0;flex-wrap:wrap;}
+.qa-chip{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;color:var(--navy);background:var(--neutral);border:1px solid var(--border);border-radius:999px;padding:8px 14px;white-space:nowrap;transition:background .15s,border-color .15s,color .15s;}
+.qa-chip:hover{background:var(--emerald);border-color:var(--emerald);color:#fff;}
+.qa-chip svg{width:14px;height:14px;color:var(--emerald-dark);}
+.qa-chip:hover svg{color:#fff;}
+
+.call-modal{position:fixed;inset:0;background:rgba(15,23,42,0.55);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:120;padding:20px;}
+.call-modal.open{display:flex;animation:fadeIn .2s ease;}
+.call-card{width:340px;max-width:100%;background:var(--grad-navy);border-radius:24px;padding:32px;text-align:center;color:#fff;box-shadow:var(--shadow-lg);}
+.call-video{height:150px;border-radius:14px;background:linear-gradient(140deg,#1E293B,#0F172A);border:1px solid rgba(255,255,255,0.08);display:none;align-items:center;justify-content:center;color:#64748B;font-size:12px;font-family:var(--font-mono);margin-bottom:20px;}
+.call-modal.video .call-video{display:flex;}
+.call-avatar{width:72px;height:72px;border-radius:50%;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;font-family:var(--font-mono);background:linear-gradient(140deg,var(--emerald-dark),var(--emerald-light));}
+.call-modal.video .call-avatar{display:none;}
+.call-name{font-size:18px;font-weight:700;}
+.call-status{font-size:12.5px;color:#94A3B8;font-family:var(--font-mono);margin-top:6px;}
+.call-controls{display:flex;justify-content:center;gap:16px;margin-top:26px;}
+.call-btn{width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.12);color:#fff;transition:background .15s;}
+.call-btn:hover{background:rgba(255,255,255,0.2);}
+.call-btn svg{width:22px;height:22px;}
+.call-btn.end{background:#DC2626;}
+.call-btn.end:hover{background:#B91C1C;}
+@media(max-width:640px){
+  .mt-iconbtn.mt-open{display:none;}
+  .quick-actions{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .qa-chip{flex-shrink:0;}
+}
+
+/* ---- Settings ---- */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:16px 0;border-bottom:1px solid var(--border-soft);}
+.toggle-row:last-child{border-bottom:none;}
+.toggle-row h5{font-size:14.5px;margin-bottom:3px;}
+.toggle-row p{font-size:13px;color:var(--text-muted);}
+.switch{width:42px;height:24px;border-radius:99px;background:var(--border);position:relative;flex-shrink:0;cursor:pointer;transition:background .2s;}
+.switch::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:var(--shadow-sm);}
+.switch.on{background:var(--emerald);}
+.switch.on::after{transform:translateX(18px);}
+.kyc-status-card{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+.kyc-status-card .ks-left{display:flex;align-items:center;gap:14px;}
+.kyc-status-icon{width:44px;height:44px;border-radius:11px;background:#FFF7ED;display:flex;align-items:center;justify-content:center;}
+.kyc-status-icon svg{width:21px;height:21px;color:#C2660D;}
+
+/* ============ KYC FLOW ============ */
+.kyc-wrap{max-width:560px;margin:0 auto;padding:90px 24px 60px;}
+.kyc-steps{display:flex;align-items:center;margin-bottom:36px;}
+.kyc-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-lg);padding:38px;box-shadow:var(--shadow-md);}
+.kyc-card h2{font-size:21px;margin-bottom:8px;}
+.kyc-card .sub{font-size:14px;color:var(--text-muted);margin-bottom:26px;}
+.dropzone{
+  border:1.5px dashed var(--border);border-radius:14px;padding:38px 20px;text-align:center;margin-bottom:24px;
+  background:var(--neutral);
+}
+.dropzone svg{width:30px;height:30px;color:var(--text-faint);margin:0 auto 12px;}
+.dropzone p{font-size:13.5px;color:var(--text-muted);}
+.dropzone .dz-sub{font-size:12px;color:var(--text-faint);margin-top:4px;}
+.kyc-success{text-align:center;padding:10px 0 6px;}
+.kyc-success .check-circle{width:64px;height:64px;border-radius:50%;background:#ECFDF5;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;}
+.kyc-success .check-circle svg{width:30px;height:30px;color:var(--emerald-dark);}
+
+/* ============ PUBLIC PROFILES ============ */
+.profile-wrap{max-width:880px;margin:0 auto;padding:100px 24px 80px;}
+.profile-hero{display:flex;align-items:flex-start;gap:22px;margin-bottom:36px;flex-wrap:wrap;}
+.profile-avatar{width:84px;height:84px;border-radius:20px;background:linear-gradient(140deg,var(--navy),var(--navy-soft));display:flex;align-items:center;justify-content:center;color:#fff;font-size:28px;font-weight:700;font-family:var(--font-mono);flex-shrink:0;}
+.profile-hero h1{font-size:26px;margin-bottom:6px;display:flex;align-items:center;gap:10px;}
+.verify-badge{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;color:var(--emerald-dark);background:#ECFDF5;padding:4px 10px;border-radius:999px;font-family:var(--font-mono);}
+.verify-badge svg{width:12px;height:12px;}
+.profile-hero .tagline{font-size:15px;color:var(--text-muted);margin-bottom:10px;}
+.profile-hero .url{font-size:13px;color:var(--text-faint);font-family:var(--font-mono);}
+.profile-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:36px;}
+.skills-wrap{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:36px;}
+.skill-tag{font-size:12.5px;font-weight:600;background:var(--neutral);color:var(--navy-soft);padding:7px 13px;border-radius:999px;}
+.portfolio-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:40px;}
+.portfolio-thumb{aspect-ratio:4/3;border-radius:12px;background:linear-gradient(135deg,var(--neutral),#EDF2F7);display:flex;align-items:center;justify-content:center;font-size:30px;border:1px solid var(--border-soft);}
+.review-card{padding:20px 0;border-bottom:1px solid var(--border-soft);}
+.review-card:last-child{border-bottom:none;}
+.review-stars{color:#F59E0B;font-size:13px;margin-bottom:8px;}
+.review-card p{font-size:14.5px;color:var(--navy);line-height:1.6;margin-bottom:10px;}
+.review-card .rv-name{font-size:12.5px;color:var(--text-faint);font-family:var(--font-mono);}
+.team-avatars{display:flex;gap:10px;flex-wrap:wrap;}
+.team-avatars .ta-item{display:flex;align-items:center;gap:8px;background:var(--neutral);padding:8px 14px 8px 8px;border-radius:999px;}
+.team-avatars .ta-item .ta-dot{width:26px;height:26px;border-radius:50%;background:linear-gradient(140deg,var(--navy),var(--navy-soft));color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);}
+
+/* ============ DISPUTES ============ */
+.dispute-case{border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:16px;}
+.dispute-case-head{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:12px;}
+.dispute-case h5{font-size:15px;}
+.dispute-case .dc-meta{font-size:12.5px;color:var(--text-faint);font-family:var(--font-mono);margin-top:4px;}
+.evidence-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;}
+.evidence-chip{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;background:var(--neutral);padding:7px 12px;border-radius:8px;color:var(--navy-soft);}
+
+/* ============ ADMIN ============ */
+.admin-shell{display:flex;min-height:100vh;background:var(--neutral);}
+.admin-sidebar{width:230px;flex-shrink:0;background:var(--grad-navy);color:#CBD5E1;padding:22px 14px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;}
+.admin-table-wrap{overflow-x:auto;}
+.status-dot{display:inline-flex;align-items:center;gap:6px;font-size:13px;}
+.status-dot::before{content:'';width:7px;height:7px;border-radius:50%;}
+.status-dot.ok::before{background:var(--emerald);}
+.status-dot.pending::before{background:#C2660D;}
+.status-dot.bad::before{background:#DC2626;}
+.admin-stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}
+
+@media (max-width:1024px){
+  .ws-grid{grid-template-columns:repeat(2,1fr);}
+  .profile-stats{grid-template-columns:repeat(2,1fr);}
+  .admin-stat-grid{grid-template-columns:repeat(2,1fr);}
+}
+@media (max-width:900px){
+  .app-sidebar,.admin-sidebar{position:fixed;left:-260px;transition:left .25s;z-index:50;box-shadow:var(--shadow-lg);}
+  .app-sidebar.open,.admin-sidebar.open{left:0;}
+  .app-burger{display:flex;}
+}
+@media (max-width:768px){
+  .app-content{padding:22px;}
+  .ws-grid{grid-template-columns:1fr;}
+  .portfolio-grid{grid-template-columns:1fr 1fr;}
+  .profile-stats{grid-template-columns:1fr 1fr;}
+  .pfee-card,.membership-card{padding:30px;}
+  .admin-stat-grid{grid-template-columns:1fr 1fr;}
+
+  /* Messaging: one pane at a time - list, then tap to open the chat */
+  .msg-shell{grid-template-columns:1fr;height:72vh;min-height:460px;}
+  .msg-list{max-height:none;border-right:none;}
+  .msg-thread{display:none;}
+  .msg-shell.show-thread .msg-list{display:none;}
+  .msg-shell.show-thread .msg-thread{display:flex;}
+  .msg-back{display:flex;}
+  .msg-thread-head{padding:12px 14px;}
+  .mt-iconbtn.mt-open{display:none;}
+}
+
+/* ============ MOBILE FINE-TUNING ============ */
+@media (max-width:600px){
+  .nav-inner{padding:0 16px;height:64px;}
+  .nav-mobile{top:64px;padding:18px 20px 24px;}
+  .logo{font-size:16.5px;}
+  .logo-mark{width:30px;height:30px;}
+
+  .app-topbar{padding:0 16px;}
+  .app-topbar h1{font-size:16px;}
+  .app-topbar-right{gap:8px;}
+  #newWorkspaceBtn{padding:9px 14px;font-size:13px;}
+  .app-content{padding:16px;}
+  .panel-head h2{font-size:18px;}
+  .card-block{padding:18px;}
+
+  .dash-wrap{padding:16px;border-radius:18px;}
+  .dash-screen{padding:16px;border-radius:14px;}
+  .dash-tabs{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:6px;margin-bottom:20px;}
+  .dash-tab{flex-shrink:0;white-space:nowrap;padding:9px 14px;font-size:12.5px;}
+
+  .pfee-amount{font-size:32px;}
+  .membership-amount{font-size:30px;}
+  .pfee-card,.membership-card{padding:24px;}
+
+  .auth-shell{padding:40px 16px;}
+  .auth-card{padding:28px 22px;}
+  .auth-card.wide{padding:28px 20px;}
+  .auth-card h2{font-size:21px;}
+  .code-inputs{gap:7px;}
+  .code-inputs input{font-size:18px;}
+  .field-row{grid-template-columns:1fr 1fr;gap:10px;}
+  .role-tab{font-size:12px;padding:9px 4px;}
+
+  .kyc-wrap{padding:80px 16px 50px;}
+  .kyc-card{padding:24px 20px;}
+  .kyc-card h2{font-size:19px;}
+
+  .profile-wrap{padding:88px 16px 56px;}
+  .profile-hero{gap:14px;}
+  .profile-avatar{width:64px;height:64px;font-size:21px;border-radius:16px;}
+  .profile-hero h1{font-size:19px;flex-wrap:wrap;gap:6px;}
+  .profile-stats{grid-template-columns:1fr 1fr;gap:10px;}
+  .portfolio-grid{grid-template-columns:1fr 1fr;gap:10px;}
+
+  .admin-stat-grid{grid-template-columns:1fr 1fr;gap:10px;}
+  .statgrid{gap:10px;}
+
+  .stackcard{padding:12px 13px;}
+  .stackcard .sc-left{gap:9px;}
+  .stackcard .sc-icon{width:28px;height:28px;}
+  .stackcard .sc-title{font-size:12px;}
+  .stackcard .sc-amount{font-size:10.5px;}
+  .pill{font-size:9.5px;padding:4px 8px;}
+  .escrow-floater{padding:10px 13px;gap:9px;}
+  .escrow-floater .lock{width:24px;height:24px;}
+  .escrow-floater .ef-amount{font-size:13px;}
+  .escrow-floater .ef-label{font-size:9px;}
+
+  .approval-card{flex-direction:column;padding:18px;}
+  .dispute-case{padding:16px;}
+
+  .finalcta{padding:36px 18px;border-radius:20px;}
+  .finalcta h2{font-size:23px;}
+  .finalcta p{font-size:14.5px;}
+
+  .footer-bottom{flex-direction:column;align-items:flex-start;gap:8px;}
+  .back-pill{top:14px;left:14px;font-size:12px;padding:8px 14px 8px 10px;}
+
+  .feature-card.big{padding:22px;}
+  .feature-card{padding:22px;}
+  .testi-card{padding:22px;}
+  .aud-card{padding:20px 16px;}
+
+  .hero-copy h1{font-size:34px;line-height:1.12;margin-bottom:18px;}
+  .hero-copy p.lede{font-size:16.5px;max-width:340px;margin-bottom:28px;}
+  .hero-microtrust{font-size:12.5px;}
+}
+
+@media (max-width:380px){
+  .hero-visual{height:360px;}
+  .stackcard{padding:10px 12px;}
+  .sc-icon svg{width:14px;height:14px;}
+  .profile-stats{grid-template-columns:1fr;}
+  .admin-stat-grid{grid-template-columns:1fr;}
+  .field-row{grid-template-columns:1fr;}
+  .code-inputs{gap:6px;}
+  .code-inputs input{font-size:16px;}
+
+  .hero-copy h1{font-size:27px;}
+  .hero-copy p.lede{font-size:15px;max-width:270px;}
+}
+</style>
+</head>
+<body>
+
+<div class="screen active" id="screen-landing">
+
+<!-- ============ NAV ============ -->
+<nav class="nav" id="mainNav">
+  <div class="nav-inner">
+    <a href="#" class="logo">
+      <span class="logo-mark">
+        <svg width="20" height="20" viewBox="0 0 32 32" fill="none">
+          <polyline points="6,22 11,10 16,20 21,8 26,20" stroke="#10B981" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="6" cy="22" r="1.8" fill="#10B981"/><circle cx="11" cy="10" r="1.8" fill="#10B981"/>
+          <circle cx="16" cy="20" r="1.8" fill="#10B981"/><circle cx="21" cy="8" r="1.8" fill="#10B981"/><circle cx="26" cy="20" r="1.8" fill="#10B981"/>
+        </svg>
+      </span>
+      Milestack
+    </a>
+    <div class="nav-links">
+      <a href="#features">Product</a>
+      <a href="#how">How it works</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">Security</a>
+    </div>
+    <div class="nav-actions">
+      <a href="#" class="login-link js-login">Log in</a>
+      <a href="#" class="btn btn-primary btn-sm js-start-workspace">Start a Workspace</a>
+      <button class="nav-burger" id="burgerBtn" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+  <div class="nav-mobile" id="navMobile">
+    <a href="#features">Product</a>
+    <a href="#how">How it works</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#faq">Security</a>
+    <div class="nav-mobile-actions">
+      <a href="#" class="btn btn-ghost btn-block js-login">Log in</a>
+      <a href="#" class="btn btn-primary btn-block js-start-workspace">Start a Workspace</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="container hero-inner">
+    <div class="hero-copy">
+      <div class="eyebrow">For freelancers who bring their own clients</div>
+      <h1>Found A Client?<br><span class="hl">We'll Secure The Deal.</span></h1>
+      <p class="lede">Protect payments, track milestones, and get paid with confidence.</p>
+      <div class="hero-ctas">
+        <a href="#" class="btn btn-primary js-start-workspace">Start a Workspace</a>
+        <a href="#how" class="btn btn-ghost with-icon">
+          See How It Works
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+      </div>
+      <div class="hero-microtrust">
+        <span class="avatars"><span>TA</span><span>WO</span><span>LM</span></span>
+        Trusted by freelancers and clients in 30+ countries
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="stackcard card-1">
+        <div class="sc-left">
+          <div class="sc-icon" style="background:#ECFDF5;">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>
+          </div>
+          <div><div class="sc-title">Launch Support</div><div class="sc-amount">$800.00</div></div>
+        </div>
+        <span class="pill pill-released">RELEASED</span>
+      </div>
+      <div class="stackcard card-2">
+        <div class="sc-left">
+          <div class="sc-icon" style="background:#EFF6FF;">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+          </div>
+          <div><div class="sc-title">Final Build</div><div class="sc-amount">$3,000.00</div></div>
+        </div>
+        <span class="pill pill-approved">APPROVED</span>
+      </div>
+      <div class="stackcard card-3">
+        <div class="sc-left">
+          <div class="sc-icon" style="background:#FFF7ED;">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#C2660D" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+          </div>
+          <div><div class="sc-title">Wireframes</div><div class="sc-amount">$1,200.00</div></div>
+        </div>
+        <span class="pill pill-progress">IN PROGRESS</span>
+      </div>
+      <div class="stackcard card-4">
+        <div class="sc-left">
+          <div class="sc-icon" style="background:#F1F5F9;">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#334155" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg>
+          </div>
+          <div><div class="sc-title">Discovery Call</div><div class="sc-amount">$500.00</div></div>
+        </div>
+        <span class="pill pill-funded">FUNDED</span>
+      </div>
+      <div class="escrow-floater">
+        <div class="lock">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg>
+        </div>
+        <div>
+          <div class="ef-label">SECURED IN ESCROW</div>
+          <div class="ef-amount">$4,500.00</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TRUST BAR ============ -->
+<section class="trustbar">
+  <div class="container trustbar-inner">
+    <div class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z"/></svg>Secure Escrow</div>
+    <div class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="3"/><path d="M5 21c0-4 3-6 7-6s7 2 7 6"/><path d="M3 11l1.5 1.5L7 10"/></svg>Identity Verification</div>
+    <div class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 14h4"/></svg>Protected Payments</div>
+    <div class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a13 13 0 010 18 13 13 0 010-18z"/></svg>Global Collaboration</div>
+    <div class="trust-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l2 5 5 .8-3.6 3.5.9 5-4.3-2.4-4.3 2.4.9-5L5 8.8 10 8z"/></svg>Dispute Resolution</div>
+  </div>
+</section>
+
+<!-- ============ KEY MESSAGE BANNER ============ -->
+<section class="keymsg">
+  <div class="container keymsg-inner">
+    <h2>You found the client. <span class="hl">Keep every dollar you earn.</span></h2>
+    <p>Clients pay for protection. Freelancers keep 100% of their project earnings.</p>
+  </div>
+</section>
+
+<!-- ============ HOW IT WORKS ============ -->
+<section class="section howitworks" id="how">
+  <div class="container">
+    <div class="section-head center">
+      <div class="eyebrow" style="justify-content:center;">The workflow</div>
+      <h2>From invite to payout, in six steps</h2>
+      <p>Every workspace follows the same trusted sequence, so both sides always know exactly where the money and the work stand.</p>
+    </div>
+    <div class="timeline">
+      <div class="tstep reveal">
+        <div class="tnum">01</div>
+        <div class="tbody"><h3>Invite Your Client</h3><p>Send a workspace link by email, WhatsApp, LinkedIn, or any channel you already use. No marketplace account required on either side.</p></div>
+      </div>
+      <div class="tstep reveal">
+        <div class="tnum">02</div>
+        <div class="tbody"><h3>Create Milestones</h3><p>Break the project into clear, priced milestones with deadlines, deliverables, and scope, set once, visible to both sides.</p></div>
+      </div>
+      <div class="tstep reveal">
+        <div class="tnum">03</div>
+        <div class="tbody"><h3>Client Funds Project</h3><p>Your client deposits the milestone amount plus a 10% Project Protection Fee into escrow before work begins. You'll receive the full milestone amount, the fee is what the client pays for protection, not a cut of your earnings.</p></div>
+      </div>
+      <div class="tstep reveal">
+        <div class="tnum">04</div>
+        <div class="tbody"><h3>Deliver Work</h3><p>Upload files, share progress, and message your client inside the workspace, one shared record for the whole project.</p></div>
+      </div>
+      <div class="tstep reveal">
+        <div class="tnum">05</div>
+        <div class="tbody"><h3>Client Approves</h3><p>Your client reviews the deliverable against the milestone and approves it, or requests changes with specific feedback.</p></div>
+      </div>
+      <div class="tstep reveal">
+        <div class="tnum">06</div>
+        <div class="tbody"><h3>Payment Released</h3><p>Funds release straight to your account the moment a milestone is approved. No invoices to chase, no waiting on "payment sent."</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FEATURES ============ -->
+<section class="section section-glow" id="features">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow">Everything the relationship needs</div>
+      <h2>Built for work between two people who already trust each other, mostly</h2>
+      <p>Milestack handles the parts that get awkward: money, proof of delivery, and what happens when something goes wrong.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card big reveal">
+        <div class="ficon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z"/></svg></div>
+        <h3>Escrow Payments</h3>
+        <p>Clients fund milestones through regulated payment infrastructure, paying the project amount plus a 10% Project Protection Fee. Freelancers receive 100% of the agreed amount, Milestack never takes a cut of your earnings, and never takes custody of the money itself.</p>
+        <div class="biginner">
+          <span class="minitag">Freelancer keeps 100%</span>
+          <span class="minitag">Held until approval</span>
+          <span class="minitag">Fee paid by client</span>
+        </div>
+      </div>
+      <div class="feature-card reveal">
+        <div class="ficon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
+        <h3>Milestone Tracking</h3>
+        <p>Every deliverable has a status (draft, funded, in progress, submitted, approved, or released) visible to both sides at all times.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="ficon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/><path d="M9 13h6M9 17h6"/></svg></div>
+        <h3>Contracts & Agreements</h3>
+        <p>Generate a scope-of-work agreement from your milestones and have both parties sign before any money moves.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="ficon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.5 8.5 0 11-3.8-7.1"/><path d="M3 21l1.6-4A8.5 8.5 0 0121 11.5"/></svg></div>
+        <h3>Project Chat</h3>
+        <p>One thread per workspace, attached to the milestone it's about, no more digging through WhatsApp for the brief.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="ficon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg></div>
+        <h3>File Sharing</h3>
+        <p>Drafts, revisions, and final deliverables live inside the milestone they belong to, version by version.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="ficon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="3"/><path d="M5 21c0-4 3-6 7-6s7 2 7 6"/><path d="M3 11l1.5 1.5L7 10"/></svg></div>
+        <h3>Identity Verification</h3>
+        <p>Government ID, selfie liveness check, and address verification keep every workspace tied to a real, accountable person.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="ficon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l2 5 5 .8-3.6 3.5.9 5-4.3-2.4-4.3 2.4.9-5L5 8.8 10 8z"/></svg></div>
+        <h3>Dispute Resolution</h3>
+        <p>If a milestone is contested, either side can open a case with evidence and chat history for a binding review.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="ficon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></div>
+        <h3>Portfolio Profiles</h3>
+        <p>A public profile with verified work history, completed projects, and client reviews, built from real, funded work.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ AUDIENCE ============ -->
+<section class="section" style="background:var(--grad-tint);padding-top:100px;padding-bottom:100px;">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow">Who it's for</div>
+      <h2>Built for independent work, whatever shape it takes</h2>
+      <p>If you bring your own clients and bill by the project, Milestack fits how you already work.</p>
+    </div>
+    <div class="audience-row">
+      <div class="aud-card reveal"><div class="aud-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.5 3.5-7 8-7s8 2.5 8 7"/></svg></div><h4>Freelancers</h4><p>Independent talent working project to project, direct with clients.</p></div>
+      <div class="aud-card reveal"><div class="aud-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.5 7.5"/></svg></div><h4>Designers</h4><p>Brand, product, and graphic designers shipping client deliverables.</p></div>
+      <div class="aud-card reveal"><div class="aud-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6L2 12l6 6M16 6l6 6-6 6"/></svg></div><h4>Developers</h4><p>Engineers building sites, apps, and integrations for direct clients.</p></div>
+      <div class="aud-card reveal"><div class="aud-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.8 2.8 0 114 4L7 21l-4 1 1-4z"/></svg></div><h4>Writers</h4><p>Copywriters, ghostwriters, and content creators working by the brief.</p></div>
+      <div class="aud-card reveal"><div class="aud-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="9" width="16" height="12" rx="1"/><path d="M9 22V13M9 4h6v5H9z"/></svg></div><h4>Agencies</h4><p>Small teams running multiple client engagements at once.</p></div>
+      <div class="aud-card reveal"><div class="aud-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4"/></svg></div><h4>Consultants</h4><p>Advisors billing for milestone-based engagements and retainers.</p></div>
+      <div class="aud-card reveal"><div class="aud-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M16 8l-5 3-2 5 5-3 2-5z"/></svg></div><h4>Architects</h4><p>Spatial and structural designers managing phased project payments.</p></div>
+      <div class="aud-card reveal"><div class="aud-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l18-7-7 18-3-7-8-4z"/></svg></div><h4>Marketing Pros</h4><p>Strategists and freelance marketers running campaign-based work.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DASHBOARD PREVIEW ============ -->
+<section class="section section-glow">
+  <div class="container">
+    <div class="section-head center">
+      <div class="eyebrow" style="justify-content:center;">Inside the workspace</div>
+      <h2>One workspace. Every part of the project.</h2>
+      <p>A real look at how a milestone moves from funded to paid, and what each side sees along the way.</p>
+    </div>
+
+    <div class="dash-wrap reveal">
+      <div class="dash-tabs">
+        <button class="dash-tab active" data-tab="overview">Workspace Overview</button>
+        <button class="dash-tab" data-tab="milestones">Milestone Management</button>
+        <button class="dash-tab" data-tab="payments">Payment Tracking</button>
+        <button class="dash-tab" data-tab="chat">Team Collaboration</button>
+        <button class="dash-tab" data-tab="files">File Uploads</button>
+        <button class="dash-tab" data-tab="approval">Client Approval</button>
+      </div>
+
+      <div class="dash-screen">
+        <!-- OVERVIEW -->
+        <div class="dash-panel active" data-panel="overview">
+          <div class="dash-header-row">
+            <div><h4>Brand Redesign · Lagos Retail Co.</h4><div class="ws-meta">Workspace · 4 milestones · $5,500 total budget</div></div>
+            <span class="pill pill-progress">IN PROGRESS</span>
+          </div>
+          <div class="progressbar"><div style="width:65%;"></div></div>
+          <div class="mini-row"><div class="mr-left"><span class="mr-dot" style="background:#10B981;"></span><span class="mr-title">Discovery Call</span></div><span class="mr-amount">$500 · Released</span></div>
+          <div class="mini-row"><div class="mr-left"><span class="mr-dot" style="background:#2563EB;"></span><span class="mr-title">Wireframes</span></div><span class="mr-amount">$1,200 · Approved</span></div>
+          <div class="mini-row"><div class="mr-left"><span class="mr-dot" style="background:#C2660D;"></span><span class="mr-title">Final Build</span></div><span class="mr-amount">$3,000 · In Progress</span></div>
+          <div class="mini-row"><div class="mr-left"><span class="mr-dot" style="background:#94A3B8;"></span><span class="mr-title">Launch Support</span></div><span class="mr-amount">$800 · Draft</span></div>
+          <div class="avatar-group"><span>TA</span><span>LR</span><span>+1</span></div>
+        </div>
+
+        <!-- MILESTONES -->
+        <div class="dash-panel" data-panel="milestones">
+          <div class="dash-header-row"><h4>Milestones</h4><span class="ws-meta">4 total</span></div>
+          <div class="table-scroll">
+          <table class="mtable">
+            <thead><tr><th>Title</th><th>Amount</th><th>Due</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+              <tr><td>Discovery Call</td><td class="mono">$500.00</td><td class="mono">Jun 02</td><td><span class="pill pill-released">RELEASED</span></td><td></td></tr>
+              <tr><td>Wireframes</td><td class="mono">$1,200.00</td><td class="mono">Jun 09</td><td><span class="pill pill-approved">APPROVED</span></td><td></td></tr>
+              <tr><td>Final Build</td><td class="mono">$3,000.00</td><td class="mono">Jun 24</td><td><span class="pill pill-submitted">SUBMITTED</span></td><td><button class="btn btn-primary btn-sm">Approve</button></td></tr>
+              <tr><td>Launch Support</td><td class="mono">$800.00</td><td class="mono">Jul 01</td><td><span class="pill pill-draft">DRAFT</span></td><td></td></tr>
+            </tbody>
+          </table>
+          </div>
+        </div>
+
+        <!-- PAYMENTS -->
+        <div class="dash-panel" data-panel="payments">
+          <div class="dash-header-row"><h4>Payments</h4><span class="ws-meta">Lifetime across all workspaces</span></div>
+          <div class="statgrid">
+            <div class="statbox"><div class="sl">ESCROW BALANCE</div><div class="sv">$3,200</div></div>
+            <div class="statbox"><div class="sl">PENDING RELEASE</div><div class="sv">$1,200</div></div>
+            <div class="statbox"><div class="sl">RELEASED TO DATE</div><div class="sv">$8,400</div></div>
+          </div>
+          <div class="table-scroll">
+          <table class="mtable">
+            <thead><tr><th>Transaction</th><th>Workspace</th><th>Amount</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>Milestone release</td><td>Lagos Retail Co.</td><td class="mono">+$500.00</td><td><span class="pill pill-released">RELEASED</span></td></tr>
+              <tr><td>Escrow deposit</td><td>Lagos Retail Co.</td><td class="mono">+$3,000.00</td><td><span class="pill pill-funded">FUNDED</span></td></tr>
+              <tr><td>Refund (scope change)</td><td>Accra Foods Ltd.</td><td class="mono">−$150.00</td><td><span class="pill pill-disputed">REFUNDED</span></td></tr>
+            </tbody>
+          </table>
+          </div>
+        </div>
+
+        <!-- CHAT -->
+        <div class="dash-panel" data-panel="chat">
+          <div class="dash-header-row"><h4>Team Collaboration</h4><span class="ws-meta">Final Build milestone</span></div>
+          <div class="chat-bubble them">Sent the homepage draft over, let me know what you think before I move to the product pages.</div>
+          <div class="chat-meta">Lara · 10:14 AM</div>
+          <div class="attach-chip">📎 homepage-draft-v3.fig · 4.2 MB</div>
+          <div class="chat-bubble me">Looks great, just one tweak on the hero spacing and we're good to submit for approval.</div>
+          <div class="chat-meta right">You · 10:31 AM</div>
+        </div>
+
+        <!-- FILES -->
+        <div class="dash-panel" data-panel="files">
+          <div class="dash-header-row"><h4>Files</h4><span class="ws-meta">12 files across this workspace</span></div>
+          <div class="file-grid">
+            <div class="file-card"><div class="fticon" style="background:#FEF2F2;">📄</div><div class="fname">contract-v1.pdf</div><div class="fmeta">220 KB · Jun 02</div></div>
+            <div class="file-card"><div class="fticon" style="background:#EFF6FF;">🎨</div><div class="fname">homepage-v3.fig</div><div class="fmeta">4.2 MB · Jun 14</div></div>
+            <div class="file-card"><div class="fticon" style="background:#F1F5F9;">🗂️</div><div class="fname">assets-final.zip</div><div class="fmeta">18.6 MB · Jun 16</div></div>
+            <div class="file-card"><div class="fticon" style="background:#ECFDF5;">🖼️</div><div class="fname">logo-export.png</div><div class="fmeta">1.1 MB · Jun 16</div></div>
+          </div>
+        </div>
+
+        <!-- APPROVAL -->
+        <div class="dash-panel" data-panel="approval">
+          <div class="dash-header-row"><h4>Client Approval Flow</h4><span class="ws-meta">Final Build milestone</span></div>
+          <div class="approval-card">
+            <div class="approval-thumb">🖥️</div>
+            <div>
+              <h5>Final Build submitted for review</h5>
+              <p>Lara submitted the completed homepage build on Jun 16, 10:42 AM. Review the deliverable and approve to release $3,000.00 from escrow.</p>
+              <div class="approval-actions">
+                <button class="btn btn-primary btn-sm">Approve & Release</button>
+                <button class="btn btn-ghost btn-sm">Request Changes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TESTIMONIALS ============ -->
+<section class="section" style="background:var(--grad-tint);">
+  <div class="container">
+    <div class="section-head center">
+      <div class="eyebrow" style="justify-content:center;">Used in the field</div>
+      <h2>Freelancers and agencies already running on Milestack</h2>
+    </div>
+    <div class="testi-grid">
+      <div class="testi-card reveal">
+        <p class="testi-quote">Milestack took the awkwardness out of asking new clients for money upfront. Funding the first milestone is just part of how we kick off every project now.</p>
+        <div class="testi-person"><div class="testi-avatar">TA</div><div><div class="testi-name">Tunde A.</div><div class="testi-role">Brand Designer</div></div></div>
+      </div>
+      <div class="testi-card reveal">
+        <p class="testi-quote">I stopped chasing invoices entirely. The client funds the milestone, I deliver, they approve, and the money is already sitting there waiting.</p>
+        <div class="testi-person"><div class="testi-avatar">WO</div><div><div class="testi-name">Wale O.</div><div class="testi-role">Web Developer</div></div></div>
+      </div>
+      <div class="testi-card reveal">
+        <p class="testi-quote">We run every contractor we bring on through referrals through Milestack now. It's the trust layer we didn't know we needed until we had it.</p>
+        <div class="testi-person"><div class="testi-avatar">LM</div><div><div class="testi-name">Lara M.</div><div class="testi-role">Agency Founder</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRICING ============ -->
+<section class="section section-glow" id="pricing">
+  <div class="container">
+    <div class="section-head center">
+      <div class="eyebrow" style="justify-content:center;">Pricing</div>
+      <h2>Freelancers keep 100%. Clients pay for protection.</h2>
+      <p>Milestack is free to join for freelancers. Clients pay a transparent Project Protection Fee only when they fund a project.</p>
+    </div>
+
+    <div class="pricing-cards">
+      <div class="pfee-card reveal">
+        <span class="price-badge">PROJECT PROTECTION FEE</span>
+        <div class="pfee-amount">10%<span>paid by the client, on top of the project amount</span></div>
+        <p class="price-desc" style="margin:14px 0 22px;">Charged to the client when they fund a project, never deducted from what the freelancer earns.</p>
+
+        <p style="font-size:13px;color:var(--text-faint);margin-top:4px;line-height:1.6;">Covers escrow protection, identity verification, fraud prevention, milestone management, project monitoring, secure payment processing, and dispute resolution.</p>
+        <a href="#" class="btn btn-primary js-start-workspace" style="margin-top:24px;">Start a Workspace</a>
+      </div>
+
+      <div class="membership-card reveal">
+        <span class="price-badge" style="background:rgba(255,255,255,0.12);color:#fff;">OPTIONAL · FOR FREELANCERS</span>
+        <div class="price-name" style="color:#fff;font-size:19px;margin-top:14px;">Verified Freelancer Membership</div>
+        <div class="membership-amount">$5<span>/month</span></div>
+        <p class="price-desc" style="color:#A9B6CC;margin:10px 0 24px;">Stand out to clients and run unlimited workspaces.</p>
+        <ul class="price-feats">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Verified freelancer badge</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Professional profile</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Unlimited client workspaces</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Portfolio profile</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>Priority support</li>
+        </ul>
+        <a href="#" class="btn btn-primary btn-block js-go-kyc" style="margin-top:26px;background:#fff;color:var(--navy);">Get Verified</a>
+      </div>
+    </div>
+
+    <p class="pricing-footnote">You found the client. Keep every dollar you earn. Running a larger team? <a href="#">Talk to us</a> about custom terms.</p>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="section" style="background:var(--grad-tint);" id="faq">
+  <div class="container">
+    <div class="section-head center">
+      <div class="eyebrow" style="justify-content:center;">Questions</div>
+      <h2>Frequently asked questions</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-q">Is Milestack a marketplace?<span class="fplus"></span></button>
+        <div class="faq-a"><p>No. You bring your own clients from wherever you already work, whether LinkedIn, referrals, WhatsApp, email, or anywhere else. Milestack only handles the trust and payment layer once you've already agreed to work together.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">How does escrow actually work?<span class="fplus"></span></button>
+        <div class="faq-a"><p>Your client deposits milestone funds through our payment partner before work begins. Funds stay held until the client approves the milestone, then release directly to you, with no manual transfer needed.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Does Milestack hold my money?<span class="fplus"></span></button>
+        <div class="faq-a"><p>No. Milestack doesn't custody funds directly. Payments run through regulated payment infrastructure compatible with Stripe Connect, so funds sit with licensed financial partners, not with Milestack itself.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">What happens if a client and freelancer disagree?<span class="fplus"></span></button>
+        <div class="faq-a"><p>Either side can open a case in the Dispute Center with evidence, files, and chat history attached. Our resolution team reviews the milestone and makes a binding decision on the funds in escrow.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Do I need to verify my identity?<span class="fplus"></span></button>
+        <div class="faq-a"><p>Yes. Both freelancers and clients complete a one-time identity verification (government ID plus a selfie liveness check) before funding or receiving any payments.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">What does Milestack cost?<span class="fplus"></span></button>
+        <div class="faq-a"><p>Milestack is free for freelancers to join, so you keep 100% of every project you complete. Clients pay a 10% Project Protection Fee on top of the project amount when they fund a workspace. On a $1,000 project, the client pays $1,100 total, and you receive the full $1,000. Running a larger team? We offer custom terms on request.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Why do clients pay a Project Protection Fee instead of freelancers paying a fee?<span class="fplus"></span></button>
+        <div class="faq-a"><p>We wanted freelancers to keep every dollar they earn, so the cost of running Milestack's protection (escrow, identity verification, fraud prevention, milestone management, monitoring, secure payment processing, and dispute resolution) is built into what the client pays to fund a project, not deducted from your payout.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">What's the Verified Freelancer Membership?<span class="fplus"></span></button>
+        <div class="faq-a"><p>It's an optional $5/month upgrade for freelancers. It adds a verified badge on your public profile, unlimited client workspaces, a professional portfolio profile, and priority support. It has no effect on the Project Protection Fee or what you earn from a project.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FINAL CTA ============ -->
+<section class="section section-glow" style="padding-bottom:140px;">
+  <div class="container">
+    <div class="finalcta reveal">
+      <h2>Bring the client you already have.<br>We'll handle the trust.</h2>
+      <p>Set up your first workspace in under five minutes, with no marketplace listing, no waiting to get picked.</p>
+      <div class="ctas">
+        <a href="#" class="btn btn-primary js-start-workspace">Start a Workspace</a>
+        <a href="#how" class="btn btn-ghost" style="border-color:rgba(255,255,255,0.25);color:#fff;">See How It Works</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="#" class="logo" style="color:#fff;">
+          <span class="logo-mark">
+            <svg width="20" height="20" viewBox="0 0 32 32" fill="none">
+              <polyline points="6,22 11,10 16,20 21,8 26,20" stroke="#10B981" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="6" cy="22" r="1.8" fill="#10B981"/><circle cx="11" cy="10" r="1.8" fill="#10B981"/>
+              <circle cx="16" cy="20" r="1.8" fill="#10B981"/><circle cx="21" cy="8" r="1.8" fill="#10B981"/><circle cx="26" cy="20" r="1.8" fill="#10B981"/>
+            </svg>
+          </span>
+          Milestack
+        </a>
+        <p>Secure Milestones. Trusted Payments. The trust layer for freelance work between people who already know each other.</p>
+      </div>
+      <div class="footer-col"><h5>Product</h5><a href="#features">Features</a><a href="#pricing">Pricing</a><a href="#faq">Security</a><a href="#how">How it works</a></div>
+      <div class="footer-col"><h5>Company</h5><a href="#">About</a><a href="#">Careers</a><a href="#">Contact</a></div>
+      <div class="footer-col"><h5>Resources</h5><a href="#faq">FAQ</a><a href="#">Terms</a><a href="#">Privacy</a></div>
+      <div class="footer-col"><h5>Connect</h5>
+        <div class="footer-socials">
+          <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 4.01c-1 .5-1.8.6-2.6.7 1-.6 1.7-1.5 2-2.6-.9.5-1.8.9-2.9 1.1A4.3 4.3 0 0015.5 2c-2.4 0-4.2 2.2-3.7 4.5C8.8 6.2 6 4.8 4 2.5c-1 1.7-.5 4 1.2 5.1-.8 0-1.5-.2-2.2-.5 0 1.8 1.3 3.4 3 3.8-.7.2-1.5.2-2.2.1.6 1.9 2.4 3.2 4.4 3.3-1.6 1.3-3.7 2-5.8 1.7 2.1 1.3 4.5 2.1 7.1 2.1 8.5 0 13.1-7.2 12.8-13.6.9-.6 1.6-1.5 2-2.4z"/></svg></a>
+          <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="12" cy="12" r="3.2"/><circle cx="16.2" cy="7.8" r="0.6" fill="currentColor"/></svg></a>
+          <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 10v7M7 7v.01M12 17v-4.5a2.5 2.5 0 015 0V17M12 10v7"/></svg></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Milestack. All rights reserved.</span>
+      <span>Payments processed by regulated third-party partners.</span>
+    </div>
+  </div>
+</footer>
+</div><!-- /screen-landing -->
+
+<!-- ============ SIGN UP ============ -->
+<div class="screen" id="screen-signup">
+  <button class="back-pill js-go-landing"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>Back to homepage</button>
+  <div class="auth-shell">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <span class="logo-mark"><svg width="20" height="20" viewBox="0 0 32 32" fill="none"><polyline points="6,22 11,10 16,20 21,8 26,20" stroke="#10B981" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6" cy="22" r="1.8" fill="#10B981"/><circle cx="11" cy="10" r="1.8" fill="#10B981"/><circle cx="16" cy="20" r="1.8" fill="#10B981"/><circle cx="21" cy="8" r="1.8" fill="#10B981"/><circle cx="26" cy="20" r="1.8" fill="#10B981"/></svg></span>
+        Milestack
+      </div>
+      <h2>Create your account</h2>
+      <p class="sub">Set up your workspace in under five minutes.</p>
+      <div class="role-tabs">
+        <div class="role-tab active" data-role="freelancer">Freelancer</div>
+        <div class="role-tab" data-role="client">Client</div>
+        <div class="role-tab" data-role="agency">Agency</div>
+      </div>
+      <div class="field"><label>Full name</label><input type="text" placeholder="Tunde Adebayo"></div>
+      <div class="field" id="signupCompanyField" style="display:none;"><label>Company name</label><input type="text" placeholder="Lagos Retail Co."></div>
+      <div class="field"><label>Email address</label><input type="email" placeholder="you@email.com"></div>
+      <div class="field"><label>Password</label><input type="password" placeholder="••••••••"></div>
+      <button class="btn btn-primary btn-block js-go-verify">Continue</button>
+      <p class="auth-foot">Already have an account? <a href="#" class="js-go-login">Log in</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- ============ VERIFY EMAIL ============ -->
+<div class="screen" id="screen-verify">
+  <button class="back-pill js-go-landing"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>Back to homepage</button>
+  <div class="auth-shell">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <span class="logo-mark"><svg width="20" height="20" viewBox="0 0 32 32" fill="none"><polyline points="6,22 11,10 16,20 21,8 26,20" stroke="#10B981" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6" cy="22" r="1.8" fill="#10B981"/><circle cx="11" cy="10" r="1.8" fill="#10B981"/><circle cx="16" cy="20" r="1.8" fill="#10B981"/><circle cx="21" cy="8" r="1.8" fill="#10B981"/><circle cx="26" cy="20" r="1.8" fill="#10B981"/></svg></span>
+        Milestack
+      </div>
+      <h2>Verify your email</h2>
+      <p class="sub">Enter the 6-digit code we sent to your inbox.</p>
+      <div class="code-inputs">
+        <input maxlength="1" value="4"><input maxlength="1" value="2"><input maxlength="1" value="8"><input maxlength="1" value="1"><input maxlength="1" value="9"><input maxlength="1" value="0">
+      </div>
+      <button class="btn btn-primary btn-block js-go-onboarding">Verify & Continue</button>
+      <p class="auth-foot">Didn't get a code? <a href="#">Resend it</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- ============ LOGIN ============ -->
+<div class="screen" id="screen-login">
+  <button class="back-pill js-go-landing"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>Back to homepage</button>
+  <div class="auth-shell">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <span class="logo-mark"><svg width="20" height="20" viewBox="0 0 32 32" fill="none"><polyline points="6,22 11,10 16,20 21,8 26,20" stroke="#10B981" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6" cy="22" r="1.8" fill="#10B981"/><circle cx="11" cy="10" r="1.8" fill="#10B981"/><circle cx="16" cy="20" r="1.8" fill="#10B981"/><circle cx="21" cy="8" r="1.8" fill="#10B981"/><circle cx="26" cy="20" r="1.8" fill="#10B981"/></svg></span>
+        Milestack
+      </div>
+      <h2>Welcome back</h2>
+      <p class="sub">Log in to your workspaces.</p>
+      <div class="field"><label>Email address</label><input type="email" placeholder="you@email.com"></div>
+      <div class="field">
+        <label style="display:flex;justify-content:space-between;">Password <a href="#" class="js-go-forgot" style="font-weight:600;color:var(--emerald-dark);">Forgot?</a></label>
+        <input type="password" placeholder="••••••••">
+      </div>
+      <button class="btn btn-primary btn-block js-go-app">Log in</button>
+      <p class="auth-foot">New to Milestack? <a href="#" class="js-go-signup">Create an account</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- ============ FORGOT PASSWORD ============ -->
+<div class="screen" id="screen-forgot">
+  <button class="back-pill js-go-landing"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>Back to homepage</button>
+  <div class="auth-shell">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <span class="logo-mark"><svg width="20" height="20" viewBox="0 0 32 32" fill="none"><polyline points="6,22 11,10 16,20 21,8 26,20" stroke="#10B981" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6" cy="22" r="1.8" fill="#10B981"/><circle cx="11" cy="10" r="1.8" fill="#10B981"/><circle cx="16" cy="20" r="1.8" fill="#10B981"/><circle cx="21" cy="8" r="1.8" fill="#10B981"/><circle cx="26" cy="20" r="1.8" fill="#10B981"/></svg></span>
+        Milestack
+      </div>
+      <h2>Reset your password</h2>
+      <p class="sub">We'll email you a link to set a new one.</p>
+      <div class="field"><label>Email address</label><input type="email" placeholder="you@email.com"></div>
+      <button class="btn btn-primary btn-block js-go-login">Send reset link</button>
+      <p class="auth-foot"><a href="#" class="js-go-login">Back to log in</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ONBOARDING ============ -->
+<div class="screen" id="screen-onboarding">
+  <button class="back-pill js-go-landing"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>Back to homepage</button>
+  <div class="auth-shell">
+    <div class="auth-card wide">
+      <div class="onb-steps">
+        <div class="onb-dot active" data-onb="1">1</div><div class="onb-line"></div>
+        <div class="onb-dot" data-onb="2">2</div><div class="onb-line"></div>
+        <div class="onb-dot" data-onb="3">3</div>
+      </div>
+
+      <div class="onb-panel active" data-onbpanel="1">
+        <h2>Invite your client</h2>
+        <p class="sub">Send them a link to join this workspace, no account required on their end yet.</p>
+        <div class="field"><label>Client name</label><input type="text" placeholder="Lagos Retail Co."></div>
+        <div class="field"><label>Client email</label><input type="email" placeholder="client@email.com"></div>
+        <button class="btn btn-primary btn-block js-onb-next">Continue</button>
+      </div>
+
+      <div class="onb-panel" data-onbpanel="2" style="display:none;">
+        <h2>Name your workspace</h2>
+        <p class="sub">This is what both of you will see when you open the project.</p>
+        <div class="field"><label>Workspace name</label><input type="text" value="Brand Redesign · Lagos Retail Co."></div>
+        <div class="field-row">
+          <div class="field"><label>Total budget</label><input type="text" value="$5,500"></div>
+          <div class="field"><label>Currency</label><input type="text" value="USD"></div>
+        </div>
+        <button class="btn btn-primary btn-block js-onb-next">Continue</button>
+      </div>
+
+      <div class="onb-panel" data-onbpanel="3" style="display:none;">
+        <h2>Add your first milestone</h2>
+        <p class="sub">You can add the rest once you're inside the workspace.</p>
+        <div class="field"><label>Milestone title</label><input type="text" value="Discovery Call"></div>
+        <div class="field-row">
+          <div class="field"><label>Amount</label><input type="text" value="$500"></div>
+          <div class="field"><label>Due date</label><input type="text" value="2026-07-02"></div>
+        </div>
+        <button class="btn btn-primary btn-block js-go-app">Create Workspace</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ KYC / IDENTITY VERIFICATION ============ -->
+<div class="screen" id="screen-kyc">
+  <button class="back-pill js-go-app-settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>Back to settings</button>
+  <div class="kyc-wrap">
+    <div class="onb-steps" id="kycSteps">
+      <div class="onb-dot active" data-kyc="1">1</div><div class="onb-line"></div>
+      <div class="onb-dot" data-kyc="2">2</div><div class="onb-line"></div>
+      <div class="onb-dot" data-kyc="3">3</div>
+    </div>
+
+    <div class="kyc-card kyc-panel active" data-kycpanel="1">
+      <h2>Upload a government ID</h2>
+      <p class="sub">Choose an ID type, then upload a clear photo of the front side.</p>
+      <div class="role-tabs">
+        <div class="role-tab active" data-idtype="passport">Passport</div>
+        <div class="role-tab" data-idtype="national">National ID</div>
+        <div class="role-tab" data-idtype="license">Driver's License</div>
+      </div>
+      <div class="dropzone">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="M7 8l5-5 5 5"/><path d="M5 21h14"/></svg>
+        <p>Drag and drop, or click to upload</p>
+        <div class="dz-sub">JPG or PNG, under 10MB</div>
+      </div>
+      <button class="btn btn-primary btn-block js-kyc-next">Continue</button>
+    </div>
+
+    <div class="kyc-card kyc-panel" data-kycpanel="2" style="display:none;">
+      <h2>Take a quick selfie</h2>
+      <p class="sub">We use this to confirm the ID belongs to you. Look straight at the camera in good light.</p>
+      <div class="dropzone" style="padding:50px 20px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-4 3-6.5 7-6.5s7 2.5 7 6.5"/></svg>
+        <p>Position your face in the frame</p>
+        <div class="dz-sub">Liveness check, takes about 10 seconds</div>
+      </div>
+      <button class="btn btn-primary btn-block js-kyc-next">Take Selfie & Continue</button>
+    </div>
+
+    <div class="kyc-card kyc-panel" data-kycpanel="3" style="display:none;">
+      <h2>Confirm your address</h2>
+      <p class="sub">This helps us verify your identity with our payment partner.</p>
+      <div class="field"><label>Street address</label><input type="text" placeholder="14 Awolowo Road"></div>
+      <div class="field-row">
+        <div class="field"><label>City</label><input type="text" placeholder="Ibadan"></div>
+        <div class="field"><label>Country</label><input type="text" placeholder="Nigeria"></div>
+      </div>
+      <button class="btn btn-primary btn-block js-kyc-submit">Submit for Review</button>
+    </div>
+
+    <div class="kyc-card kyc-panel" data-kycpanel="success" style="display:none;">
+      <div class="kyc-success">
+        <div class="check-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg></div>
+        <h2 style="margin-bottom:10px;">Verification submitted</h2>
+        <p class="sub" style="margin-bottom:6px;">Our team typically reviews submissions within 24 hours.</p>
+        <span class="pill pill-progress" style="margin-bottom:26px;display:inline-flex;">PENDING REVIEW</span>
+        <button class="btn btn-primary btn-block js-go-app-settings">Continue to Dashboard</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ FREELANCER PUBLIC PROFILE ============ -->
+<div class="screen" id="screen-profile-freelancer">
+  <button class="back-pill js-go-app-portfolio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>Back to Milestack</button>
+  <div class="profile-wrap">
+    <div class="profile-hero">
+      <div class="profile-avatar">TA</div>
+      <div>
+        <h1>Tunde Adebayo <span class="verify-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>Verified</span></h1>
+        <p class="tagline">Brand & Web Designer · Lagos, Nigeria</p>
+        <p class="url">milestack.com/u/tundeadebayo</p>
+      </div>
+    </div>
+    <div class="profile-stats">
+      <div class="statbox"><div class="sl">PROJECTS COMPLETED</div><div class="sv">24</div></div>
+      <div class="statbox"><div class="sl">CLIENT RATING</div><div class="sv">4.9</div></div>
+      <div class="statbox"><div class="sl">RESPONSE TIME</div><div class="sv">&lt;2h</div></div>
+      <div class="statbox"><div class="sl">MEMBER SINCE</div><div class="sv">2024</div></div>
+    </div>
+    <h2 style="font-size:16px;margin-bottom:14px;">Skills</h2>
+    <div class="skills-wrap">
+      <span class="skill-tag">Brand Identity</span><span class="skill-tag">Web Design</span><span class="skill-tag">Figma</span><span class="skill-tag">Webflow</span><span class="skill-tag">Art Direction</span>
+    </div>
+    <h2 style="font-size:16px;margin-bottom:14px;">Portfolio</h2>
+    <div class="portfolio-grid">
+      <div class="portfolio-thumb">🎨</div><div class="portfolio-thumb">🖥️</div><div class="portfolio-thumb">📦</div>
+    </div>
+    <h2 style="font-size:16px;margin-bottom:6px;">Client reviews</h2>
+    <div class="review-card">
+      <div class="review-stars">★★★★★</div>
+      <p>Delivered exactly on brief and ahead of schedule. The milestone structure made the whole engagement feel safe on both sides.</p>
+      <div class="rv-name">Lagos Retail Co. · Brand Redesign</div>
+    </div>
+    <div class="review-card">
+      <div class="review-stars">★★★★★</div>
+      <p>Communicative, fast, and the funded-milestone approach meant we never had an awkward payment conversation.</p>
+      <div class="rv-name">Nairobi Coffee Co. · Social Templates</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ CLIENT PUBLIC PROFILE ============ -->
+<div class="screen" id="screen-profile-client">
+  <button class="back-pill js-go-app-workspaces"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>Back to Milestack</button>
+  <div class="profile-wrap">
+    <div class="profile-hero">
+      <div class="profile-avatar" style="border-radius:14px;">LR</div>
+      <div>
+        <h1>Lagos Retail Co. <span class="verify-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>Verified</span></h1>
+        <p class="tagline">Retail & E-commerce · Lagos, Nigeria</p>
+        <p class="url">milestack.com/c/lagos-retail-co</p>
+      </div>
+    </div>
+    <div class="profile-stats">
+      <div class="statbox"><div class="sl">PROJECTS CREATED</div><div class="sv">5</div></div>
+      <div class="statbox"><div class="sl">ACTIVE WORKSPACES</div><div class="sv">2</div></div>
+      <div class="statbox"><div class="sl">TEAM MEMBERS</div><div class="sv">3</div></div>
+      <div class="statbox"><div class="sl">MEMBER SINCE</div><div class="sv">2025</div></div>
+    </div>
+    <h2 style="font-size:16px;margin-bottom:14px;">Team on Milestack</h2>
+    <div class="team-avatars" style="margin-bottom:36px;">
+      <div class="ta-item"><div class="ta-dot">FO</div>Funmi O. · Founder</div>
+      <div class="ta-item"><div class="ta-dot">BJ</div>Bayo J. · Marketing Lead</div>
+      <div class="ta-item"><div class="ta-dot">+1</div>1 more</div>
+    </div>
+    <h2 style="font-size:16px;margin-bottom:6px;">Freelancer reviews</h2>
+    <div class="review-card">
+      <div class="review-stars">★★★★★</div>
+      <p>Clear brief, funded every milestone on time, and approved quickly once the work was delivered. Easy to work with.</p>
+      <div class="rv-name">Tunde Adebayo · Brand Designer</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ADMIN PANEL ============ -->
+<div class="screen" id="screen-admin">
+  <div class="admin-shell">
+    <aside class="admin-sidebar">
+      <div class="app-sidebar-logo">
+        <span class="logo-mark"><svg width="18" height="18" viewBox="0 0 32 32" fill="none"><polyline points="6,22 11,10 16,20 21,8 26,20" stroke="#10B981" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6" cy="22" r="1.8" fill="#10B981"/><circle cx="11" cy="10" r="1.8" fill="#10B981"/><circle cx="16" cy="20" r="1.8" fill="#10B981"/><circle cx="21" cy="8" r="1.8" fill="#10B981"/><circle cx="26" cy="20" r="1.8" fill="#10B981"/></svg></span>
+        Admin
+      </div>
+      <nav class="app-nav">
+        <div class="app-nav-item active" data-admin-panel="users"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-3.5 3-5.5 7-5.5s7 2 7 5.5"/><path d="M16 7a3 3 0 010 6"/><path d="M19.5 14.5c2 .5 3.5 2 3.5 5.5"/></svg>User Management</div>
+        <div class="app-nav-item" data-admin-panel="verification"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="3"/><path d="M5 21c0-4 3-6 7-6s7 2 7 6"/><path d="M3 11l1.5 1.5L7 10"/></svg>Verification Reviews</div>
+        <div class="app-nav-item" data-admin-panel="disputes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l2 5 5 .8-3.6 3.5.9 5-4.3-2.4-4.3 2.4.9-5L5 8.8 10 8z"/></svg>Dispute Management</div>
+        <div class="app-nav-item" data-admin-panel="projects"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/></svg>Project Monitoring</div>
+        <div class="app-nav-item" data-admin-panel="fraud"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z"/><path d="M9.5 12l1.8 1.8L15 10"/></svg>Fraud Monitoring</div>
+        <div class="app-nav-item" data-admin-panel="transactions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 14h4"/></svg>Transaction Monitoring</div>
+        <div class="app-nav-item" data-admin-panel="analytics"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V9M11 19V4M18 19v-7"/></svg>Analytics</div>
+        <div class="app-nav-item" data-admin-panel="support"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.5 8.5 0 11-3.8-7.1"/><path d="M3 21l1.6-4A8.5 8.5 0 0121 11.5"/></svg>Support Tickets</div>
+      </nav>
+      <button class="btn btn-ghost btn-block js-go-app" style="background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.15);color:#fff;margin-top:10px;">← Exit Admin</button>
+    </aside>
+
+    <main class="app-main">
+      <div class="app-topbar">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <button class="app-burger" id="adminBurger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+          <h1 id="adminPanelTitle">User Management</h1>
+        </div>
+      </div>
+      <div class="sidebar-backdrop" id="adminBackdrop"></div>
+      <div class="app-content">
+
+        <div class="admin-stat-grid">
+          <div class="statbox"><div class="sl">TOTAL USERS</div><div class="sv">4,812</div></div>
+          <div class="statbox"><div class="sl">ACTIVE DISPUTES</div><div class="sv">7</div></div>
+          <div class="statbox"><div class="sl">VERIFICATION QUEUE</div><div class="sv">23</div></div>
+          <div class="statbox"><div class="sl">VOLUME (30D)</div><div class="sv">$182,400</div></div>
+        </div>
+
+        <div class="admin-panel active" data-adminpanel="users">
+          <div class="card-block admin-table-wrap">
+            <table class="mtable">
+              <thead><tr><th>User</th><th>Role</th><th>Joined</th><th>Status</th><th></th></tr></thead>
+              <tbody>
+                <tr><td>Tunde Adebayo</td><td class="mono">Freelancer</td><td class="mono">Mar 2024</td><td><span class="status-dot ok">Active</span></td><td><button class="btn btn-ghost btn-sm">View</button></td></tr>
+                <tr><td>Lagos Retail Co.</td><td class="mono">Client</td><td class="mono">Apr 2024</td><td><span class="status-dot ok">Active</span></td><td><button class="btn btn-ghost btn-sm">View</button></td></tr>
+                <tr><td>Wale Okafor</td><td class="mono">Freelancer</td><td class="mono">Jan 2025</td><td><span class="status-dot pending">Verifying</span></td><td><button class="btn btn-ghost btn-sm">View</button></td></tr>
+                <tr><td>Accra Foods Ltd.</td><td class="mono">Client</td><td class="mono">Jun 2025</td><td><span class="status-dot bad">Suspended</span></td><td><button class="btn btn-ghost btn-sm">View</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="admin-panel" data-adminpanel="verification" style="display:none;">
+          <div class="card-block admin-table-wrap">
+            <table class="mtable">
+              <thead><tr><th>User</th><th>Document</th><th>Submitted</th><th>Status</th><th></th></tr></thead>
+              <tbody>
+                <tr><td>Wale Okafor</td><td class="mono">National ID + Selfie</td><td class="mono">Jun 16</td><td><span class="pill pill-progress">PENDING</span></td><td><button class="btn btn-primary btn-sm">Approve</button> <button class="btn btn-ghost btn-sm">Reject</button></td></tr>
+                <tr><td>Nairobi Coffee Co.</td><td class="mono">Passport</td><td class="mono">Jun 15</td><td><span class="pill pill-progress">PENDING</span></td><td><button class="btn btn-primary btn-sm">Approve</button> <button class="btn btn-ghost btn-sm">Reject</button></td></tr>
+                <tr><td>Tunde Adebayo</td><td class="mono">National ID + Selfie</td><td class="mono">Mar 2024</td><td><span class="pill pill-released">VERIFIED</span></td><td></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="admin-panel" data-adminpanel="disputes" style="display:none;">
+          <div class="dispute-case">
+            <div class="dispute-case-head"><div><h5>Icon Set Round 2 · $150.00</h5><div class="dc-meta">Accra Foods Ltd. ↔ Wale Okafor · Opened Jun 13</div></div><span class="pill pill-disputed">UNDER REVIEW</span></div>
+            <div class="evidence-row"><button class="btn btn-primary btn-sm">Resolve in Freelancer's Favor</button><button class="btn btn-ghost btn-sm">Resolve in Client's Favor</button></div>
+          </div>
+          <div class="dispute-case">
+            <div class="dispute-case-head"><div><h5>Homepage Copy · $300.00</h5><div class="dc-meta">Nairobi Coffee Co. ↔ Tunde Adebayo · Resolved May 02</div></div><span class="pill pill-released">RESOLVED</span></div>
+          </div>
+        </div>
+
+        <div class="admin-panel" data-adminpanel="projects" style="display:none;">
+          <div class="card-block">
+            <div class="mini-row"><div class="mr-left"><span class="mr-dot" style="background:#C2660D;"></span><span class="mr-title">Brand Redesign · Lagos Retail Co.</span></div><span class="mr-amount">65% · In Progress</span></div>
+            <div class="mini-row"><div class="mr-left"><span class="mr-dot" style="background:#2563EB;"></span><span class="mr-title">Landing Page · Accra Foods Ltd.</span></div><span class="mr-amount">40% · Funded</span></div>
+            <div class="mini-row"><div class="mr-left"><span class="mr-dot" style="background:#DC2626;"></span><span class="mr-title">App Icon Set · Accra Foods Ltd.</span></div><span class="mr-amount">Disputed</span></div>
+          </div>
+        </div>
+
+        <div class="admin-panel" data-adminpanel="fraud" style="display:none;">
+          <div class="card-block">
+            <p class="text-muted" style="font-size:14px;margin-bottom:14px;">No active fraud flags. The system monitors for duplicate IDs, rapid milestone creation, and mismatched payout details.</p>
+            <div class="mini-row"><div class="mr-left"><span class="mr-dot" style="background:#94A3B8;"></span><span class="mr-title">Duplicate device flagged · review closed</span></div><span class="mr-amount">Jun 09</span></div>
+          </div>
+        </div>
+
+        <div class="admin-panel" data-adminpanel="transactions" style="display:none;">
+          <div class="card-block admin-table-wrap">
+            <table class="mtable">
+              <thead><tr><th>Transaction</th><th>Amount</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>Project funded · Lagos Retail Co.</td><td class="mono">$3,300.00</td><td><span class="pill pill-funded">FUNDED</span></td></tr>
+                <tr><td>Milestone release · Tunde Adebayo</td><td class="mono">$500.00</td><td><span class="pill pill-released">RELEASED</span></td></tr>
+                <tr><td>Project Protection Fee · Lagos Retail Co.</td><td class="mono">$300.00</td><td><span class="pill pill-released">CHARGED</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="admin-panel" data-adminpanel="analytics" style="display:none;">
+          <div class="card-block">
+            <h2 style="font-size:16px;margin-bottom:14px;">30-day overview</h2>
+            <div class="mini-row"><div class="mr-left"><span class="mr-title">Freelancer earnings (gross)</span></div><span class="mr-amount">$182,400</span></div>
+            <div class="mini-row"><div class="mr-left"><span class="mr-title">Project Protection Fee revenue (10%)</span></div><span class="mr-amount">$18,240</span></div>
+            <div class="mini-row"><div class="mr-left"><span class="mr-title">Total client volume</span></div><span class="mr-amount">$200,640</span></div>
+            <div class="mini-row"><div class="mr-left"><span class="mr-title">New workspaces</span></div><span class="mr-amount">146</span></div>
+            <div class="mini-row"><div class="mr-left"><span class="mr-title">Dispute rate</span></div><span class="mr-amount">1.2%</span></div>
+          </div>
+        </div>
+
+        <div class="admin-panel" data-adminpanel="support" style="display:none;">
+          <div class="card-block admin-table-wrap">
+            <table class="mtable">
+              <thead><tr><th>Ticket</th><th>User</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>Payout not received</td><td>Wale Okafor</td><td><span class="status-dot pending">Open</span></td></tr>
+                <tr><td>Can't upload contract PDF</td><td>Lagos Retail Co.</td><td><span class="status-dot ok">Resolved</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ============ APP DASHBOARD ============ -->
+<div class="screen" id="screen-app">
+  <div class="app-shell">
+    <aside class="app-sidebar" id="appSidebar">
+      <div class="app-sidebar-logo">
+        <span class="logo-mark"><svg width="18" height="18" viewBox="0 0 32 32" fill="none"><polyline points="6,22 11,10 16,20 21,8 26,20" stroke="#10B981" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6" cy="22" r="1.8" fill="#10B981"/><circle cx="11" cy="10" r="1.8" fill="#10B981"/><circle cx="16" cy="20" r="1.8" fill="#10B981"/><circle cx="21" cy="8" r="1.8" fill="#10B981"/><circle cx="26" cy="20" r="1.8" fill="#10B981"/></svg></span>
+        Milestack
+      </div>
+      <nav class="app-nav">
+        <div class="app-nav-item active" data-app-panel="dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg>Dashboard</div>
+        <div class="app-nav-item" data-app-panel="workspaces"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/></svg>Workspaces</div>
+        <div class="app-nav-item" data-app-panel="milestones"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3v18"/><path d="M5 4h11l-3 4 3 4H5"/></svg>Milestones</div>
+        <div class="app-nav-item" data-app-panel="payments"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 14h4"/></svg>Payments</div>
+        <div class="app-nav-item" data-app-panel="contracts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/><path d="M9 13h6M9 17h6"/></svg>Contracts</div>
+        <div class="app-nav-item" data-app-panel="messages"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.5 8.5 0 11-3.8-7.1"/><path d="M3 21l1.6-4A8.5 8.5 0 0121 11.5"/></svg>Messages</div>
+        <div class="app-nav-item" data-app-panel="files"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>Files</div>
+        <div class="app-nav-item" data-app-panel="portfolio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>Portfolio</div>
+        <div class="app-nav-divider"></div>
+        <div class="app-nav-item" data-app-panel="disputes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18M5 7l-2 5a3 3 0 006 0l-2-5H5zM19 7l-2 5a3 3 0 006 0l-2-5h-4zM5 7h14"/></svg>Disputes</div>
+        <div class="app-nav-item" data-app-panel="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.9l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.9-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1-1.6 1.7 1.7 0 00-1.9.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.9 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.6-1 1.7 1.7 0 00-.3-1.9l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.9.3h.1a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5h.1a1.7 1.7 0 001.9-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.9v.1a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>Settings</div>
+      </nav>
+      <div class="app-user-card">
+        <div class="au-avatar">TA</div>
+        <div><div class="au-name">Tunde Adebayo</div><div class="au-role">Freelancer</div></div>
+      </div>
+    </aside>
+
+    <main class="app-main">
+      <div class="app-topbar">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <button class="app-burger" id="appBurger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+          <h1 id="appPanelTitle">Dashboard</h1>
+        </div>
+        <div class="app-topbar-right">
+          <button class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg></button>
+          <a href="#" class="btn btn-primary btn-sm" id="newWorkspaceBtn">New Workspace</a>
+        </div>
+      </div>
+      <div class="sidebar-backdrop" id="appBackdrop"></div>
+
+      <div class="app-content">
+
+        <!-- DASHBOARD PANEL -->
+        <div class="app-panel active" data-panel="dashboard">
+          <div class="dash-greet">
+            <div>
+              <h2>Welcome back, Tunde</h2>
+              <p>You have 3 active orders, and 1 needs a response.</p>
+            </div>
+            <div class="seller-badge">
+              <span><span class="sb-star">★</span> <b>4.9</b></span>
+              <span class="sb-sep"></span>
+              <span><b>27</b> projects</span>
+              <span class="sb-sep"></span>
+              <span><b>100%</b> on time</span>
+            </div>
+          </div>
+
+          <div class="attn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+            <span>A dispute on <b>App Icon Set</b> is waiting for your response.</span>
+            <a href="#" class="js-go-app-disputes">Respond now →</a>
+          </div>
+
+          <div class="earn-card">
+            <div class="earn-main">
+              <div class="el">Available to withdraw</div>
+              <div class="ev">$1,950</div>
+              <a href="#" class="btn btn-primary btn-sm js-go-app-payments">Withdraw funds</a>
+            </div>
+            <div class="earn-secs">
+              <div class="earn-sec"><div class="el">In escrow</div><div class="ev">$3,200</div></div>
+              <div class="earn-sec"><div class="el">Pending release</div><div class="ev">$1,200</div></div>
+              <div class="earn-sec"><div class="el">Earned lifetime</div><div class="ev">$8,400</div></div>
+            </div>
+          </div>
+
+          <div class="card-block">
+            <div class="orders-head">
+              <h2>Active orders</h2>
+              <a href="#" class="js-go-app-workspaces">View all →</a>
+            </div>
+            <div class="order-row">
+              <div class="order-av" style="background:linear-gradient(140deg,#C2660D,#E8902F);">LR</div>
+              <div class="order-info"><h5>Brand Redesign</h5><div class="om">Lagos Retail Co. · Final Build delivered</div></div>
+              <span class="order-due">Due Jun 24</span>
+              <span class="pill pill-submitted">AWAITING APPROVAL</span>
+              <button class="btn btn-ghost btn-sm order-act js-go-app-milestones">View</button>
+            </div>
+            <div class="order-row">
+              <div class="order-av" style="background:linear-gradient(140deg,#2563EB,#60A5FA);">AF</div>
+              <div class="order-info"><h5>Landing Page</h5><div class="om">Accra Foods Ltd. · Product Pages in progress</div></div>
+              <span class="order-due">Due Jul 05</span>
+              <span class="pill pill-progress">IN PROGRESS</span>
+              <button class="btn btn-primary btn-sm order-act js-go-app-milestones">Deliver</button>
+            </div>
+            <div class="order-row">
+              <div class="order-av" style="background:linear-gradient(140deg,#DC2626,#F87171);">AF</div>
+              <div class="order-info"><h5>App Icon Set</h5><div class="om">Accra Foods Ltd. · Dispute opened Jun 11</div></div>
+              <span class="order-due">-</span>
+              <span class="pill pill-disputed">DISPUTED</span>
+              <button class="btn btn-ghost btn-sm order-act js-go-app-disputes">Respond</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- WORKSPACES PANEL -->
+        <div class="app-panel" data-panel="workspaces">
+          <div class="panel-head"><div><h2>Workspaces</h2><p>Every active and completed project, in one place.</p></div><a href="#" class="btn btn-primary btn-sm js-onboarding-from-app">New Workspace</a></div>
+          <div class="ws-grid">
+            <div class="ws-card"><span class="pill pill-progress">IN PROGRESS</span><h4>Brand Redesign</h4><div class="ws-client js-go-profile-client" style="cursor:pointer;text-decoration:underline;">Lagos Retail Co.</div><div class="progressbar" style="margin:4px 0 0;"><div style="width:65%;"></div></div><div class="ws-budget">$3,575 of $5,500 released</div></div>
+            <div class="ws-card"><span class="pill pill-funded">FUNDED</span><h4>Landing Page</h4><div class="ws-client">Accra Foods Ltd.</div><div class="progressbar" style="margin:4px 0 0;"><div style="width:40%;"></div></div><div class="ws-budget">$800 of $2,000 released</div></div>
+            <div class="ws-card"><span class="pill pill-released">COMPLETE</span><h4>Social Templates</h4><div class="ws-client">Nairobi Coffee Co.</div><div class="progressbar" style="margin:4px 0 0;"><div style="width:100%;"></div></div><div class="ws-budget">$1,400 of $1,400 released</div></div>
+            <div class="ws-card"><span class="pill pill-disputed">DISPUTED</span><h4>App Icon Set</h4><div class="ws-client">Accra Foods Ltd.</div><div class="progressbar" style="margin:4px 0 0;"><div style="width:80%;"></div></div><div class="ws-budget">$150 under review</div></div>
+            <div class="ws-card"><span class="pill pill-draft">DRAFT</span><h4>Q3 Newsletter</h4><div class="ws-client">Nairobi Coffee Co.</div><div class="progressbar" style="margin:4px 0 0;"><div style="width:0%;"></div></div><div class="ws-budget">Awaiting client funding</div></div>
+          </div>
+        </div>
+
+        <!-- MILESTONES PANEL -->
+        <div class="app-panel" data-panel="milestones">
+          <div class="panel-head"><div><h2>Milestones</h2><p>Across every workspace you're part of.</p></div></div>
+          <div class="filter-pills">
+            <span class="filter-pill active" data-filter="all">All</span>
+            <span class="filter-pill" data-filter="funded">Funded</span>
+            <span class="filter-pill" data-filter="progress">In Progress</span>
+            <span class="filter-pill" data-filter="submitted">Submitted</span>
+            <span class="filter-pill" data-filter="approved">Approved</span>
+            <span class="filter-pill" data-filter="released">Released</span>
+            <span class="filter-pill" data-filter="disputed">Disputed</span>
+          </div>
+          <div class="card-block">
+            <div class="table-scroll">
+            <table class="mtable">
+              <thead><tr><th>Title</th><th>Workspace</th><th>Amount</th><th>Due</th><th>Status</th><th></th></tr></thead>
+              <tbody>
+                <tr data-status="released"><td>Discovery Call</td><td class="mono">Lagos Retail Co.</td><td class="mono">$500.00</td><td class="mono">Jun 02</td><td><span class="pill pill-released">RELEASED</span></td><td></td></tr>
+                <tr data-status="approved"><td>Wireframes</td><td class="mono">Lagos Retail Co.</td><td class="mono">$1,200.00</td><td class="mono">Jun 09</td><td><span class="pill pill-approved">APPROVED</span></td><td></td></tr>
+                <tr data-status="submitted"><td>Final Build</td><td class="mono">Lagos Retail Co.</td><td class="mono">$3,000.00</td><td class="mono">Jun 24</td><td><span class="pill pill-submitted">SUBMITTED</span></td><td><button class="btn btn-primary btn-sm">Approve</button></td></tr>
+                <tr data-status="funded"><td>Hero Section</td><td class="mono">Accra Foods Ltd.</td><td class="mono">$800.00</td><td class="mono">Jun 20</td><td><span class="pill pill-funded">FUNDED</span></td><td></td></tr>
+                <tr data-status="progress"><td>Product Pages</td><td class="mono">Accra Foods Ltd.</td><td class="mono">$1,200.00</td><td class="mono">Jul 05</td><td><span class="pill pill-progress">IN PROGRESS</span></td><td></td></tr>
+                <tr data-status="disputed"><td>Icon Set Round 2</td><td class="mono">Accra Foods Ltd.</td><td class="mono">$150.00</td><td class="mono">Jun 11</td><td><span class="pill pill-disputed">DISPUTED</span></td><td><button class="btn btn-ghost btn-sm">View Case</button></td></tr>
+                <tr data-status="released"><td>Final Delivery</td><td class="mono">Nairobi Coffee Co.</td><td class="mono">$1,400.00</td><td class="mono">May 28</td><td><span class="pill pill-released">RELEASED</span></td><td></td></tr>
+              </tbody>
+            </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- PAYMENTS PANEL -->
+        <div class="app-panel" data-panel="payments">
+          <div class="panel-head"><div><h2>Payments</h2><p>Escrow balances, payouts, and transaction history.</p></div><a href="#" class="btn btn-primary btn-sm">Request Payout</a></div>
+          <div class="statgrid" style="margin-bottom:20px;">
+            <div class="statbox"><div class="sl">ESCROW BALANCE</div><div class="sv">$3,200</div></div>
+            <div class="statbox"><div class="sl">PENDING RELEASE</div><div class="sv">$1,200</div></div>
+            <div class="statbox"><div class="sl">RELEASED (LIFETIME)</div><div class="sv">$8,400</div></div>
+          </div>
+          <div class="card-block">
+            <h2 style="font-size:16px;margin-bottom:14px;">Transaction history</h2>
+            <div class="table-scroll">
+            <table class="mtable">
+              <thead><tr><th>Transaction</th><th>Workspace</th><th>Amount</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>Milestone release</td><td>Lagos Retail Co.</td><td class="mono">+$500.00</td><td><span class="pill pill-released">RELEASED</span></td></tr>
+                <tr><td>Project funded</td><td>Lagos Retail Co.</td><td class="mono">+$3,000.00</td><td><span class="pill pill-funded">FUNDED</span></td></tr>
+                <tr><td>Payout to bank</td><td>-</td><td class="mono">−$2,250.00</td><td><span class="pill pill-released">COMPLETE</span></td></tr>
+                <tr><td>Refund (scope change)</td><td>Accra Foods Ltd.</td><td class="mono">−$150.00</td><td><span class="pill pill-disputed">REFUNDED</span></td></tr>
+                <tr><td>Milestone release</td><td>Nairobi Coffee Co.</td><td class="mono">+$1,400.00</td><td><span class="pill pill-released">RELEASED</span></td></tr>
+              </tbody>
+            </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- CONTRACTS PANEL -->
+        <div class="app-panel" data-panel="contracts">
+          <div class="panel-head"><div><h2>Contracts</h2><p>Scope-of-work agreements generated from your milestones.</p></div></div>
+          <div class="card-block">
+            <div class="contract-row">
+              <div class="cr-left"><div class="contract-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg></div><div><h5>Brand Redesign · Scope Agreement</h5><div class="cr-meta">Lagos Retail Co. · Signed Jun 01</div></div></div>
+              <span class="pill pill-released">SIGNED</span>
+            </div>
+            <div class="contract-row">
+              <div class="cr-left"><div class="contract-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg></div><div><h5>Landing Page · Scope Agreement</h5><div class="cr-meta">Accra Foods Ltd. · Sent Jun 15</div></div></div>
+              <span class="pill pill-submitted">AWAITING SIGNATURE</span>
+            </div>
+            <div class="contract-row">
+              <div class="cr-left"><div class="contract-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3v4a1 1 0 001 1h4"/><path d="M17 21H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5v11a2 2 0 01-2 2z"/></svg></div><div><h5>Q3 Newsletter · Scope Agreement</h5><div class="cr-meta">Nairobi Coffee Co. · Draft</div></div></div>
+              <span class="pill pill-draft">DRAFT</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- MESSAGES PANEL -->
+        <div class="app-panel" data-panel="messages">
+          <div class="panel-head"><div><h2>Messages</h2><p>Chat, call, and run the whole project from one place.</p></div></div>
+          <div class="msg-shell">
+            <div class="msg-list">
+              <div class="msg-item active" data-client="Lagos Retail Co." data-initials="LR" data-project="Brand Redesign" data-code="MSK-7Q4A" data-status="IN PROGRESS" data-status-class="pill-progress">
+                <div class="mi-avatar">LR</div>
+                <div><h5>Lagos Retail Co.</h5><span class="mi-code">MSK-7Q4A · Brand Redesign</span><p>Looks great, just one tweak...</p></div>
+              </div>
+              <div class="msg-item" data-client="Accra Foods Ltd." data-initials="AF" data-project="Landing Page" data-code="MSK-3F8K" data-status="FUNDED" data-status-class="pill-funded">
+                <div class="mi-avatar">AF</div>
+                <div><h5>Accra Foods Ltd.</h5><span class="mi-code">MSK-3F8K · Landing Page</span><p>Can we push the deadline?</p></div>
+              </div>
+              <div class="msg-item" data-client="Accra Foods Ltd." data-initials="AF" data-project="App Icon Set" data-code="MSK-5T1C" data-status="DISPUTED" data-status-class="pill-disputed">
+                <div class="mi-avatar">AF</div>
+                <div><h5>Accra Foods Ltd.</h5><span class="mi-code">MSK-5T1C · App Icon Set</span><p>Opened a dispute on round 2...</p></div>
+              </div>
+              <div class="msg-item" data-client="Nairobi Coffee Co." data-initials="NC" data-project="Social Templates" data-code="MSK-9R2D" data-status="COMPLETE" data-status-class="pill-released">
+                <div class="mi-avatar">NC</div>
+                <div><h5>Nairobi Coffee Co.</h5><span class="mi-code">MSK-9R2D · Social Templates</span><p>Final files received, thank you!</p></div>
+              </div>
+            </div>
+            <div class="msg-thread">
+              <div class="msg-thread-head">
+                <div class="mt-id">
+                  <button class="msg-back" id="msgBack" title="Back to conversations" aria-label="Back to conversations"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+                  <div class="mt-avatar" id="mtAvatar">LR</div>
+                  <div>
+                    <div class="mt-name" id="mtName">Lagos Retail Co.</div>
+                    <div class="mt-sub">
+                      <span id="mtProject">Brand Redesign</span><span class="dot"></span>
+                      <span class="code-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/></svg><span id="mtCode">MSK-7Q4A</span></span>
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-actions">
+                  <button class="mt-iconbtn js-call" title="Voice call" aria-label="Voice call"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg></button>
+                  <button class="mt-iconbtn js-video" title="Video call" aria-label="Video call"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></button>
+                  <button class="mt-iconbtn mt-open js-go-app-workspaces" title="Open project" aria-label="Open project"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"/><path d="M21 3l-9 9"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/></svg></button>
+                </div>
+              </div>
+              <div class="proj-strip">
+                <span class="ps-name" id="psName">Brand Redesign</span>
+                <span class="code-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/></svg><span id="psCode">MSK-7Q4A</span></span>
+                <span class="pill pill-progress" id="psStatus">IN PROGRESS</span>
+                <span class="ps-view js-go-app-milestones">View project →</span>
+              </div>
+              <div class="msg-thread-body" id="msgBody">
+                <div class="chat-event">
+                  <div class="ce-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/></svg></div>
+                  <div class="ce-body"><div class="ce-title">Project opened: Brand Redesign</div><div class="ce-meta">Milestack code MSK-7Q4A · assigned for support &amp; disputes</div></div>
+                </div>
+                <div class="chat-bubble them">Sent the homepage draft over, let me know what you think before I move to the product pages.</div>
+                <div class="chat-meta">Lara · 10:14 AM</div>
+                <div class="attach-chip">📎 homepage-draft-v3.fig · 4.2 MB</div>
+                <div class="chat-bubble me">Looks great, just one tweak on the hero spacing and we're good to submit for approval.</div>
+                <div class="chat-meta right">You · 10:31 AM</div>
+                <div class="chat-event">
+                  <div class="ce-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v18"/><path d="M5 4h11l-3 4 3 4H5"/></svg></div>
+                  <div class="ce-body"><div class="ce-title">Milestone requested: Product Pages</div><div class="ce-meta">$1,200.00 · due Jul 05</div><div class="ce-actions"><button class="btn btn-primary btn-sm">Fund milestone</button><button class="btn btn-ghost btn-sm js-go-app-milestones">View details</button></div></div>
+                </div>
+              </div>
+              <div class="composer">
+                <div class="quick-actions">
+                  <button class="qa-chip js-chat-milestone" data-kind="request"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v18"/><path d="M5 4h11l-3 4 3 4H5"/></svg>Request milestone</button>
+                  <button class="qa-chip js-chat-milestone" data-kind="create"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Create milestone</button>
+                  <button class="qa-chip js-onboarding-from-app"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>New project</button>
+                </div>
+                <div class="msg-thread-input">
+                  <input type="text" id="msgInput" placeholder="Write a message...">
+                  <button class="btn btn-primary btn-sm js-send-msg">Send</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FILES PANEL -->
+        <div class="app-panel" data-panel="files">
+          <div class="panel-head"><div><h2>Files</h2><p>12 files across 5 workspaces.</p></div><a href="#" class="btn btn-primary btn-sm">Upload</a></div>
+          <div class="card-block">
+            <div class="file-grid">
+              <div class="file-card"><div class="fticon" style="background:#FEF2F2;">📄</div><div class="fname">contract-v1.pdf</div><div class="fmeta">220 KB · Jun 02</div></div>
+              <div class="file-card"><div class="fticon" style="background:#EFF6FF;">🎨</div><div class="fname">homepage-v3.fig</div><div class="fmeta">4.2 MB · Jun 14</div></div>
+              <div class="file-card"><div class="fticon" style="background:#F1F5F9;">🗂️</div><div class="fname">assets-final.zip</div><div class="fmeta">18.6 MB · Jun 16</div></div>
+              <div class="file-card"><div class="fticon" style="background:#ECFDF5;">🖼️</div><div class="fname">logo-export.png</div><div class="fmeta">1.1 MB · Jun 16</div></div>
+              <div class="file-card"><div class="fticon" style="background:#FFF7ED;">📊</div><div class="fname">brand-deck.pdf</div><div class="fmeta">3.4 MB · Jun 10</div></div>
+              <div class="file-card"><div class="fticon" style="background:#F5F3FF;">📝</div><div class="fname">copy-doc.docx</div><div class="fmeta">88 KB · Jun 08</div></div>
+              <div class="file-card"><div class="fticon" style="background:#EFF6FF;">🖌️</div><div class="fname">icon-set-v2.fig</div><div class="fmeta">2.1 MB · Jun 11</div></div>
+              <div class="file-card"><div class="fticon" style="background:#F1F5F9;">📦</div><div class="fname">final-export.zip</div><div class="fmeta">22.3 MB · May 28</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PORTFOLIO PANEL -->
+        <div class="app-panel" data-panel="portfolio">
+          <div class="panel-head"><div><h2>Portfolio</h2><p>Your public profile, built from real, funded work.</p></div><a href="#" class="btn btn-primary btn-sm js-go-profile-freelancer">View Public Profile</a></div>
+          <div class="card-block">
+            <div class="profile-hero" style="margin-bottom:0;">
+              <div class="profile-avatar">TA</div>
+              <div>
+                <h1 style="font-size:20px;">Tunde Adebayo <span class="verify-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>Verified</span></h1>
+                <p class="tagline">Brand & Web Designer · Lagos, Nigeria</p>
+                <p class="url">milestack.com/u/tundeadebayo</p>
+              </div>
+            </div>
+          </div>
+          <div class="card-block">
+            <h2 style="font-size:16px;margin-bottom:14px;">Skills</h2>
+            <div class="skills-wrap" style="margin-bottom:0;">
+              <span class="skill-tag">Brand Identity</span><span class="skill-tag">Web Design</span><span class="skill-tag">Figma</span><span class="skill-tag">Webflow</span><span class="skill-tag">Art Direction</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- DISPUTES PANEL -->
+        <div class="app-panel" data-panel="disputes">
+          <div class="panel-head"><div><h2>Dispute Center</h2><p>Open cases, evidence, and resolutions.</p></div></div>
+          <div class="dispute-case">
+            <div class="dispute-case-head">
+              <div><h5>Icon Set Round 2 · $150.00</h5><div class="dc-meta">Accra Foods Ltd. · Opened Jun 13 · Under Review</div></div>
+              <span class="pill pill-disputed">UNDER REVIEW</span>
+            </div>
+            <p class="text-muted" style="font-size:14px;">Client requested a partial refund citing missed brand guideline specs. Freelancer submitted the original brief and revision history as evidence.</p>
+            <div class="evidence-row">
+              <span class="evidence-chip">📎 brief-v1.pdf</span>
+              <span class="evidence-chip">💬 Chat history (42 messages)</span>
+              <span class="evidence-chip">🖼️ icon-set-v2.fig</span>
+            </div>
+            <div class="evidence-row"><button class="btn btn-ghost btn-sm">Submit Additional Evidence</button></div>
+          </div>
+          <div class="dispute-case">
+            <div class="dispute-case-head">
+              <div><h5>Homepage Copy · $300.00</h5><div class="dc-meta">Nairobi Coffee Co. · Resolved May 02</div></div>
+              <span class="pill pill-released">RESOLVED · RELEASED</span>
+            </div>
+            <p class="text-muted" style="font-size:14px;">Resolution: milestone approved as delivered. Funds released in full to the freelancer on May 4.</p>
+          </div>
+        </div>
+
+        <!-- SETTINGS PANEL -->
+        <div class="app-panel" data-panel="settings">
+          <div class="panel-head"><div><h2>Settings</h2><p>Account, verification, and notification preferences.</p></div></div>
+          <div class="card-block">
+            <h2 style="font-size:16px;margin-bottom:16px;">Identity verification</h2>
+            <div class="kyc-status-card">
+              <div class="ks-left">
+                <div class="kyc-status-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+                <div><h5 style="font-size:14.5px;margin-bottom:3px;">Pending review</h5><p style="font-size:13px;color:var(--text-muted);">Submitted Jun 02 · usually takes under 24 hours</p></div>
+              </div>
+              <a href="#" class="btn btn-ghost btn-sm js-go-kyc">View Verification</a>
+            </div>
+          </div>
+          <div class="card-block">
+            <h2 style="font-size:16px;margin-bottom:6px;">Account</h2>
+            <div class="field" style="margin-top:16px;"><label>Full name</label><input type="text" value="Tunde Adebayo"></div>
+            <div class="field"><label>Email address</label><input type="email" value="tunde@email.com"></div>
+            <button class="btn btn-secondary btn-sm">Save Changes</button>
+          </div>
+          <div class="card-block">
+            <h2 style="font-size:16px;margin-bottom:6px;">Notifications</h2>
+            <div class="toggle-row"><div><h5>Milestone activity</h5><p>Client approvals, funding, and releases</p></div><div class="switch on js-toggle"></div></div>
+            <div class="toggle-row"><div><h5>New messages</h5><p>Get notified when a client replies</p></div><div class="switch on js-toggle"></div></div>
+            <div class="toggle-row"><div><h5>Product updates</h5><p>Occasional news about new features</p></div><div class="switch js-toggle"></div></div>
+          </div>
+          <div class="card-block">
+            <button class="btn btn-ghost js-go-landing">Log out</button>
+            <a href="#" class="js-go-admin" style="display:block;margin-top:14px;font-size:13px;color:var(--text-faint);">Switch to admin view (demo)</a>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ============ CALL OVERLAY (voice / video) ============ -->
+<div class="call-modal" id="callModal">
+  <div class="call-card">
+    <div class="call-video">Camera preview</div>
+    <div class="call-avatar" id="callAvatar">LR</div>
+    <div class="call-name" id="callName">Lagos Retail Co.</div>
+    <div class="call-status">Connecting…</div>
+    <div class="call-controls">
+      <button class="call-btn" title="Mute" aria-label="Mute"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/><path d="M12 18v4"/></svg></button>
+      <button class="call-btn end js-end-call" title="End call" aria-label="End call"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/><path d="M2 2l20 20"/></svg></button>
+      <button class="call-btn js-toggle-cam" title="Camera" aria-label="Camera"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Nav scroll state
+const mainNav = document.getElementById('mainNav');
+window.addEventListener('scroll', () => {
+  mainNav.classList.toggle('scrolled', window.scrollY > 8);
+});
+
+// Mobile nav toggle
+const burgerBtn = document.getElementById('burgerBtn');
+const navMobile = document.getElementById('navMobile');
+burgerBtn.addEventListener('click', () => navMobile.classList.toggle('open'));
+navMobile.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navMobile.classList.remove('open')));
+
+// Scroll reveal
+const revealEls = document.querySelectorAll('.reveal');
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+}, { threshold: 0.15 });
+revealEls.forEach(el => io.observe(el));
+
+// FAQ accordion
+document.querySelectorAll('.faq-item').forEach(item => {
+  const q = item.querySelector('.faq-q');
+  const a = item.querySelector('.faq-a');
+  q.addEventListener('click', () => {
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(other => {
+      other.classList.remove('open');
+      other.querySelector('.faq-a').style.maxHeight = null;
+    });
+    if (!isOpen) {
+      item.classList.add('open');
+      a.style.maxHeight = a.scrollHeight + 'px';
+    }
+  });
+});
+
+// Dashboard tabs
+document.querySelectorAll('.dash-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.dash-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.dash-panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.querySelector(`.dash-panel[data-panel="${tab.dataset.tab}"]`).classList.add('active');
+  });
+});
+
+/* ====================================================================
+   SCREEN ROUTER - everything below powers navigation between the
+   landing page, the auth flow, onboarding, the app, and admin.
+   ==================================================================== */
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const target = document.getElementById('screen-' + id);
+  if(target) target.classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function showAppPanel(panelName){
+  document.querySelectorAll('#screen-app .app-nav-item').forEach(i => i.classList.remove('active'));
+  document.querySelectorAll('#screen-app .app-panel').forEach(p => p.classList.remove('active'));
+  const navItem = document.querySelector(`#screen-app .app-nav-item[data-app-panel="${panelName}"]`);
+  const panel = document.querySelector(`#screen-app .app-panel[data-panel="${panelName}"]`);
+  if(navItem) navItem.classList.add('active');
+  if(panel) panel.classList.add('active');
+  const titleEl = document.getElementById('appPanelTitle');
+  if(titleEl && navItem) titleEl.textContent = navItem.textContent.trim();
+  document.getElementById('appSidebar')?.classList.remove('open');
+  document.getElementById('appBackdrop')?.classList.remove('open');
+}
+
+function showAdminPanel(panelName){
+  document.querySelectorAll('#screen-admin .app-nav-item').forEach(i => i.classList.remove('active'));
+  document.querySelectorAll('.admin-panel').forEach(p => p.style.display = 'none');
+  const navItem = document.querySelector(`#screen-admin .app-nav-item[data-admin-panel="${panelName}"]`);
+  const panel = document.querySelector(`.admin-panel[data-adminpanel="${panelName}"]`);
+  if(navItem) navItem.classList.add('active');
+  if(panel) panel.style.display = 'block';
+  const titleEl = document.getElementById('adminPanelTitle');
+  if(titleEl && navItem) titleEl.textContent = navItem.textContent.trim();
+  document.querySelector('.admin-sidebar')?.classList.remove('open');
+  document.getElementById('adminBackdrop')?.classList.remove('open');
+}
+
+function resetOnboarding(){
+  document.querySelectorAll('#screen-onboarding .onb-dot').forEach((d,i) => {
+    d.classList.remove('active','done');
+    if(i===0) d.classList.add('active');
+  });
+  document.querySelectorAll('#screen-onboarding .onb-line').forEach(l => l.classList.remove('done'));
+  document.querySelectorAll('#screen-onboarding .onb-panel').forEach((p,i) => { p.style.display = i===0 ? 'block' : 'none'; });
+}
+function resetKyc(){
+  document.querySelectorAll('#screen-kyc .onb-dot').forEach((d,i) => {
+    d.classList.remove('active','done');
+    if(i===0) d.classList.add('active');
+  });
+  document.querySelectorAll('#screen-kyc .onb-line').forEach(l => l.classList.remove('done'));
+  document.querySelectorAll('#screen-kyc .kyc-panel').forEach(p => p.style.display = 'none');
+  document.querySelector('#screen-kyc .kyc-panel[data-kycpanel="1"]').style.display = 'block';
+}
+
+// Single delegated handler covers every navigation link/button across all screens
+document.body.addEventListener('click', (e) => {
+  const map = [
+    ['.js-go-signup, .js-start-workspace', () => showScreen('signup')],
+    ['.js-go-login, .js-login',            () => showScreen('login')],
+    ['.js-go-verify',                      () => showScreen('verify')],
+    ['.js-go-forgot',                      () => showScreen('forgot')],
+    ['.js-go-onboarding, .js-onboarding-from-app', () => { resetOnboarding(); showScreen('onboarding'); }],
+    ['.js-go-app-settings',                () => { showScreen('app'); showAppPanel('settings'); }],
+    ['.js-go-app-portfolio',                () => { showScreen('app'); showAppPanel('portfolio'); }],
+    ['.js-go-app-workspaces',               () => { showScreen('app'); showAppPanel('workspaces'); }],
+    ['.js-go-app-payments',                 () => { showScreen('app'); showAppPanel('payments'); }],
+    ['.js-go-app-milestones',               () => { showScreen('app'); showAppPanel('milestones'); }],
+    ['.js-go-app-disputes',                 () => { showScreen('app'); showAppPanel('disputes'); }],
+    ['.js-go-app',                          () => { showScreen('app'); showAppPanel('dashboard'); }],
+    ['.js-go-kyc',                          () => { resetKyc(); showScreen('kyc'); }],
+    ['.js-go-profile-freelancer',           () => showScreen('profile-freelancer')],
+    ['.js-go-profile-client',               () => showScreen('profile-client')],
+    ['.js-go-admin',                        () => showScreen('admin')],
+    ['.js-go-landing',                      () => showScreen('landing')],
+  ];
+  for(const [selector, action] of map){
+    if(e.target.closest(selector)){ e.preventDefault(); action(); return; }
+  }
+});
+
+// ---- Sign up: role tabs ----
+document.querySelectorAll('#screen-signup .role-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('#screen-signup .role-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    const companyField = document.getElementById('signupCompanyField');
+    if(companyField) companyField.style.display = (tab.dataset.role === 'freelancer') ? 'none' : 'block';
+  });
+});
+
+// ---- Onboarding stepper ----
+document.querySelectorAll('.js-onb-next').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const currentPanel = btn.closest('.onb-panel');
+    const next = parseInt(currentPanel.dataset.onbpanel, 10) + 1;
+    currentPanel.style.display = 'none';
+    document.querySelector(`.onb-panel[data-onbpanel="${next}"]`).style.display = 'block';
+    document.querySelectorAll('#screen-onboarding .onb-dot').forEach(d => {
+      const n = parseInt(d.dataset.onb, 10);
+      d.classList.remove('active','done');
+      if(n < next) d.classList.add('done');
+      if(n === next) d.classList.add('active');
+    });
+    document.querySelectorAll('#screen-onboarding .onb-line').forEach((l,i) => { if(i < next-1) l.classList.add('done'); });
+  });
+});
+
+// ---- KYC stepper ----
+document.querySelectorAll('.js-kyc-next').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const currentPanel = btn.closest('.kyc-panel');
+    const next = parseInt(currentPanel.dataset.kycpanel, 10) + 1;
+    currentPanel.style.display = 'none';
+    document.querySelector(`.kyc-panel[data-kycpanel="${next}"]`).style.display = 'block';
+    document.querySelectorAll('#screen-kyc .onb-dot').forEach(d => {
+      const n = parseInt(d.dataset.kyc, 10);
+      d.classList.remove('active','done');
+      if(n < next) d.classList.add('done');
+      if(n === next) d.classList.add('active');
+    });
+    document.querySelectorAll('#screen-kyc .onb-line').forEach((l,i) => { if(i < next-1) l.classList.add('done'); });
+  });
+});
+document.querySelectorAll('.js-kyc-submit').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#screen-kyc .kyc-panel').forEach(p => p.style.display = 'none');
+    document.querySelector('#screen-kyc .kyc-panel[data-kycpanel="success"]').style.display = 'block';
+    document.querySelectorAll('#screen-kyc .onb-dot').forEach(d => { d.classList.remove('active'); d.classList.add('done'); });
+    document.querySelectorAll('#screen-kyc .onb-line').forEach(l => l.classList.add('done'));
+  });
+});
+
+// ---- App sidebar navigation ----
+document.querySelectorAll('#screen-app .app-nav-item[data-app-panel]').forEach(item => {
+  item.addEventListener('click', () => showAppPanel(item.dataset.appPanel));
+});
+document.getElementById('appBurger')?.addEventListener('click', () => {
+  document.getElementById('appSidebar').classList.toggle('open');
+  document.getElementById('appBackdrop').classList.toggle('open');
+});
+document.getElementById('appBackdrop')?.addEventListener('click', () => {
+  document.getElementById('appSidebar').classList.remove('open');
+  document.getElementById('appBackdrop').classList.remove('open');
+});
+document.getElementById('newWorkspaceBtn')?.addEventListener('click', (e) => {
+  e.preventDefault();
+  resetOnboarding();
+  showScreen('onboarding');
+});
+
+// ---- Admin sidebar navigation ----
+document.querySelectorAll('#screen-admin .app-nav-item[data-admin-panel]').forEach(item => {
+  item.addEventListener('click', () => showAdminPanel(item.dataset.adminPanel));
+});
+document.getElementById('adminBurger')?.addEventListener('click', () => {
+  document.querySelector('.admin-sidebar').classList.toggle('open');
+  document.getElementById('adminBackdrop').classList.toggle('open');
+});
+document.getElementById('adminBackdrop')?.addEventListener('click', () => {
+  document.querySelector('.admin-sidebar').classList.remove('open');
+  document.getElementById('adminBackdrop').classList.remove('open');
+});
+
+// ---- Workspace card → drills into Milestones (client name instead opens client profile) ----
+document.querySelectorAll('#screen-app .ws-card').forEach(card => {
+  card.style.cursor = 'pointer';
+  card.addEventListener('click', (e) => {
+    if(e.target.closest('.js-go-profile-client')) return;
+    showAppPanel('milestones');
+  });
+});
+
+// ---- Milestone filter pills ----
+document.querySelectorAll('.filter-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+    const filter = pill.dataset.filter;
+    document.querySelectorAll('#screen-app .app-panel[data-panel="milestones"] tbody tr').forEach(row => {
+      row.style.display = (filter === 'all' || row.dataset.status === filter) ? '' : 'none';
+    });
+  });
+});
+
+// ---- Message thread switching (updates header + project strip from data-*) ----
+const mtAvatar=document.getElementById('mtAvatar'), mtName=document.getElementById('mtName'),
+      mtProject=document.getElementById('mtProject'), mtCode=document.getElementById('mtCode'),
+      psName=document.getElementById('psName'), psCode=document.getElementById('psCode'),
+      psStatus=document.getElementById('psStatus');
+document.querySelectorAll('.msg-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.msg-item').forEach(i => i.classList.remove('active'));
+    item.classList.add('active');
+    const d = item.dataset;
+    if(mtAvatar) mtAvatar.textContent = d.initials || '';
+    if(mtName) mtName.textContent = d.client || '';
+    if(mtProject) mtProject.textContent = d.project || '';
+    if(mtCode) mtCode.textContent = d.code || '';
+    if(psName) psName.textContent = d.project || '';
+    if(psCode) psCode.textContent = d.code || '';
+    if(psStatus){ psStatus.textContent = d.status || ''; psStatus.className = 'pill ' + (d.statusClass || ''); }
+    document.querySelector('.msg-shell')?.classList.add('show-thread');
+  });
+});
+document.getElementById('msgBack')?.addEventListener('click', () => {
+  document.querySelector('.msg-shell')?.classList.remove('show-thread');
+});
+
+// ---- Create / request a milestone directly from chat ----
+document.querySelectorAll('.js-chat-milestone').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const requesting = btn.dataset.kind === 'request';
+    const body = document.getElementById('msgBody');
+    if(body){
+      const ev = document.createElement('div');
+      ev.className = 'chat-event';
+      ev.innerHTML = '<div class="ce-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v18"/><path d="M5 4h11l-3 4 3 4H5"/></svg></div>'
+        + '<div class="ce-body"><div class="ce-title">' + (requesting ? 'Milestone requested' : 'New milestone') + ': Untitled</div>'
+        + '<div class="ce-meta">Set an amount and due date to send to the client</div>'
+        + '<div class="ce-actions"><button class="btn btn-primary btn-sm js-go-app-milestones">Set details</button></div></div>';
+      body.appendChild(ev);
+      body.scrollTop = body.scrollHeight;
+    }
+  });
+});
+
+// ---- Send a message ----
+const msgInput = document.getElementById('msgInput');
+function sendMsg(){
+  const text = (msgInput?.value || '').trim();
+  if(!text) return;
+  const body = document.getElementById('msgBody');
+  const bubble = document.createElement('div');
+  bubble.className = 'chat-bubble me';
+  bubble.textContent = text;
+  const meta = document.createElement('div');
+  meta.className = 'chat-meta right';
+  meta.textContent = 'You · now';
+  body.appendChild(bubble);
+  body.appendChild(meta);
+  body.scrollTop = body.scrollHeight;
+  msgInput.value = '';
+  msgInput.focus();
+}
+document.querySelector('.js-send-msg')?.addEventListener('click', sendMsg);
+msgInput?.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter'){ e.preventDefault(); sendMsg(); }
+});
+
+// ---- Voice / video calls ----
+const callModal = document.getElementById('callModal');
+function openCall(isVideo){
+  if(!callModal) return;
+  const active = document.querySelector('.msg-item.active');
+  callModal.querySelector('#callName').textContent = active?.dataset.client || 'Client';
+  callModal.querySelector('#callAvatar').textContent = active?.dataset.initials || '';
+  callModal.classList.toggle('video', !!isVideo);
+  callModal.classList.add('open');
+}
+document.querySelectorAll('.js-call').forEach(b => b.addEventListener('click', () => openCall(false)));
+document.querySelectorAll('.js-video').forEach(b => b.addEventListener('click', () => openCall(true)));
+document.querySelectorAll('.js-end-call').forEach(b => b.addEventListener('click', () => callModal?.classList.remove('open')));
+document.querySelectorAll('.js-toggle-cam').forEach(b => b.addEventListener('click', () => callModal?.classList.toggle('video')));
+callModal?.addEventListener('click', (e) => { if(e.target === callModal) callModal.classList.remove('open'); });
+
+// ---- Settings notification toggles ----
+document.querySelectorAll('.js-toggle').forEach(sw => {
+  sw.addEventListener('click', () => sw.classList.toggle('on'));
+});
+
+// ---- Approve a submitted milestone (demo interaction) ----
+document.querySelectorAll('#screen-app .app-panel[data-panel="milestones"] tbody tr').forEach(row => {
+  const approveBtn = Array.from(row.querySelectorAll('button')).find(b => b.textContent.trim() === 'Approve');
+  if(approveBtn){
+    approveBtn.addEventListener('click', () => {
+      const pillEl = row.querySelector('.pill');
+      pillEl.className = 'pill pill-released';
+      pillEl.textContent = 'RELEASED';
+      row.dataset.status = 'released';
+      approveBtn.remove();
+    });
+  }
+});
+
+// ---- Approve a pending verification (demo interaction) ----
+document.querySelectorAll('.admin-panel[data-adminpanel="verification"] tbody tr').forEach(row => {
+  const approveBtn = Array.from(row.querySelectorAll('button')).find(b => b.textContent.trim() === 'Approve');
+  if(approveBtn){
+    approveBtn.addEventListener('click', () => {
+      const pillEl = row.querySelector('.pill');
+      pillEl.className = 'pill pill-released';
+      pillEl.textContent = 'VERIFIED';
+      row.querySelectorAll('.btn').forEach(b => b.remove());
+    });
+  }
+});
+</script>
+</body>
+</html>
