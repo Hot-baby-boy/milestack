@@ -6,6 +6,8 @@ import { MilestoneActions } from "./MilestoneActions";
 import { NewMilestoneForm } from "./NewMilestoneForm";
 import { InviteClientForm } from "./InviteClientForm";
 import { CopyLinkBox } from "./CopyLinkBox";
+import { TransactionsTable } from "@/components/TransactionsTable";
+import { ContractPanel } from "./ContractPanel";
 
 export default async function ProjectPage({
   params,
@@ -37,6 +39,31 @@ export default async function ProjectPage({
     .select("id, title, amount, due_date, status")
     .eq("project_id", projectId)
     .order("created_at", { ascending: true });
+
+  const { data: transactions } = await supabase
+    .from("transactions")
+    .select("id, type, amount, currency, created_at")
+    .eq("project_id", projectId)
+    .order("created_at", { ascending: false });
+
+  const { data: contract } = await supabase
+    .from("contracts")
+    .select("id, content, status")
+    .eq("project_id", projectId)
+    .maybeSingle();
+
+  const { data: signatures } = contract
+    ? await supabase
+        .from("contract_signatures")
+        .select("user_id, signed_name, signed_at")
+        .eq("contract_id", contract.id)
+    : { data: [] };
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("display_name, email")
+    .eq("id", user.id)
+    .single();
 
   const inviteLink =
     invited === "1" && token
@@ -120,6 +147,26 @@ export default async function ProjectPage({
               </tbody>
             </table>
           )}
+        </div>
+
+        <div className="mt-6 rounded-xl border border-slate-200 bg-white">
+          <div className="border-b border-slate-100 p-4">
+            <h2 className="text-sm font-semibold text-slate-900">Transactions</h2>
+          </div>
+          <TransactionsTable transactions={transactions ?? []} />
+        </div>
+
+        <div className="mt-6 rounded-xl border border-slate-200 bg-white p-5">
+          <h2 className="text-sm font-semibold text-slate-900">Scope agreement</h2>
+          <ContractPanel
+            projectId={project.id}
+            isFreelancer={isFreelancer}
+            contract={contract ?? null}
+            signatures={signatures ?? []}
+            freelancerId={project.freelancer_id}
+            clientId={project.client_id}
+            defaultSignedName={profile?.display_name ?? profile?.email ?? ""}
+          />
         </div>
       </div>
     </div>

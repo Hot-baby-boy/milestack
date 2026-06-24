@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { transitionMilestone } from "@/lib/milestones/actions";
+import { fundMilestone, releaseMilestone } from "@/lib/payments/service";
 
 type Action = { label: string; status: string; variant: "primary" | "ghost" | "danger" };
 
@@ -55,7 +56,12 @@ export function MilestoneActions({
   async function act(newStatus: string) {
     setPending(newStatus);
     setError(null);
-    const result = await transitionMilestone(milestoneId, projectId, newStatus);
+    const result =
+      newStatus === "funded"
+        ? await fundMilestone(milestoneId, projectId)
+        : newStatus === "released"
+          ? await releaseMilestone(milestoneId, projectId)
+          : await transitionMilestone(milestoneId, projectId, newStatus);
     setPending(null);
     if (result?.error) setError(result.error);
   }
