@@ -58,6 +58,12 @@ draft -> cancelled. (In Phase 1, "funded" and "released" are simulated transitio
 5. Dashboards + profiles/portfolio + basic admin/support console (lookup by code)
 6. Hardening + onboard pilot users
 
+## Deferred features (noted, not forgotten)
+- Auto-release timer: if a client approves a milestone but never clicks Release (e.g. inactivity,
+  lost device), auto-release after a set window (e.g. 24h) plus a reminder notification before
+  then. Intentionally deferred to Stage 3+ (after real payments/releases exist) per the Technical
+  Roadmap — building it against simulated "release" now would mean redoing it once money is real.
+
 ## Reference docs (in this folder)
 - Technical Roadmap: full feature specs (Section 5), DB schema (Section 6), security (Section 7)
 - Phase 1 Build Brief: exact scope, acceptance criteria, build order

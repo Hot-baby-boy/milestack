@@ -5,11 +5,18 @@ import { redirect } from "next/navigation";
 
 export type ActionResult = { error: string } | void;
 
+// Only ever redirect to a path within this app — never to an external URL.
+function safeNext(next: string | null): string | null {
+  if (next && next.startsWith("/") && !next.startsWith("//")) return next;
+  return null;
+}
+
 export async function signup(formData: FormData): Promise<ActionResult> {
   const fullName = String(formData.get("fullName") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
   const role = String(formData.get("role") ?? "client");
+  const next = safeNext(String(formData.get("next") ?? ""));
 
   if (!fullName || !email || !password) {
     return { error: "Please fill in every field." };
@@ -19,23 +26,27 @@ export async function signup(formData: FormData): Promise<ActionResult> {
   }
 
   const supabase = await createClient();
+  const confirmUrl = new URL(`${process.env.NEXT_PUBLIC_SITE_URL}/auth/confirm`);
+  if (next) confirmUrl.searchParams.set("next", next);
+
   const { error } = await supabase.auth.signUp({
     email,
     password,
     options: {
       data: { full_name: fullName, role },
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/confirm`,
+      emailRedirectTo: confirmUrl.toString(),
     },
   });
 
   if (error) return { error: error.message };
 
-  redirect("/verify");
+  redirect(next ? `/verify?next=${encodeURIComponent(next)}` : "/verify");
 }
 
 export async function login(formData: FormData): Promise<ActionResult> {
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
+  const next = safeNext(String(formData.get("next") ?? ""));
 
   if (!email || !password) {
     return { error: "Please fill in every field." };
@@ -46,7 +57,7 @@ export async function login(formData: FormData): Promise<ActionResult> {
 
   if (error) return { error: error.message };
 
-  redirect("/dashboard");
+  redirect(next ?? "/dashboard");
 }
 
 export async function logout() {

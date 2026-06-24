@@ -1,10 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { signup } from "../actions";
 
-export default function SignupPage() {
+function SignupForm() {
+  const searchParams = useSearchParams();
+  const next = searchParams.get("next") ?? "";
   const [role, setRole] = useState<"freelancer" | "client">("freelancer");
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -39,6 +42,7 @@ export default function SignupPage() {
       </div>
 
       <form action={onSubmit} className="mt-5 space-y-4">
+        <input type="hidden" name="next" value={next} />
         <div>
           <label className="block text-sm font-medium text-slate-700">Full name</label>
           <input
@@ -84,10 +88,18 @@ export default function SignupPage() {
 
       <p className="mt-5 text-center text-sm text-slate-500">
         Already have an account?{" "}
-        <Link href="/login" className="font-medium text-emerald-600">
+        <Link href={next ? `/login?next=${encodeURIComponent(next)}` : "/login"} className="font-medium text-emerald-600">
           Log in
         </Link>
       </p>
     </>
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense fallback={null}>
+      <SignupForm />
+    </Suspense>
   );
 }

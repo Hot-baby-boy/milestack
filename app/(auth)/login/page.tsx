@@ -1,10 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { login } from "../actions";
 
-export default function LoginPage() {
+function LoginForm() {
+  const searchParams = useSearchParams();
+  const next = searchParams.get("next") ?? "";
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
@@ -22,6 +25,7 @@ export default function LoginPage() {
       <p className="mt-1 text-sm text-slate-500">Log in to your workspaces.</p>
 
       <form action={onSubmit} className="mt-5 space-y-4">
+        <input type="hidden" name="next" value={next} />
         <div>
           <label className="block text-sm font-medium text-slate-700">Email address</label>
           <input
@@ -61,10 +65,18 @@ export default function LoginPage() {
 
       <p className="mt-5 text-center text-sm text-slate-500">
         New to Milestack?{" "}
-        <Link href="/signup" className="font-medium text-emerald-600">
+        <Link href={next ? `/signup?next=${encodeURIComponent(next)}` : "/signup"} className="font-medium text-emerald-600">
           Create an account
         </Link>
       </p>
     </>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginForm />
+    </Suspense>
   );
 }

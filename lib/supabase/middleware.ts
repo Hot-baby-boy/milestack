@@ -8,6 +8,8 @@ const PUBLIC_PATHS = [
   "/forgot-password",
   "/reset-password",
   "/auth/callback",
+  "/auth/confirm",
+  "/invite",
 ];
 
 export async function updateSession(request: NextRequest) {
@@ -46,8 +48,11 @@ export async function updateSession(request: NextRequest) {
   }
 
   if (user && (pathname === "/login" || pathname === "/signup")) {
+    const requestedNext = request.nextUrl.searchParams.get("next");
+    const safeNext = requestedNext?.startsWith("/") && !requestedNext.startsWith("//") ? requestedNext : null;
     const url = request.nextUrl.clone();
-    url.pathname = "/dashboard";
+    url.search = "";
+    url.pathname = safeNext ?? "/dashboard";
     return NextResponse.redirect(url);
   }
 
