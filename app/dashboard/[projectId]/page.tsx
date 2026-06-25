@@ -8,6 +8,8 @@ import { InviteClientForm } from "./InviteClientForm";
 import { CopyLinkBox } from "./CopyLinkBox";
 import { TransactionsTable } from "@/components/TransactionsTable";
 import { ContractPanel } from "./ContractPanel";
+import { ChatPanel } from "@/components/ChatPanel";
+import { FilesList } from "./FilesList";
 
 export default async function ProjectPage({
   params,
@@ -64,6 +66,18 @@ export default async function ProjectPage({
     .select("display_name, email")
     .eq("id", user.id)
     .single();
+
+  const { data: messages } = await supabase
+    .from("messages")
+    .select("id, project_id, sender_id, type, body, attachment_id, created_at")
+    .eq("project_id", projectId)
+    .order("created_at", { ascending: true });
+
+  const { data: files } = await supabase
+    .from("files")
+    .select("id, name, size, mime, created_at")
+    .eq("project_id", projectId)
+    .order("created_at", { ascending: false });
 
   const inviteLink =
     invited === "1" && token
@@ -147,6 +161,23 @@ export default async function ProjectPage({
               </tbody>
             </table>
           )}
+        </div>
+
+        <div className="mt-6 rounded-xl border border-slate-200 bg-white">
+          <div className="border-b border-slate-100 p-4">
+            <h2 className="text-sm font-semibold text-slate-900">Chat</h2>
+          </div>
+          <ChatPanel
+            projectId={project.id}
+            currentUserId={user.id}
+            isClient={isClient}
+            initialMessages={messages ?? []}
+          />
+        </div>
+
+        <div className="mt-6 rounded-xl border border-slate-200 bg-white p-5">
+          <h2 className="text-sm font-semibold text-slate-900">Files</h2>
+          <FilesList files={files ?? []} />
         </div>
 
         <div className="mt-6 rounded-xl border border-slate-200 bg-white">

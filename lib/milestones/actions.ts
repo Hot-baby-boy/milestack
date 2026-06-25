@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { notifyByEmailForLatestEvent } from "@/lib/notifications/actions";
 
 export type ActionResult = { error: string } | void;
 
@@ -34,12 +35,15 @@ export async function transitionMilestone(
   newStatus: string,
 ): Promise<ActionResult> {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
   const { error } = await supabase.rpc("transition_milestone", {
     p_milestone_id: milestoneId,
     p_new_status: newStatus,
   });
 
   if (error) return { error: error.message };
+
+  if (user) await notifyByEmailForLatestEvent(projectId, user.id);
 
   revalidatePath(`/dashboard/${projectId}`);
 }
