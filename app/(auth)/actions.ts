@@ -40,6 +40,13 @@ export async function signup(formData: FormData): Promise<ActionResult> {
 
   if (error) return { error: error.message };
 
+  // When email confirmation is disabled in Supabase, the session is created
+  // immediately — redirect straight to the dashboard.
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) {
+    redirect(next ?? "/dashboard");
+  }
+
   redirect(next ? `/verify?next=${encodeURIComponent(next)}` : "/verify");
 }
 
