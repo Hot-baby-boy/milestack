@@ -7,9 +7,9 @@ import { revalidatePath } from "next/cache";
 export type ActionResult = { error: string } | void;
 
 export async function adminLogin(
-  _prev: unknown,
+  _prev: { error: string } | null,
   formData: FormData
-): Promise<{ error: string } | void> {
+): Promise<{ error: string } | null> {
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
 
