@@ -133,15 +133,14 @@ export async function addPortfolioItem(_prev: unknown, formData: FormData): Prom
   return { success: true };
 }
 
-export async function deletePortfolioItem(formData: FormData): Promise<ActionResult> {
+export async function deletePortfolioItem(formData: FormData): Promise<void> {
   const itemId = String(formData.get("item_id") ?? "").trim();
-  if (!itemId) return { error: "Missing item ID." };
+  if (!itemId) return;
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated." };
+  if (!user) return;
 
-  // Fetch attachments to delete from storage
   const { data: attachments } = await supabase
     .from("portfolio_attachments")
     .select("storage_path")
@@ -153,13 +152,11 @@ export async function deletePortfolioItem(formData: FormData): Promise<ActionRes
     await supabase.storage.from("portfolio").remove(paths);
   }
 
-  const { error } = await supabase
+  await supabase
     .from("portfolio_items")
     .delete()
     .eq("id", itemId)
     .eq("user_id", user.id);
 
-  if (error) return { error: error.message };
   revalidatePath("/dashboard/profile");
-  return { success: true };
 }
