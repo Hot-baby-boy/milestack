@@ -62,6 +62,7 @@ export async function uploadAvatar(_prev: unknown, formData: FormData): Promise<
 }
 
 export async function addPortfolioItem(_prev: unknown, formData: FormData): Promise<ActionResult> {
+  try {
   const title = String(formData.get("title") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim() || null;
   const external_url = String(formData.get("external_url") ?? "").trim() || null;
@@ -131,6 +132,9 @@ export async function addPortfolioItem(_prev: unknown, formData: FormData): Prom
 
   revalidatePath("/dashboard/profile");
   return { success: true };
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Something went wrong. Please try again." };
+  }
 }
 
 export async function deletePortfolioItem(formData: FormData): Promise<void> {
