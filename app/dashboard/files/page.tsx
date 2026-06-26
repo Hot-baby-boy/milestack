@@ -44,7 +44,7 @@ export default async function FilesPage() {
         <h1 className="text-[19px] font-bold tracking-tight text-[#0F172A]">Files</h1>
       </div>
 
-      <div className="px-4 py-8 sm:px-8">
+      <div className="px-4 py-5 sm:px-8 sm:py-8">
         <p className="mb-6 text-[13.5px] text-slate-500">
           {files?.length ? `${files.length} file${files.length !== 1 ? "s" : ""} across ${ids.length} workspace${ids.length !== 1 ? "s" : ""}.` : "All files from your workspaces."}
         </p>
@@ -58,7 +58,7 @@ export default async function FilesPage() {
             <p className="text-sm text-slate-500">Files are shared inside each workspace&apos;s chat.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
+          <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3 md:grid-cols-4 xl:grid-cols-5">
             {(files ?? []).map(f => {
               const { icon, bg } = fileEmoji(f.file_name);
               return (

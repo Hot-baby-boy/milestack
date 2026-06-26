@@ -71,13 +71,9 @@ export default async function WorkspacesPage() {
       </div>
 
       <div className="px-4 py-8 sm:px-8">
-        <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <p className="text-[13.5px] text-slate-500">Every active and completed project, in one place.</p>
-          </div>
-          {role === "freelancer" && (
-            <div className="lg:hidden"><NewProjectForm/></div>
-          )}
+        <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+          <p className="text-[13px] text-slate-500 sm:text-[13.5px]">Every active and completed project, in one place.</p>
+          {role === "freelancer" && <div className="lg:hidden"><NewProjectForm/></div>}
         </div>
 
         {!(projects?.length) ? (
@@ -94,7 +90,7 @@ export default async function WorkspacesPage() {
             {role === "freelancer" && <NewProjectForm/>}
           </div>
         ) : (
-          <div className="grid gap-[18px] sm:grid-cols-2 xl:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-[18px] xl:grid-cols-3">
             {(projects ?? []).map(project => {
               const { total, rel, pct, status, milestoneCount } = projectMeta(project.id);
               const pill = STATUS_PILL[status] ?? STATUS_PILL.draft;

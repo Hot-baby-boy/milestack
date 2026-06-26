@@ -58,11 +58,13 @@ export default function MilestonesPage() {
         <h1 className="text-[19px] font-bold tracking-tight text-[#0F172A]">Milestones</h1>
       </div>
 
-      <div className="px-4 py-8 sm:px-8">
-        <p className="mb-5 text-[13.5px] text-slate-500">Across every workspace you&apos;re part of.</p>
+      <div className="px-4 py-5 sm:px-8 sm:py-8">
+        <p className="mb-4 text-[13px] text-slate-500 sm:text-[13.5px]">Across every workspace you&apos;re part of.</p>
 
-        {/* Filter pills */}
-        <div className="mb-5 flex flex-wrap gap-2">
+        {/* Filter pills — scrollable on mobile */}
+        <div className="-mx-4 mb-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:px-0 sm:pb-0"
+          style={{scrollbarWidth:"none"}}>
+
           {FILTERS.map(f => (
             <button key={f.key} onClick={() => setFilter(f.key)}
               className={`rounded-full border px-3.5 py-1.5 font-mono text-[12.5px] font-semibold transition ${
@@ -81,7 +83,7 @@ export default function MilestonesPage() {
           ))}
         </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white" style={{background:"linear-gradient(165deg,#fff 0%,#FAFBFD 100%)"}}>
+        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
           {loading ? (
             <div className="px-6 py-12 text-center text-sm text-slate-400">Loading milestones…</div>
           ) : !filtered.length ? (
@@ -89,7 +91,7 @@ export default function MilestonesPage() {
               No {filter !== "all" ? filter.replace("_", " ") + " " : ""}milestones yet.
             </div>
           ) : (
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto -webkit-overflow-scrolling-touch">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-slate-100">

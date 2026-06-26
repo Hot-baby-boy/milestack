@@ -49,7 +49,7 @@ export default async function ContractsPage() {
         <h1 className="text-[19px] font-bold tracking-tight text-[#0F172A]">Contracts</h1>
       </div>
 
-      <div className="px-4 py-8 sm:px-8">
+      <div className="px-4 py-5 sm:px-8 sm:py-8">
         <p className="mb-6 text-[13.5px] text-slate-500">Scope-of-work agreements generated from your milestones.</p>
 
         {!(projects?.length) ? (

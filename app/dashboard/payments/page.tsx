@@ -57,16 +57,16 @@ export default async function PaymentsPage() {
         </span>
       </div>
 
-      <div className="px-4 py-8 sm:px-8">
-        <p className="mb-6 text-[13.5px] text-slate-500">Escrow balances and transaction history.</p>
+      <div className="px-4 py-5 sm:px-8 sm:py-8">
+        <p className="mb-4 text-[13px] text-slate-500 sm:mb-6 sm:text-[13.5px]">Escrow balances and transaction history.</p>
 
         {/* Stat grid */}
-        <div className="mb-6 grid gap-4 sm:grid-cols-3">
+        <div className="mb-5 grid grid-cols-3 gap-2 sm:mb-6 sm:gap-4">
           {STATS.map(s => (
             <div key={s.label} className="relative overflow-hidden rounded-[14px] border border-slate-200 bg-white p-[18px]">
               <div className="absolute inset-x-0 top-0 h-[3px] rounded-t-[14px]" style={{background:"linear-gradient(90deg,#34D399,#059669)"}}/>
-              <div className="mb-1.5 font-mono text-[12px] uppercase tracking-wider text-slate-400">{s.label}</div>
-              <div className="font-mono text-[22px] font-bold text-[#0F172A]">{s.value}</div>
+              <div className="mb-1 font-mono text-[10px] uppercase tracking-wider text-slate-400 sm:text-[12px]">{s.label}</div>
+              <div className="font-mono text-[16px] font-bold text-[#0F172A] sm:text-[22px]">{s.value}</div>
             </div>
           ))}
         </div>

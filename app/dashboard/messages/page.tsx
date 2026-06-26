@@ -40,8 +40,8 @@ export default async function MessagesPage() {
         <h1 className="text-[19px] font-bold tracking-tight text-[#0F172A]">Messages</h1>
       </div>
 
-      <div className="px-4 py-8 sm:px-8">
-        <p className="mb-6 text-[13.5px] text-slate-500">Chat from every workspace in one place.</p>
+      <div className="px-4 py-5 sm:px-8 sm:py-8">
+        <p className="mb-4 text-[13px] text-slate-500 sm:mb-6 sm:text-[13.5px]">Chat from every workspace in one place.</p>
 
         {!(projects?.length) ? (
           <div className="rounded-2xl border-2 border-dashed border-slate-200 bg-white px-8 py-14 text-center">

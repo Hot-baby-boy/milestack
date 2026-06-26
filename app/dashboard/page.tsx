@@ -5,21 +5,11 @@ import { NewProjectForm } from "./NewProjectForm";
 import { NotificationBell } from "@/components/NotificationBell";
 
 const AVATAR_COLORS = [
-  "from-orange-500 to-amber-400",
-  "from-blue-600 to-blue-400",
-  "from-emerald-600 to-emerald-400",
-  "from-purple-600 to-purple-400",
-  "from-red-600 to-rose-400",
-  "from-cyan-600 to-cyan-400",
+  "from-orange-500 to-amber-400","from-blue-600 to-blue-400","from-emerald-600 to-emerald-400",
+  "from-purple-600 to-purple-400","from-red-600 to-rose-400","from-cyan-600 to-cyan-400",
 ];
-
-function avatarColor(name: string) {
-  return AVATAR_COLORS[name.charCodeAt(0) % AVATAR_COLORS.length];
-}
-
-function initials2(name: string) {
-  return name.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase();
-}
+function avatarColor(name: string) { return AVATAR_COLORS[name.charCodeAt(0) % AVATAR_COLORS.length]; }
+function initials2(name: string) { return name.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase(); }
 
 const STATUS_PILL: Record<string, { label: string; cls: string }> = {
   draft:       { label: "DRAFT",             cls: "bg-slate-100 text-slate-500 border border-slate-200" },
@@ -27,17 +17,13 @@ const STATUS_PILL: Record<string, { label: string; cls: string }> = {
   in_progress: { label: "IN PROGRESS",       cls: "bg-orange-50 text-[#C2660D]" },
   submitted:   { label: "AWAITING APPROVAL", cls: "bg-purple-50 text-purple-700" },
   approved:    { label: "APPROVED",          cls: "bg-blue-50 text-blue-700" },
-  released:    { label: "RELEASED",          cls: "bg-emerald-50 text-emerald-700" },
+  released:    { label: "COMPLETE",          cls: "bg-emerald-50 text-emerald-700" },
   disputed:    { label: "DISPUTED",          cls: "bg-red-50 text-red-700" },
 };
 
 function Pill({ status }: { status: string }) {
   const p = STATUS_PILL[status] ?? { label: status.toUpperCase(), cls: "bg-slate-100 text-slate-500" };
-  return (
-    <span className={`inline-flex items-center rounded-full px-2.5 py-1 font-mono text-[10.5px] font-semibold tracking-wide ${p.cls}`}>
-      {p.label}
-    </span>
-  );
+  return <span className={`inline-flex items-center rounded-full px-2 py-0.5 font-mono text-[10px] font-semibold tracking-wide ${p.cls}`}>{p.label}</span>;
 }
 
 export default async function DashboardPage() {
@@ -45,48 +31,30 @@ export default async function DashboardPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role, display_name, email")
-    .eq("id", user.id)
-    .single();
-
+  const { data: profile } = await supabase.from("profiles").select("role, display_name, email").eq("id", user.id).single();
   const role = profile?.role ?? "freelancer";
   const firstName = (profile?.display_name ?? profile?.email ?? "there").split(" ")[0];
 
-  const { data: projects } = await supabase
-    .from("projects")
-    .select("id, code, name, status, client_id, freelancer_id, created_at")
-    .order("created_at", { ascending: false });
-
+  const { data: projects } = await supabase.from("projects").select("id, code, name, status, client_id, freelancer_id, created_at").order("created_at", { ascending: false });
   const projectIds = (projects ?? []).map(p => p.id);
 
   const { data: milestones } = projectIds.length
-    ? await supabase
-        .from("milestones")
-        .select("id, project_id, title, amount, currency, status, due_date")
-        .in("project_id", projectIds)
-        .order("created_at", { ascending: false })
+    ? await supabase.from("milestones").select("id, project_id, title, amount, currency, status, due_date").in("project_id", projectIds).order("created_at", { ascending: false })
     : { data: [] as { id: string; project_id: string; title: string; amount: number; currency: string; status: string; due_date: string | null }[] };
 
-  const { data: notifications } = await supabase
-    .from("notifications")
-    .select("id, project_id, type, payload, read_at, created_at")
-    .order("created_at", { ascending: false })
-    .limit(10);
+  const { data: notifications } = await supabase.from("notifications").select("id, project_id, type, payload, read_at, created_at").order("created_at", { ascending: false }).limit(10);
 
   const ms = milestones ?? [];
   const currency = ms[0]?.currency ?? "USD";
   const fmt = (n: number) => `${currency} ${n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const fmtShort = (n: number) => n >= 1000 ? `${currency} ${(n/1000).toFixed(1)}k` : fmt(n);
 
   const released   = ms.filter(m => m.status === "released").reduce((s, m) => s + Number(m.amount), 0);
   const inEscrow   = ms.filter(m => ["funded","in_progress","submitted","approved"].includes(m.status)).reduce((s, m) => s + Number(m.amount), 0);
   const pendingRel = ms.filter(m => m.status === "approved").reduce((s, m) => s + Number(m.amount), 0);
   const lifetime   = ms.reduce((s, m) => s + Number(m.amount), 0);
-
   const unreadCount = (notifications ?? []).filter(n => !n.read_at).length;
 
-  // Active orders = milestones that need attention or are in motion, deduplicated per project
   const activeProjectIds = new Set<string>();
   const activeOrders: typeof ms = [];
   for (const m of ms) {
@@ -95,15 +63,13 @@ export default async function DashboardPage() {
       activeOrders.push(m);
     }
   }
-
   const projectById = Object.fromEntries((projects ?? []).map(p => [p.id, p]));
 
   function projectProgress(projectId: string) {
     const pms = ms.filter(m => m.project_id === projectId);
     const total = pms.reduce((s, m) => s + Number(m.amount), 0);
     const rel = pms.filter(m => m.status === "released").reduce((s, m) => s + Number(m.amount), 0);
-    const pct = total > 0 ? Math.round((rel / total) * 100) : 0;
-    return { total, rel, pct };
+    return { total, rel, pct: total > 0 ? Math.round((rel / total) * 100) : 0 };
   }
 
   function projectOverallStatus(projectId: string): string {
@@ -118,20 +84,17 @@ export default async function DashboardPage() {
     return "draft";
   }
 
-  // Seller badge stats
   const completedProjects = (projects ?? []).filter(p => {
     const pms = ms.filter(m => m.project_id === p.id);
     return pms.length > 0 && pms.every(m => m.status === "released");
   }).length;
 
   const disputedMilestones = ms.filter(m => m.status === "disputed");
-  const needsAction = role === "freelancer"
-    ? ms.filter(m => m.status === "funded").length
-    : ms.filter(m => m.status === "submitted").length;
+  const needsAction = role === "freelancer" ? ms.filter(m => m.status === "funded").length : ms.filter(m => m.status === "submitted").length;
 
   return (
     <div className="flex flex-col">
-      {/* Top bar */}
+      {/* Desktop top bar */}
       <div className="sticky top-0 z-30 hidden h-[72px] items-center justify-between border-b border-slate-200 bg-white px-8 lg:flex">
         <h1 className="text-[19px] font-bold tracking-tight text-[#0F172A]">Dashboard</h1>
         <div className="flex items-center gap-3">
@@ -140,122 +103,112 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      <div className="px-4 py-8 sm:px-8 sm:py-9">
+      {/* Mobile page header (below the sidebar mobile top bar) */}
+      <div className="border-b border-slate-100 bg-white px-4 py-3 lg:hidden">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-[17px] font-bold text-[#0F172A]">Welcome, {firstName} 👋</h2>
+            <p className="text-[12px] text-slate-500">
+              {needsAction > 0 ? `${needsAction} milestone${needsAction !== 1 ? "s" : ""} need attention` : "All up to date"}
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <NotificationBell notifications={notifications ?? []} unreadCount={unreadCount}/>
+            {role === "freelancer" && <NewProjectForm/>}
+          </div>
+        </div>
+      </div>
 
-        {/* Greeting + seller badge */}
-        <div className="mb-5 flex flex-wrap items-start justify-between gap-4">
+      <div className="px-4 py-5 sm:px-6 lg:px-8 lg:py-8">
+
+        {/* Greeting — desktop only */}
+        <div className="mb-5 hidden flex-wrap items-start justify-between gap-4 lg:flex">
           <div>
             <h2 className="text-[21px] font-bold tracking-tight text-[#0F172A]">Welcome back, {firstName} 👋</h2>
             <p className="mt-1 text-[13.5px] text-slate-500">
-              {needsAction > 0
-                ? `You have ${needsAction} milestone${needsAction !== 1 ? "s" : ""} waiting for action.`
-                : activeOrders.length > 0
-                  ? `${activeOrders.length} active order${activeOrders.length !== 1 ? "s" : ""} in progress.`
-                  : "Everything is up to date — no action needed."}
+              {needsAction > 0 ? `You have ${needsAction} milestone${needsAction !== 1 ? "s" : ""} waiting for action.`
+                : activeOrders.length > 0 ? `${activeOrders.length} active order${activeOrders.length !== 1 ? "s" : ""} in progress.`
+                : "Everything is up to date — no action needed."}
             </p>
           </div>
-          {(completedProjects > 0 || (projects?.length ?? 0) > 0) && (
+          {(projects?.length ?? 0) > 0 && (
             <div className="flex items-center gap-3 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-[13px] text-slate-500">
-              <span><span className="text-amber-400">★</span> <strong className="text-[#0F172A]">Top rated</strong></span>
-              <span className="h-3.5 w-px bg-slate-300"/>
-              <span><strong className="text-[#0F172A]">{projects?.length ?? 0}</strong> projects</span>
+              <span><span className="text-amber-400">★</span> <strong className="text-[#0F172A]">{projects?.length ?? 0}</strong> projects</span>
               <span className="h-3.5 w-px bg-slate-300"/>
               <span><strong className="text-[#0F172A]">{completedProjects}</strong> completed</span>
             </div>
           )}
         </div>
 
-        {/* Dispute attention banner */}
+        {/* Dispute banner */}
         {disputedMilestones.length > 0 && (
-          <div className="mb-5 flex items-center gap-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3.5 text-[13.5px] text-red-700">
-            <svg className="h-[19px] w-[19px] flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>
-            <span>
-              {disputedMilestones.length} dispute{disputedMilestones.length > 1 ? "s are" : " is"} waiting for your response.
-            </span>
-            <Link href="/dashboard/disputes" className="ml-auto font-bold text-red-700 underline whitespace-nowrap">
-              Respond now →
-            </Link>
+          <div className="mb-4 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-[13px] text-red-700 sm:rounded-2xl sm:text-[13.5px]">
+            <svg className="mt-0.5 h-4 w-4 flex-shrink-0 sm:h-[19px] sm:w-[19px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+            <span className="flex-1">{disputedMilestones.length} dispute{disputedMilestones.length > 1 ? "s" : ""} waiting for response.</span>
+            <Link href="/dashboard/disputes" className="flex-shrink-0 font-bold underline">Respond →</Link>
           </div>
         )}
 
         {/* Earnings card */}
-        <div className="relative mb-6 overflow-hidden rounded-[24px] p-[30px_34px] text-white" style={{background:"linear-gradient(155deg,#16223C 0%,#0F172A 50%,#060A14 100%)"}}>
-          <div className="pointer-events-none absolute -right-[70px] -top-[130px] h-[360px] w-[360px] rounded-full" style={{background:"radial-gradient(circle,rgba(16,185,129,0.22),transparent 70%)"}}/>
-          <div className="relative flex flex-wrap items-end gap-8 sm:gap-[36px]">
-            <div>
-              <div className="mb-2.5 font-mono text-[12px] uppercase tracking-[0.07em] text-slate-400">
-                {role === "freelancer" ? "Available to withdraw" : "Total released to freelancers"}
+        <div className="relative mb-5 overflow-hidden rounded-2xl p-5 text-white sm:mb-6 sm:rounded-[24px] sm:p-8" style={{background:"linear-gradient(155deg,#16223C 0%,#0F172A 50%,#060A14 100%)"}}>
+          <div className="pointer-events-none absolute -right-16 -top-24 h-64 w-64 rounded-full sm:-right-[70px] sm:-top-[130px] sm:h-[360px] sm:w-[360px]" style={{background:"radial-gradient(circle,rgba(16,185,129,0.22),transparent 70%)"}}/>
+          {/* Mobile: stacked 2-col grid */}
+          <div className="relative">
+            <div className="mb-4 sm:mb-0">
+              <div className="mb-1.5 font-mono text-[11px] uppercase tracking-[0.07em] text-slate-400 sm:text-[12px]">
+                {role === "freelancer" ? "Available to withdraw" : "Total released"}
               </div>
-              <div className="font-mono text-[40px] font-extrabold leading-none tracking-tight">{fmt(released)}</div>
+              <div className="font-mono text-[32px] font-extrabold leading-none tracking-tight sm:text-[40px]">{fmtShort(released)}</div>
               {role === "freelancer" && released > 0 && (
-                <Link href="/dashboard/payments"
-                  className="mt-4 inline-flex items-center rounded-full bg-emerald-500 px-4 py-1.5 text-sm font-semibold text-white hover:bg-emerald-400 transition-colors"
-                >
+                <Link href="/dashboard/payments" className="mt-3 inline-flex items-center rounded-full bg-emerald-500 px-3 py-1 text-xs font-semibold text-white hover:bg-emerald-400 sm:mt-4 sm:px-4 sm:py-1.5 sm:text-sm">
                   View payments →
                 </Link>
               )}
             </div>
-            <div className="flex flex-wrap gap-[28px] sm:gap-[34px] ml-auto">
-              <div>
-                <div className="mb-1.5 font-mono text-[11.5px] uppercase tracking-[0.04em] text-slate-400">In escrow</div>
-                <div className="font-mono text-[19px] font-bold">{fmt(inEscrow)}</div>
-              </div>
-              <div>
-                <div className="mb-1.5 font-mono text-[11.5px] uppercase tracking-[0.04em] text-slate-400">Pending release</div>
-                <div className="font-mono text-[19px] font-bold">{fmt(pendingRel)}</div>
-              </div>
-              <div>
-                <div className="mb-1.5 font-mono text-[11.5px] uppercase tracking-[0.04em] text-slate-400">Earned lifetime</div>
-                <div className="font-mono text-[19px] font-bold">{fmt(lifetime)}</div>
-              </div>
+            <div className="grid grid-cols-3 gap-3 border-t border-white/10 pt-4 sm:flex sm:gap-[34px] sm:border-0 sm:pt-0">
+              {[
+                { label: "In escrow",       val: inEscrow },
+                { label: "Pending release", val: pendingRel },
+                { label: "Lifetime",        val: lifetime },
+              ].map(({ label, val }) => (
+                <div key={label}>
+                  <div className="mb-1 font-mono text-[10px] uppercase tracking-[0.04em] text-slate-400 sm:text-[11.5px]">{label}</div>
+                  <div className="font-mono text-[14px] font-bold sm:text-[19px]">{fmtShort(val)}</div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
 
         {/* Active orders */}
         {activeOrders.length > 0 && (
-          <div className="mb-6 rounded-2xl border border-slate-200 bg-white" style={{background:"linear-gradient(165deg,#FFFFFF 0%,#FAFBFD 100%)"}}>
-            <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
-              <h2 className="text-[16px] font-bold text-[#0F172A]">Active orders</h2>
-              <Link href="/dashboard/workspaces" className="text-[13px] font-semibold text-emerald-700 hover:text-emerald-600">
-                View all →
-              </Link>
+          <div className="mb-5 overflow-hidden rounded-2xl border border-slate-200 bg-white">
+            <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3 sm:px-6 sm:py-4">
+              <h2 className="text-[15px] font-bold text-[#0F172A] sm:text-[16px]">Active orders</h2>
+              <Link href="/dashboard/workspaces" className="text-[12px] font-semibold text-emerald-700 sm:text-[13px]">View all →</Link>
             </div>
             <div className="divide-y divide-slate-50">
               {activeOrders.slice(0, 5).map(m => {
                 const project = projectById[m.project_id];
                 if (!project) return null;
-                const clientName = project.name;
-                const color = avatarColor(clientName);
-                const inits = initials2(clientName);
-                const isAction = (role === "freelancer" && m.status === "funded") ||
-                                 (role === "client" && m.status === "submitted");
+                const color = avatarColor(project.name);
+                const inits = initials2(project.name);
+                const isAction = (role === "freelancer" && m.status === "funded") || (role === "client" && m.status === "submitted");
                 return (
-                  <Link key={m.id} href={`/dashboard/${m.project_id}`}
-                    className="flex items-center gap-4 px-6 py-4 transition hover:bg-slate-50"
-                  >
-                    <div className={`flex h-[42px] w-[42px] flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${color} font-mono text-[13px] font-bold text-white`}>
+                  <Link key={m.id} href={`/dashboard/${m.project_id}`} className="flex items-center gap-3 px-4 py-3 transition hover:bg-slate-50 sm:gap-4 sm:px-6 sm:py-4">
+                    <div className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${color} font-mono text-[12px] font-bold text-white sm:h-[42px] sm:w-[42px] sm:text-[13px]`}>
                       {inits}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h5 className="text-[14.5px] font-semibold text-[#0F172A]">{project.name}</h5>
-                      <div className="mt-0.5 truncate text-[12.5px] text-slate-500">
-                        {m.title} · {fmt(Number(m.amount))}
-                      </div>
+                      <h5 className="truncate text-[13.5px] font-semibold text-[#0F172A] sm:text-[14.5px]">{project.name}</h5>
+                      <div className="truncate text-[11.5px] text-slate-500 sm:text-[12.5px]">{m.title} · {fmtShort(Number(m.amount))}</div>
                     </div>
-                    {m.due_date && (
-                      <span className="hidden shrink-0 font-mono text-[12.5px] text-slate-400 sm:block">
-                        Due {m.due_date}
+                    <div className="flex flex-shrink-0 flex-col items-end gap-1.5 sm:flex-row sm:items-center sm:gap-3">
+                      <Pill status={m.status}/>
+                      <span className={`rounded-full px-2.5 py-1 text-[11px] font-semibold sm:px-3 sm:text-xs ${isAction ? "bg-[#0F172A] text-white" : "border border-slate-200 text-slate-500"}`}>
+                        {isAction ? (role === "freelancer" ? "Start" : "Approve") : "View"}
                       </span>
-                    )}
-                    <Pill status={m.status}/>
-                    <span className={`ml-1 flex-shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold transition ${
-                      isAction
-                        ? "bg-[#0F172A] text-white hover:bg-[#1E293B]"
-                        : "border border-slate-200 text-slate-500 hover:border-slate-300"
-                    }`}>
-                      {isAction ? (role === "freelancer" ? "Start" : "Approve") : "View"}
-                    </span>
+                    </div>
                   </Link>
                 );
               })}
@@ -264,33 +217,28 @@ export default async function DashboardPage() {
         )}
 
         {/* Workspaces grid */}
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-[16px] font-bold text-[#0F172A]">
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-[15px] font-bold text-[#0F172A] sm:text-[16px]">
             {(projects?.length ?? 0) > 0 ? "Workspaces" : "Get started"}
           </h2>
           <div className="flex items-center gap-3">
             {(projects?.length ?? 0) > 0 && (
-              <Link href="/dashboard/workspaces" className="text-[13px] font-semibold text-emerald-700 hover:text-emerald-600">
-                View all →
-              </Link>
-            )}
-            {role === "freelancer" && (
-              <div className="lg:hidden"><NewProjectForm/></div>
+              <Link href="/dashboard/workspaces" className="text-[12px] font-semibold text-emerald-700 sm:text-[13px]">View all →</Link>
             )}
           </div>
         </div>
 
         {!(projects?.length) ? (
-          <div className="rounded-2xl border-2 border-dashed border-slate-200 bg-white px-8 py-14 text-center">
+          <div className="rounded-2xl border-2 border-dashed border-slate-200 bg-white px-5 py-10 text-center sm:px-8 sm:py-14">
             {role === "freelancer" ? (
               <>
-                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50">
-                  <svg className="h-7 w-7 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4"/></svg>
+                <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 sm:h-14 sm:w-14">
+                  <svg className="h-6 w-6 text-emerald-500 sm:h-7 sm:w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4"/></svg>
                 </div>
-                <h3 className="mb-2 text-[15px] font-bold text-[#0F172A]">Create your first workspace</h3>
-                <p className="mb-6 text-sm text-slate-500">A workspace secures one project — milestones, payments, files, and chat in one place.</p>
-                <ol className="mx-auto mb-6 max-w-xs space-y-2.5 text-left text-sm text-slate-500">
-                  {["Click \"New Workspace\" — takes 30 seconds","Share the invite link with your client","Add milestones and get paid as you deliver"].map((s, i) => (
+                <h3 className="mb-1.5 text-[14px] font-bold text-[#0F172A] sm:text-[15px]">Create your first workspace</h3>
+                <p className="mb-5 text-sm text-slate-500">Secure a project with milestones, payments, and chat — all in one place.</p>
+                <ol className="mx-auto mb-5 max-w-xs space-y-2 text-left text-sm text-slate-500">
+                  {["Click \"New Workspace\" above","Share the invite link with your client","Add milestones and get paid as you deliver"].map((s, i) => (
                     <li key={i} className="flex gap-2.5">
                       <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-[11px] font-bold text-emerald-700">{i+1}</span>
                       {s}
@@ -301,56 +249,47 @@ export default async function DashboardPage() {
               </>
             ) : (
               <>
-                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50">
-                  <svg className="h-7 w-7 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50">
+                  <svg className="h-6 w-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
                 </div>
-                <h3 className="mb-2 text-[15px] font-bold text-[#0F172A]">Waiting for your invite link</h3>
+                <h3 className="mb-1.5 text-[14px] font-bold text-[#0F172A]">Waiting for your invite link</h3>
                 <p className="mb-1 text-sm text-slate-500">Your freelancer will share a link to join their workspace.</p>
-                <p className="text-xs text-slate-400">Once you join, you&apos;ll fund milestones and release payments right here.</p>
+                <p className="text-xs text-slate-400">Once you join, you&apos;ll fund milestones and release payments here.</p>
               </>
             )}
           </div>
         ) : (
-          <div className="grid gap-[18px] sm:grid-cols-2 xl:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-3">
             {(projects ?? []).slice(0, 6).map(project => {
               const { total, rel, pct } = projectProgress(project.id);
               const overallStatus = projectOverallStatus(project.id);
+              const pill = STATUS_PILL[overallStatus] ?? STATUS_PILL.draft;
               const color = avatarColor(project.name);
               const inits = initials2(project.name);
-              const pill = STATUS_PILL[overallStatus] ?? STATUS_PILL.draft;
-
               return (
                 <Link key={project.id} href={`/dashboard/${project.id}`}
-                  className="group flex flex-col gap-3.5 rounded-[14px] border border-slate-200 bg-white p-[22px] transition-all hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(15,23,42,0.08)]"
+                  className="flex flex-col gap-3 rounded-[14px] border border-slate-200 bg-white p-4 transition-all hover:shadow-[0_4px_16px_rgba(15,23,42,0.08)] sm:p-[22px]"
                 >
                   <div className="flex items-start gap-3">
-                    <div className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${color} font-mono text-sm font-bold text-white`}>
-                      {inits}
-                    </div>
+                    <div className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br ${color} font-mono text-sm font-bold text-white sm:h-10 sm:w-10`}>{inits}</div>
                     <div className="min-w-0 flex-1">
-                      <h4 className="truncate text-[15.5px] font-semibold text-[#0F172A]">{project.name}</h4>
-                      <div className="font-mono text-[12.5px] text-slate-400">{project.code}</div>
+                      <h4 className="truncate text-[14px] font-semibold text-[#0F172A] sm:text-[15.5px]">{project.name}</h4>
+                      <div className="font-mono text-[11px] text-slate-400 sm:text-[12.5px]">{project.code}</div>
                     </div>
-                    <span className={`flex-shrink-0 rounded-full px-2 py-0.5 font-mono text-[10px] font-semibold ${pill.cls}`}>
-                      {pill.label}
-                    </span>
+                    <span className={`flex-shrink-0 rounded-full px-2 py-0.5 font-mono text-[9.5px] font-semibold sm:text-[10px] ${pill.cls}`}>{pill.label}</span>
                   </div>
-
                   <div>
-                    <div className="mb-1.5 h-[8px] w-full overflow-hidden rounded-full bg-slate-100">
-                      <div className="h-full rounded-full transition-all" style={{width:`${pct}%`, background:"linear-gradient(90deg,#059669,#34D399)"}}/>
+                    <div className="mb-1 h-[7px] w-full overflow-hidden rounded-full bg-slate-100 sm:h-[8px]">
+                      <div className="h-full rounded-full" style={{width:`${pct}%`,background:"linear-gradient(90deg,#059669,#34D399)"}}/>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-[13px] text-slate-500">
-                        {total > 0 ? `${fmt(rel)} of ${fmt(total)} released` : (!project.client_id ? "Awaiting client" : "No milestones yet")}
+                      <span className="text-[11.5px] text-slate-500 sm:text-[13px]">
+                        {total > 0 ? `${fmtShort(rel)} of ${fmtShort(total)} released` : !project.client_id ? "Awaiting client" : "No milestones yet"}
                       </span>
-                      <span className="font-mono text-[12px] font-semibold text-slate-500">{pct}%</span>
+                      <span className="font-mono text-[11px] font-semibold text-slate-500 sm:text-[12px]">{pct}%</span>
                     </div>
                   </div>
-
-                  {!project.client_id && (
-                    <p className="text-[12px] font-medium text-amber-600">⏳ Client hasn&apos;t joined yet</p>
-                  )}
+                  {!project.client_id && <p className="text-[11.5px] font-medium text-amber-600">⏳ Client hasn&apos;t joined yet</p>}
                 </Link>
               );
             })}
@@ -359,9 +298,7 @@ export default async function DashboardPage() {
 
         {(projects?.length ?? 0) > 6 && (
           <div className="mt-4 text-center">
-            <Link href="/dashboard/workspaces" className="text-sm font-semibold text-emerald-700 hover:text-emerald-600">
-              View all {projects!.length} workspaces →
-            </Link>
+            <Link href="/dashboard/workspaces" className="text-sm font-semibold text-emerald-700">View all {projects!.length} workspaces →</Link>
           </div>
         )}
       </div>

@@ -86,79 +86,70 @@ export default async function ProjectPage({
 
   return (
     <div className="min-h-screen">
-      {/* Top bar */}
-      <div className="sticky top-0 z-30 hidden items-center justify-between border-b border-slate-200 bg-white px-8 lg:flex" style={{height:72}}>
-        <div className="flex items-center gap-3">
-          <Link href="/dashboard" className="text-sm text-slate-400 hover:text-slate-700">← Workspaces</Link>
+      {/* Desktop top bar */}
+      <div className="sticky top-0 z-30 hidden h-[72px] items-center justify-between border-b border-slate-200 bg-white px-8 lg:flex">
+        <div className="flex min-w-0 items-center gap-3">
+          <Link href="/dashboard/workspaces" className="flex-shrink-0 text-sm text-slate-400 hover:text-slate-700">← Workspaces</Link>
           <span className="text-slate-300">/</span>
-          <h1 className="text-base font-bold text-slate-900">{project.name}</h1>
-          <span className="rounded-md bg-slate-100 px-2 py-0.5 font-mono text-xs text-slate-500">{project.code}</span>
+          <h1 className="truncate text-[17px] font-bold text-[#0F172A]">{project.name}</h1>
+          <span className="flex-shrink-0 rounded-md bg-slate-100 px-2 py-0.5 font-mono text-xs text-slate-500">{project.code}</span>
         </div>
         {isFreelancer && <NewMilestoneForm projectId={project.id}/>}
       </div>
 
-      <div className="px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-        {/* Mobile header */}
-        <div className="mb-5 flex items-center justify-between lg:hidden">
-          <div>
-            <Link href="/dashboard" className="mb-1 block text-xs text-slate-400 hover:text-slate-600">← Workspaces</Link>
+      {/* Mobile sub-header (sits below sidebar's mobile top bar) */}
+      <div className="border-b border-slate-100 bg-white px-4 py-3 lg:hidden">
+        <div className="flex items-center justify-between gap-2">
+          <div className="min-w-0">
+            <Link href="/dashboard/workspaces" className="text-[11px] text-slate-400">← Workspaces</Link>
             <div className="flex items-center gap-2">
-              <h1 className="text-lg font-bold text-slate-900">{project.name}</h1>
-              <span className="rounded-md bg-slate-100 px-2 py-0.5 font-mono text-xs text-slate-500">{project.code}</span>
+              <h1 className="truncate text-[16px] font-bold text-[#0F172A]">{project.name}</h1>
+              <span className="flex-shrink-0 rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] text-slate-500">{project.code}</span>
             </div>
           </div>
-          {isFreelancer && <NewMilestoneForm projectId={project.id}/>}
+          {isFreelancer && <div className="flex-shrink-0"><NewMilestoneForm projectId={project.id}/></div>}
         </div>
+      </div>
 
-        {inviteLink && (
-          <div className="mt-4">
-            <CopyLinkBox link={inviteLink} />
-          </div>
-        )}
+      <div className="px-4 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-7">
+
+        {inviteLink && <div className="mb-4"><CopyLinkBox link={inviteLink} /></div>}
 
         {!project.client_id && isFreelancer && !inviteLink && (
-          <div className="mt-6 rounded-xl border border-slate-200 bg-white p-5">
+          <div className="mb-4 rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
             <h2 className="text-sm font-semibold text-slate-900">Invite your client</h2>
-            <p className="mt-1 text-sm text-slate-500">
-              Send them a link to join this workspace, no account required until they accept.
-            </p>
-            <div className="mt-4 max-w-sm">
-              <InviteClientForm projectId={project.id} />
-            </div>
+            <p className="mt-1 text-sm text-slate-500">Share a link — no account required until they accept.</p>
+            <div className="mt-3"><InviteClientForm projectId={project.id} /></div>
           </div>
         )}
 
         {!project.client_id && !isFreelancer && (
-          <p className="mt-6 text-sm text-slate-500">Waiting for the client to join this workspace.</p>
+          <div className="mb-4 rounded-xl border border-slate-100 bg-slate-50 px-4 py-3 text-sm text-slate-500">
+            Waiting for the freelancer to send you an invite link.
+          </div>
         )}
 
-        <div className="mt-6 rounded-2xl border border-slate-200 bg-white">
-          <div className="flex items-center justify-between border-b border-slate-100 p-4">
-            <h2 className="text-sm font-bold text-slate-900">Milestones</h2>
+        {/* Milestones */}
+        <div className="mb-4 overflow-hidden rounded-2xl border border-slate-200 bg-white">
+          <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3 sm:px-5">
+            <h2 className="text-[14px] font-bold text-[#0F172A] sm:text-sm">Milestones</h2>
+            {isFreelancer && <div className="lg:hidden"><NewMilestoneForm projectId={project.id}/></div>}
           </div>
-
           {!milestones?.length ? (
-            <p className="p-4 text-sm text-slate-500">No milestones yet.</p>
+            <p className="px-4 py-5 text-sm text-slate-500">No milestones yet.{isFreelancer && " Click \"Add Milestone\" to create one."}</p>
           ) : (
-            <ul className="divide-y divide-slate-100">
+            <ul className="divide-y divide-slate-50">
               {milestones.map((m) => (
-                <li key={m.id} className="flex items-center justify-between gap-3 px-4 py-3">
+                <li key={m.id} className="flex items-center gap-3 px-4 py-3 sm:px-5">
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-slate-900">{m.title}</p>
-                    <p className="mt-0.5 text-xs text-slate-500">
-                      ${Number(m.amount).toLocaleString()}
-                      {m.due_date && <> · due {m.due_date}</>}
+                    <p className="truncate text-[13.5px] font-semibold text-[#0F172A]">{m.title}</p>
+                    <p className="mt-0.5 font-mono text-[11.5px] text-slate-500">
+                      ${Number(m.amount).toLocaleString()}{m.due_date && <> · {m.due_date}</>}
                     </p>
                   </div>
-                  <div className="flex shrink-0 items-center gap-2">
+                  <div className="flex flex-shrink-0 flex-col items-end gap-1.5 sm:flex-row sm:items-center sm:gap-2">
                     <StatusPill status={m.status} />
-                    <MilestoneActions
-                      milestoneId={m.id}
-                      projectId={project.id}
-                      status={m.status}
-                      isFreelancer={isFreelancer}
-                      isClient={isClient}
-                    />
+                    <MilestoneActions milestoneId={m.id} projectId={project.id} status={m.status} isFreelancer={isFreelancer} isClient={isClient}/>
                   </div>
                 </li>
               ))}
@@ -166,39 +157,37 @@ export default async function ProjectPage({
           )}
         </div>
 
-        <div className="mt-6 rounded-2xl border border-slate-200 bg-white">
-          <div className="border-b border-slate-100 p-4">
-            <h2 className="text-sm font-bold text-slate-900">Chat</h2>
+        {/* Chat */}
+        <div className="mb-4 overflow-hidden rounded-2xl border border-slate-200 bg-white">
+          <div className="border-b border-slate-100 px-4 py-3 sm:px-5">
+            <h2 className="text-[14px] font-bold text-[#0F172A] sm:text-sm">Chat</h2>
           </div>
-          <ChatPanel
-            projectId={project.id}
-            currentUserId={user.id}
-            isClient={isClient}
-            initialMessages={messages ?? []}
-          />
+          <ChatPanel projectId={project.id} currentUserId={user.id} isClient={isClient} initialMessages={messages ?? []}/>
         </div>
 
-        <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-5">
-          <h2 className="mb-3 text-sm font-bold text-slate-900">Files</h2>
+        {/* Files */}
+        <div className="mb-4 rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
+          <h2 className="mb-3 text-[14px] font-bold text-[#0F172A] sm:text-sm">Files</h2>
           <FilesList files={files ?? []} />
         </div>
 
-        <div className="mt-6 rounded-2xl border border-slate-200 bg-white">
-          <div className="border-b border-slate-100 p-4">
-            <h2 className="text-sm font-bold text-slate-900">Transactions</h2>
+        {/* Transactions */}
+        <div className="mb-4 overflow-hidden rounded-2xl border border-slate-200 bg-white">
+          <div className="border-b border-slate-100 px-4 py-3 sm:px-5">
+            <h2 className="text-[14px] font-bold text-[#0F172A] sm:text-sm">Transactions</h2>
           </div>
-          <TransactionsTable transactions={transactions ?? []} />
+          <div className="overflow-x-auto">
+            <TransactionsTable transactions={transactions ?? []} />
+          </div>
         </div>
 
-        <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-5">
-          <h2 className="mb-3 text-sm font-bold text-slate-900">Scope agreement</h2>
+        {/* Contract */}
+        <div className="mb-4 rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
+          <h2 className="mb-3 text-[14px] font-bold text-[#0F172A] sm:text-sm">Scope agreement</h2>
           <ContractPanel
-            projectId={project.id}
-            isFreelancer={isFreelancer}
-            contract={contract ?? null}
-            signatures={signatures ?? []}
-            freelancerId={project.freelancer_id}
-            clientId={project.client_id}
+            projectId={project.id} isFreelancer={isFreelancer}
+            contract={contract ?? null} signatures={signatures ?? []}
+            freelancerId={project.freelancer_id} clientId={project.client_id}
             defaultSignedName={profile?.display_name ?? profile?.email ?? ""}
           />
         </div>
