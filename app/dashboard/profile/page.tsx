@@ -15,40 +15,67 @@ export default async function ProfilePage() {
     .eq("id", user.id)
     .single();
 
-  const { data: portfolioItems } = await supabase
-    .from("portfolio_items")
-    .select("id, title, description, external_url, created_at")
-    .eq("user_id", user.id)
-    .order("position", { ascending: true });
+  // Load portfolio items — skip gracefully on any DB error
+  let itemsWithAttachments: {
+    id: string;
+    title: string;
+    description: string | null;
+    external_url: string | null;
+    attachments: {
+      id: string;
+      portfolio_item_id: string;
+      attachment_type: string;
+      name: string;
+      url: string | null;
+      storage_path: string | null;
+      mime: string | null;
+      signedUrl: string | null;
+    }[];
+  }[] = [];
 
-  const itemIds = (portfolioItems ?? []).map((i) => i.id);
-  const { data: allAttachments } = itemIds.length
-    ? await supabase
-        .from("portfolio_attachments")
-        .select("id, portfolio_item_id, attachment_type, name, url, storage_path, mime")
-        .in("portfolio_item_id", itemIds)
-    : { data: [] as {
-        id: string; portfolio_item_id: string; attachment_type: string;
-        name: string; url: string | null; storage_path: string | null; mime: string | null;
-      }[] };
+  try {
+    const { data: portfolioItems } = await supabase
+      .from("portfolio_items")
+      .select("id, title, description, external_url, created_at")
+      .eq("user_id", user.id)
+      .order("position", { ascending: true });
 
-  // Build signed URLs for file attachments
-  const attachmentsWithUrls = await Promise.all(
-    (allAttachments ?? []).map(async (a) => {
-      if (a.storage_path) {
-        const { data } = await supabase.storage
-          .from("portfolio")
-          .createSignedUrl(a.storage_path, 3600);
-        return { ...a, signedUrl: data?.signedUrl ?? null };
-      }
-      return { ...a, signedUrl: a.url };
-    })
-  );
+    const itemIds = (portfolioItems ?? []).map((i) => i.id);
 
-  const itemsWithAttachments = (portfolioItems ?? []).map((item) => ({
-    ...item,
-    attachments: attachmentsWithUrls.filter((a) => a.portfolio_item_id === item.id),
-  }));
+    const { data: allAttachments } = itemIds.length
+      ? await supabase
+          .from("portfolio_attachments")
+          .select("id, portfolio_item_id, attachment_type, name, url, storage_path, mime")
+          .in("portfolio_item_id", itemIds)
+      : { data: [] as {
+          id: string; portfolio_item_id: string; attachment_type: string;
+          name: string; url: string | null; storage_path: string | null; mime: string | null;
+        }[] };
+
+    // Build signed URLs — skip any that fail
+    const attachmentsWithUrls = await Promise.all(
+      (allAttachments ?? []).map(async (a) => {
+        if (a.storage_path) {
+          try {
+            const { data } = await supabase.storage
+              .from("portfolio")
+              .createSignedUrl(a.storage_path, 3600);
+            return { ...a, signedUrl: data?.signedUrl ?? null };
+          } catch {
+            return { ...a, signedUrl: null };
+          }
+        }
+        return { ...a, signedUrl: a.url };
+      })
+    );
+
+    itemsWithAttachments = (portfolioItems ?? []).map((item) => ({
+      ...item,
+      attachments: attachmentsWithUrls.filter((a) => a.portfolio_item_id === item.id),
+    }));
+  } catch {
+    // Portfolio failed to load — page still renders, just without items
+  }
 
   return (
     <div className="min-h-screen bg-slate-50">
