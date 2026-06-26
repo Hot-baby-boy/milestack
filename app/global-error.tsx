@@ -1,8 +1,5 @@
 "use client";
 
-import * as Sentry from "@sentry/nextjs";
-import { useEffect } from "react";
-
 export default function GlobalError({
   error,
   reset,
@@ -10,22 +7,18 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  useEffect(() => {
-    Sentry.captureException(error);
-  }, [error]);
-
   return (
     <html>
       <body>
-        <div className="flex min-h-screen flex-col items-center justify-center bg-slate-50 px-4">
-          <div className="max-w-sm text-center">
-            <h1 className="mb-2 text-lg font-semibold text-slate-900">Something went wrong</h1>
-            <p className="mb-6 text-sm text-slate-500">
+        <div style={{ display: "flex", minHeight: "100vh", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "#f8fafc", padding: "1rem" }}>
+          <div style={{ maxWidth: "24rem", textAlign: "center" }}>
+            <h1 style={{ marginBottom: "0.5rem", fontSize: "1.125rem", fontWeight: 600, color: "#0f172a" }}>Something went wrong</h1>
+            <p style={{ marginBottom: "1.5rem", fontSize: "0.875rem", color: "#64748b" }}>
               We&apos;ve been notified and are looking into it.
             </p>
             <button
               onClick={reset}
-              className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
+              style={{ borderRadius: "0.5rem", background: "#059669", padding: "0.5rem 1rem", fontSize: "0.875rem", fontWeight: 500, color: "#fff", border: "none", cursor: "pointer" }}
             >
               Try again
             </button>

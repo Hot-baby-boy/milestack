@@ -1,5 +1,4 @@
 import type { NextConfig } from "next";
-import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: NextConfig = {
   experimental: {
@@ -18,10 +17,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withSentryConfig(nextConfig, {
-  org: "milestack",
-  project: "milestack",
-  silent: true,
-  disableLogger: true,
-  automaticVercelMonitors: false,
-});
+export default nextConfig;
