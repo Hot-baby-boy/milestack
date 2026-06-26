@@ -123,11 +123,35 @@ export default async function DashboardPage() {
         </div>
 
         {!projects?.length && (
-          <p className="text-sm text-slate-500">
-            {role === "freelancer"
-              ? "No workspaces yet — create one to get started."
-              : "No workspaces yet. Ask your freelancer for an invite link."}
-          </p>
+          <div className="rounded-xl border-2 border-dashed border-slate-200 bg-white px-8 py-12 text-center">
+            {role === "freelancer" ? (
+              <>
+                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100">
+                  <svg className="h-6 w-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                </div>
+                <h3 className="mb-1 text-base font-semibold text-slate-900">Create your first workspace</h3>
+                <p className="mb-4 text-sm text-slate-500">A workspace holds all milestones, payments, and messages for one client project.</p>
+                <ol className="mx-auto mb-6 max-w-xs space-y-2 text-left text-sm text-slate-500">
+                  <li className="flex gap-2"><span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-xs font-semibold text-emerald-700">1</span>Click &quot;New Workspace&quot; above</li>
+                  <li className="flex gap-2"><span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-xs font-semibold text-emerald-700">2</span>Share the invite link with your client</li>
+                  <li className="flex gap-2"><span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-xs font-semibold text-emerald-700">3</span>Add milestones and get to work</li>
+                </ol>
+              </>
+            ) : (
+              <>
+                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
+                  <svg className="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                  </svg>
+                </div>
+                <h3 className="mb-1 text-base font-semibold text-slate-900">Waiting for your invite link</h3>
+                <p className="mb-2 text-sm text-slate-500">Your freelancer will send you a link to join their workspace.</p>
+                <p className="text-xs text-slate-400">Once you join, you&apos;ll be able to review milestones and release payments here.</p>
+              </>
+            )}
+          </div>
         )}
 
         <div className="grid gap-4 sm:grid-cols-2">
