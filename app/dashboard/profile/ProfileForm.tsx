@@ -14,6 +14,8 @@ type Profile = {
   handle: string | null;
 } | null;
 
+const inputClass = "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-emerald-500 focus:outline-none";
+
 export function ProfileForm({ profile, email }: { profile: Profile; email: string }) {
   const [state, formAction, pending] = useActionState(updateProfile, null);
   const [avatarState, avatarAction, avatarPending] = useActionState(uploadAvatar, null);
@@ -73,7 +75,7 @@ export function ProfileForm({ profile, email }: { profile: Profile; email: strin
             id="display_name"
             name="display_name"
             defaultValue={profile?.display_name ?? ""}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none"
+            className={inputClass}
             placeholder="Jane Doe"
           />
         </div>
@@ -88,7 +90,7 @@ export function ProfileForm({ profile, email }: { profile: Profile; email: strin
               id="handle"
               name="handle"
               defaultValue={profile?.handle ?? ""}
-              className="flex-1 text-sm focus:outline-none"
+              className="flex-1 text-sm text-slate-900 placeholder-slate-400 focus:outline-none"
               placeholder="jane-doe"
             />
           </div>
@@ -104,7 +106,7 @@ export function ProfileForm({ profile, email }: { profile: Profile; email: strin
             name="bio"
             rows={3}
             defaultValue={profile?.bio ?? ""}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none"
+            className={inputClass}
             placeholder="A short description about yourself…"
           />
         </div>
@@ -119,7 +121,7 @@ export function ProfileForm({ profile, email }: { profile: Profile; email: strin
                 id="skills"
                 name="skills"
                 defaultValue={(profile?.skills ?? []).join(", ")}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none"
+                className={inputClass}
                 placeholder="UI Design, React, Figma"
               />
               <p className="mt-1 text-xs text-slate-400">Comma-separated</p>
@@ -136,7 +138,7 @@ export function ProfileForm({ profile, email }: { profile: Profile; email: strin
                 min="0"
                 step="0.01"
                 defaultValue={profile?.hourly_rate ?? ""}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none"
+                className={inputClass}
                 placeholder="50"
               />
             </div>
