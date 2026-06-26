@@ -26,6 +26,11 @@ export async function AppHeader() {
       </Link>
       <div className="flex items-center gap-3">
         {user && <NotificationBell notifications={notifications ?? []} unreadCount={unreadCount} />}
+        {user && (
+          <Link href="/dashboard/profile" className="text-sm font-medium text-slate-500 hover:text-slate-700">
+            Profile
+          </Link>
+        )}
         <form action={logout}>
           <button className="text-sm font-medium text-slate-500 hover:text-slate-700">Log out</button>
         </form>
