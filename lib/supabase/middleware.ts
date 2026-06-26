@@ -10,6 +10,7 @@ const PUBLIC_PATHS = [
   "/auth/callback",
   "/auth/confirm",
   "/invite",
+  "/admin/login",
 ];
 
 export async function updateSession(request: NextRequest) {
