@@ -1,6 +1,6 @@
 import { redirect, notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { AppHeader } from "@/components/AppHeader";
+import Link from "next/link";
 import { StatusPill } from "@/components/StatusPill";
 import { MilestoneActions } from "./MilestoneActions";
 import { NewMilestoneForm } from "./NewMilestoneForm";
@@ -85,14 +85,29 @@ export default async function ProjectPage({
       : null;
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <AppHeader />
-      <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6 sm:py-8">
+    <div className="min-h-screen">
+      {/* Top bar */}
+      <div className="sticky top-0 z-30 hidden items-center justify-between border-b border-slate-200 bg-white px-8 lg:flex" style={{height:72}}>
         <div className="flex items-center gap-3">
-          <h1 className="text-xl font-semibold text-slate-900">{project.name}</h1>
-          <span className="rounded-md bg-slate-100 px-2 py-1 font-mono text-xs text-slate-500">
-            {project.code}
-          </span>
+          <Link href="/dashboard" className="text-sm text-slate-400 hover:text-slate-700">← Workspaces</Link>
+          <span className="text-slate-300">/</span>
+          <h1 className="text-base font-bold text-slate-900">{project.name}</h1>
+          <span className="rounded-md bg-slate-100 px-2 py-0.5 font-mono text-xs text-slate-500">{project.code}</span>
+        </div>
+        {isFreelancer && <NewMilestoneForm projectId={project.id}/>}
+      </div>
+
+      <div className="px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+        {/* Mobile header */}
+        <div className="mb-5 flex items-center justify-between lg:hidden">
+          <div>
+            <Link href="/dashboard" className="mb-1 block text-xs text-slate-400 hover:text-slate-600">← Workspaces</Link>
+            <div className="flex items-center gap-2">
+              <h1 className="text-lg font-bold text-slate-900">{project.name}</h1>
+              <span className="rounded-md bg-slate-100 px-2 py-0.5 font-mono text-xs text-slate-500">{project.code}</span>
+            </div>
+          </div>
+          {isFreelancer && <NewMilestoneForm projectId={project.id}/>}
         </div>
 
         {inviteLink && (
@@ -117,10 +132,9 @@ export default async function ProjectPage({
           <p className="mt-6 text-sm text-slate-500">Waiting for the client to join this workspace.</p>
         )}
 
-        <div className="mt-6 rounded-xl border border-slate-200 bg-white">
+        <div className="mt-6 rounded-2xl border border-slate-200 bg-white">
           <div className="flex items-center justify-between border-b border-slate-100 p-4">
-            <h2 className="text-sm font-semibold text-slate-900">Milestones</h2>
-            {isFreelancer && <NewMilestoneForm projectId={project.id} />}
+            <h2 className="text-sm font-bold text-slate-900">Milestones</h2>
           </div>
 
           {!milestones?.length ? (
@@ -152,9 +166,9 @@ export default async function ProjectPage({
           )}
         </div>
 
-        <div className="mt-6 rounded-xl border border-slate-200 bg-white">
+        <div className="mt-6 rounded-2xl border border-slate-200 bg-white">
           <div className="border-b border-slate-100 p-4">
-            <h2 className="text-sm font-semibold text-slate-900">Chat</h2>
+            <h2 className="text-sm font-bold text-slate-900">Chat</h2>
           </div>
           <ChatPanel
             projectId={project.id}
@@ -164,20 +178,20 @@ export default async function ProjectPage({
           />
         </div>
 
-        <div className="mt-6 rounded-xl border border-slate-200 bg-white p-5">
-          <h2 className="text-sm font-semibold text-slate-900">Files</h2>
+        <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-5">
+          <h2 className="mb-3 text-sm font-bold text-slate-900">Files</h2>
           <FilesList files={files ?? []} />
         </div>
 
-        <div className="mt-6 rounded-xl border border-slate-200 bg-white">
+        <div className="mt-6 rounded-2xl border border-slate-200 bg-white">
           <div className="border-b border-slate-100 p-4">
-            <h2 className="text-sm font-semibold text-slate-900">Transactions</h2>
+            <h2 className="text-sm font-bold text-slate-900">Transactions</h2>
           </div>
           <TransactionsTable transactions={transactions ?? []} />
         </div>
 
-        <div className="mt-6 rounded-xl border border-slate-200 bg-white p-5">
-          <h2 className="text-sm font-semibold text-slate-900">Scope agreement</h2>
+        <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-5">
+          <h2 className="mb-3 text-sm font-bold text-slate-900">Scope agreement</h2>
           <ContractPanel
             projectId={project.id}
             isFreelancer={isFreelancer}

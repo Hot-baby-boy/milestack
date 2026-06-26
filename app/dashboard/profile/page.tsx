@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { AppHeader } from "@/components/AppHeader";
 import { ProfileForm } from "./ProfileForm";
 import { PortfolioSection } from "./PortfolioSection";
 
@@ -78,9 +77,11 @@ export default async function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <AppHeader />
-      <div className="mx-auto max-w-2xl px-6 py-8">
+    <div className="min-h-screen">
+      <div className="sticky top-0 z-30 hidden items-center border-b border-slate-200 bg-white px-8 lg:flex" style={{height:72}}>
+        <h1 className="text-base font-bold text-slate-900">Profile &amp; Portfolio</h1>
+      </div>
+      <div className="mx-auto max-w-2xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
         <div className="mb-6 flex items-center justify-between">
           <h1 className="text-xl font-semibold text-slate-900">Your profile</h1>
           {profile?.handle && (
