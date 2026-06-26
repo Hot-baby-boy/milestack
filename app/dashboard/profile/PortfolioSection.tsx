@@ -47,7 +47,7 @@ export function PortfolioSection({ items }: { items: PortfolioItem[] }) {
             <input
               name="title"
               required
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none"
+              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-emerald-500 focus:outline-none"
               placeholder="Brand identity redesign"
             />
           </div>
@@ -56,7 +56,7 @@ export function PortfolioSection({ items }: { items: PortfolioItem[] }) {
             <textarea
               name="description"
               rows={2}
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none"
+              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-emerald-500 focus:outline-none"
               placeholder="Brief description of the work…"
             />
           </div>
@@ -77,7 +77,7 @@ export function PortfolioSection({ items }: { items: PortfolioItem[] }) {
               <label className="mb-1 block text-sm font-medium text-slate-700">Link name</label>
               <input
                 name="link_name"
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none"
+                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-emerald-500 focus:outline-none"
                 placeholder="Live project"
               />
             </div>
@@ -86,7 +86,7 @@ export function PortfolioSection({ items }: { items: PortfolioItem[] }) {
               <input
                 name="link_url"
                 type="url"
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none"
+                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-emerald-500 focus:outline-none"
                 placeholder="https://…"
               />
             </div>
