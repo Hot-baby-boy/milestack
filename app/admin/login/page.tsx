@@ -5,7 +5,7 @@ import { Logo } from "@/components/Logo";
 import { adminLogin } from "../actions";
 
 export default function AdminLoginPage() {
-  const [state, formAction, pending] = useActionState(adminLogin, null);
+  const [state, formAction, pending] = useActionState(adminLogin, null as { error: string } | null);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-900 px-4">
