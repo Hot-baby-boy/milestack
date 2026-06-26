@@ -59,6 +59,7 @@ export default function MilestonesPage() {
       </div>
 
       <div className="px-4 py-5 sm:px-8 sm:py-8">
+        <h2 className="mb-1 text-[18px] font-bold text-[#0F172A] lg:hidden">Milestones</h2>
         <p className="mb-4 text-[13px] text-slate-500 sm:text-[13.5px]">Across every workspace you&apos;re part of.</p>
 
         {/* Filter pills — scrollable on mobile */}

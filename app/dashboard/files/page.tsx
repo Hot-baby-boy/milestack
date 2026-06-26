@@ -45,7 +45,8 @@ export default async function FilesPage() {
       </div>
 
       <div className="px-4 py-5 sm:px-8 sm:py-8">
-        <p className="mb-6 text-[13.5px] text-slate-500">
+        <h2 className="mb-1 text-[18px] font-bold text-[#0F172A] lg:hidden">Files</h2>
+        <p className="mb-4 text-[13px] text-slate-500 sm:mb-6 sm:text-[13.5px]">
           {files?.length ? `${files.length} file${files.length !== 1 ? "s" : ""} across ${ids.length} workspace${ids.length !== 1 ? "s" : ""}.` : "All files from your workspaces."}
         </p>
 

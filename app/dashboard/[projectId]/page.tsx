@@ -97,21 +97,18 @@ export default async function ProjectPage({
         {isFreelancer && <NewMilestoneForm projectId={project.id}/>}
       </div>
 
-      {/* Mobile sub-header (sits below sidebar's mobile top bar) */}
-      <div className="border-b border-slate-100 bg-white px-4 py-3 lg:hidden">
-        <div className="flex items-center justify-between gap-2">
+      <div className="px-4 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-7">
+        {/* Mobile: back + title row */}
+        <div className="mb-4 flex items-start justify-between gap-2 lg:hidden">
           <div className="min-w-0">
-            <Link href="/dashboard/workspaces" className="text-[11px] text-slate-400">← Workspaces</Link>
-            <div className="flex items-center gap-2">
-              <h1 className="truncate text-[16px] font-bold text-[#0F172A]">{project.name}</h1>
+            <Link href="/dashboard/workspaces" className="text-[11.5px] font-medium text-slate-400 hover:text-slate-600">← Workspaces</Link>
+            <div className="mt-0.5 flex items-center gap-2">
+              <h1 className="truncate text-[17px] font-bold text-[#0F172A]">{project.name}</h1>
               <span className="flex-shrink-0 rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] text-slate-500">{project.code}</span>
             </div>
           </div>
-          {isFreelancer && <div className="flex-shrink-0"><NewMilestoneForm projectId={project.id}/></div>}
+          {isFreelancer && <div className="flex-shrink-0 pt-4"><NewMilestoneForm projectId={project.id}/></div>}
         </div>
-      </div>
-
-      <div className="px-4 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-7">
 
         {inviteLink && <div className="mb-4"><CopyLinkBox link={inviteLink} /></div>}
 

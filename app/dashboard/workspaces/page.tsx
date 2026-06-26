@@ -70,10 +70,14 @@ export default async function WorkspacesPage() {
         {role === "freelancer" && <NewProjectForm/>}
       </div>
 
-      <div className="px-4 py-8 sm:px-8">
-        <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-          <p className="text-[13px] text-slate-500 sm:text-[13.5px]">Every active and completed project, in one place.</p>
-          {role === "freelancer" && <div className="lg:hidden"><NewProjectForm/></div>}
+      <div className="px-4 py-5 sm:px-8 sm:py-8">
+        {/* Mobile title */}
+        <div className="mb-4 flex items-center justify-between lg:hidden">
+          <h2 className="text-[18px] font-bold text-[#0F172A]">Workspaces</h2>
+          {role === "freelancer" && <NewProjectForm/>}
+        </div>
+        <div className="mb-4 hidden lg:block">
+          <p className="text-[13.5px] text-slate-500">Every active and completed project, in one place.</p>
         </div>
 
         {!(projects?.length) ? (

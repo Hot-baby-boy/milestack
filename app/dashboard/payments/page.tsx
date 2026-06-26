@@ -58,6 +58,7 @@ export default async function PaymentsPage() {
       </div>
 
       <div className="px-4 py-5 sm:px-8 sm:py-8">
+        <h2 className="mb-1 text-[18px] font-bold text-[#0F172A] lg:hidden">Payments</h2>
         <p className="mb-4 text-[13px] text-slate-500 sm:mb-6 sm:text-[13.5px]">Escrow balances and transaction history.</p>
 
         {/* Stat grid */}

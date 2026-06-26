@@ -31,7 +31,8 @@ export default async function DisputesPage() {
       </div>
 
       <div className="px-4 py-5 sm:px-8 sm:py-8">
-        <p className="mb-6 text-[13.5px] text-slate-500">Open cases, evidence, and resolutions.</p>
+        <h2 className="mb-1 text-[18px] font-bold text-[#0F172A] lg:hidden">Disputes</h2>
+        <p className="mb-4 text-[13px] text-slate-500 sm:mb-6 sm:text-[13.5px]">Open cases, evidence, and resolutions.</p>
 
         {!(milestones?.length) ? (
           <div className="rounded-2xl border-2 border-dashed border-slate-200 bg-white px-8 py-14 text-center">

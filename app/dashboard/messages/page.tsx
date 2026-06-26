@@ -41,6 +41,7 @@ export default async function MessagesPage() {
       </div>
 
       <div className="px-4 py-5 sm:px-8 sm:py-8">
+        <h2 className="mb-1 text-[18px] font-bold text-[#0F172A] lg:hidden">Messages</h2>
         <p className="mb-4 text-[13px] text-slate-500 sm:mb-6 sm:text-[13.5px]">Chat from every workspace in one place.</p>
 
         {!(projects?.length) ? (

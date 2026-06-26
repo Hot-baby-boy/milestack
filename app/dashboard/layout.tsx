@@ -27,7 +27,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const initials = displayName.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase();
 
   return (
-    <div className="flex min-h-screen" style={{background:"linear-gradient(180deg,#FAFBFD 0%,#F8FAFC 45%,#F1F5FA 100%)"}}>
+    <div className="flex min-h-screen flex-col lg:flex-row" style={{background:"linear-gradient(180deg,#FAFBFD 0%,#F8FAFC 45%,#F1F5FA 100%)"}}>
       <AppSidebar
         displayName={displayName}
         role={role}
@@ -35,7 +35,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         unreadCount={unreadCount}
         disputeCount={disputeCount}
       />
-      <main className="flex min-w-0 flex-1 flex-col">
+      <main className="min-w-0 flex-1">
         {children}
       </main>
     </div>

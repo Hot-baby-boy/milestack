@@ -103,41 +103,23 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* Mobile page header (below the sidebar mobile top bar) */}
-      <div className="border-b border-slate-100 bg-white px-4 py-3 lg:hidden">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-[17px] font-bold text-[#0F172A]">Welcome, {firstName} 👋</h2>
-            <p className="text-[12px] text-slate-500">
-              {needsAction > 0 ? `${needsAction} milestone${needsAction !== 1 ? "s" : ""} need attention` : "All up to date"}
+      <div className="px-4 py-5 sm:px-6 lg:px-8 lg:py-8">
+
+        {/* Greeting */}
+        <div className="mb-5 flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h2 className="text-[18px] font-bold tracking-tight text-[#0F172A] sm:text-[21px]">Welcome back, {firstName} 👋</h2>
+            <p className="mt-1 text-[12.5px] text-slate-500 sm:text-[13.5px]">
+              {needsAction > 0 ? `${needsAction} milestone${needsAction !== 1 ? "s" : ""} need${needsAction === 1 ? "s" : ""} action`
+                : activeOrders.length > 0 ? `${activeOrders.length} active order${activeOrders.length !== 1 ? "s" : ""}`
+                : "Everything is up to date"}
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          {/* Mobile: actions in greeting row. Desktop: actions in sticky top bar */}
+          <div className="flex flex-shrink-0 items-center gap-2 lg:hidden">
             <NotificationBell notifications={notifications ?? []} unreadCount={unreadCount}/>
             {role === "freelancer" && <NewProjectForm/>}
           </div>
-        </div>
-      </div>
-
-      <div className="px-4 py-5 sm:px-6 lg:px-8 lg:py-8">
-
-        {/* Greeting — desktop only */}
-        <div className="mb-5 hidden flex-wrap items-start justify-between gap-4 lg:flex">
-          <div>
-            <h2 className="text-[21px] font-bold tracking-tight text-[#0F172A]">Welcome back, {firstName} 👋</h2>
-            <p className="mt-1 text-[13.5px] text-slate-500">
-              {needsAction > 0 ? `You have ${needsAction} milestone${needsAction !== 1 ? "s" : ""} waiting for action.`
-                : activeOrders.length > 0 ? `${activeOrders.length} active order${activeOrders.length !== 1 ? "s" : ""} in progress.`
-                : "Everything is up to date — no action needed."}
-            </p>
-          </div>
-          {(projects?.length ?? 0) > 0 && (
-            <div className="flex items-center gap-3 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-[13px] text-slate-500">
-              <span><span className="text-amber-400">★</span> <strong className="text-[#0F172A]">{projects?.length ?? 0}</strong> projects</span>
-              <span className="h-3.5 w-px bg-slate-300"/>
-              <span><strong className="text-[#0F172A]">{completedProjects}</strong> completed</span>
-            </div>
-          )}
         </div>
 
         {/* Dispute banner */}
