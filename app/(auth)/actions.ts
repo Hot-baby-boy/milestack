@@ -53,9 +53,27 @@ export async function login(formData: FormData): Promise<ActionResult> {
   }
 
   const supabase = await createClient();
+
+  // Check rate limit BEFORE attempting — returns true if locked out
+  const { data: isLocked } = await supabase.rpc("check_login_rate_limit", {
+    p_email: email,
+    p_succeeded: false,
+  });
+  if (isLocked) {
+    return { error: "Too many failed attempts. Please wait 15 minutes and try again." };
+  }
+
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
-  if (error) return { error: error.message };
+  if (error) {
+    return { error: "Invalid email or password." };
+  }
+
+  // Record success to reset the failure window
+  await supabase.rpc("check_login_rate_limit", {
+    p_email: email,
+    p_succeeded: true,
+  });
 
   redirect(next ?? "/dashboard");
 }
