@@ -19,7 +19,7 @@ export async function AppHeader() {
   const unreadCount = notifications?.filter((n) => !n.read_at).length ?? 0;
 
   return (
-    <header className="flex items-center justify-between border-b border-slate-200 bg-white px-6 py-3">
+    <header className="flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3 sm:px-6">
       <Link href="/dashboard" className="flex items-center gap-2 text-base font-bold text-slate-900">
         <Logo size={24} />
         Milestack

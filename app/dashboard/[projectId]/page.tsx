@@ -87,7 +87,7 @@ export default async function ProjectPage({
   return (
     <div className="min-h-screen bg-slate-50">
       <AppHeader />
-      <div className="mx-auto max-w-4xl px-6 py-8">
+      <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6 sm:py-8">
         <div className="flex items-center gap-3">
           <h1 className="text-xl font-semibold text-slate-900">{project.name}</h1>
           <span className="rounded-md bg-slate-100 px-2 py-1 font-mono text-xs text-slate-500">
@@ -126,40 +126,29 @@ export default async function ProjectPage({
           {!milestones?.length ? (
             <p className="p-4 text-sm text-slate-500">No milestones yet.</p>
           ) : (
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-left text-xs uppercase tracking-wide text-slate-400">
-                  <th className="px-4 py-2 font-medium">Title</th>
-                  <th className="px-4 py-2 font-medium">Amount</th>
-                  <th className="px-4 py-2 font-medium">Due</th>
-                  <th className="px-4 py-2 font-medium">Status</th>
-                  <th className="px-4 py-2"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {milestones.map((m) => (
-                  <tr key={m.id} className="border-t border-slate-100">
-                    <td className="px-4 py-3 font-medium text-slate-900">{m.title}</td>
-                    <td className="px-4 py-3 font-mono text-slate-600">
+            <ul className="divide-y divide-slate-100">
+              {milestones.map((m) => (
+                <li key={m.id} className="flex items-center justify-between gap-3 px-4 py-3">
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium text-slate-900">{m.title}</p>
+                    <p className="mt-0.5 text-xs text-slate-500">
                       ${Number(m.amount).toLocaleString()}
-                    </td>
-                    <td className="px-4 py-3 font-mono text-slate-500">{m.due_date ?? "—"}</td>
-                    <td className="px-4 py-3">
-                      <StatusPill status={m.status} />
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <MilestoneActions
-                        milestoneId={m.id}
-                        projectId={project.id}
-                        status={m.status}
-                        isFreelancer={isFreelancer}
-                        isClient={isClient}
-                      />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                      {m.due_date && <> · due {m.due_date}</>}
+                    </p>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-2">
+                    <StatusPill status={m.status} />
+                    <MilestoneActions
+                      milestoneId={m.id}
+                      projectId={project.id}
+                      status={m.status}
+                      isFreelancer={isFreelancer}
+                      isClient={isClient}
+                    />
+                  </div>
+                </li>
+              ))}
+            </ul>
           )}
         </div>
 
