@@ -146,8 +146,8 @@ export function MobileNav(props: {
   const close = () => setOpen(false);
   return (
     <>
-      {/* Sticky top bar — full width on mobile, hidden on desktop */}
-      <div className="lg:hidden" style={{position:"sticky",top:0,zIndex:40,display:"flex",height:60,width:"100%",alignItems:"center",justifyContent:"space-between",borderBottom:"1px solid #E6E9EF",background:"#fff",padding:"0 16px"}}>
+      {/* Sticky top bar — mobile only. display must be in className so lg:hidden can override it */}
+      <div className="flex lg:hidden" style={{position:"sticky",top:0,zIndex:40,height:60,width:"100%",alignItems:"center",justifyContent:"space-between",borderBottom:"1px solid #E6E9EF",background:"#fff",padding:"0 16px"}}>
         <Link href="/dashboard" className="flex items-center gap-2 text-[16px] font-extrabold text-[#0F172A]">
           <LogoMark/>
           Milestack
