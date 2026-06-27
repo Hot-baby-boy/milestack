@@ -112,8 +112,8 @@ export function ChatPanel({
   }
 
   return (
-    <div className="flex flex-col">
-      <div className="max-h-80 space-y-2 overflow-y-auto p-4">
+    <div className="flex flex-col flex-1 overflow-hidden">
+      <div className="flex-1 space-y-2 overflow-y-auto p-4">
         {!messages.length && <p className="text-sm text-slate-500">No messages yet.</p>}
         {messages.map((m) => {
           const isMine = m.sender_id === currentUserId;

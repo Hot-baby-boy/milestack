@@ -39,7 +39,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
     <div
       style={{
         display: "flex",
-        minHeight: "100vh",
+        height: "100dvh",
+        overflow: "hidden",
         background: "linear-gradient(180deg,#FAFBFD 0%,#F8FAFC 45%,#F1F5FA 100%)",
       }}
     >
@@ -47,9 +48,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
       <AppSidebar {...p} />
 
       {/* ── Right side: mobile top bar + page content ── */}
-      <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
+      <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", overflow: "hidden" }}>
         <MobileNav {...p} />
-        <main style={{ flex: 1, minWidth: 0 }}>
+        <main style={{ flex: 1, minWidth: 0, overflowY: "auto" }}>
           {children}
         </main>
       </div>
