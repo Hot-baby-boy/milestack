@@ -117,7 +117,7 @@ function SidebarContent({ displayName, role, initials, unreadCount, disputeCount
 
 /* ── Desktop sidebar — uses inline styles for layout, Tailwind only for display toggle */
 export function AppSidebar(props: {
-  displayName: string; role: string; initials: string; unreadCount: number; disputeCount: number; notifications: Notification[];
+  displayName: string; role: string; initials: string; unreadCount: number; disputeCount: number; notifications: AppNotification[];
 }) {
   return (
     <aside
@@ -140,10 +140,10 @@ export function AppSidebar(props: {
 }
 
 /* ── Mobile top bar + drawer (rendered in layout separately) ────────────────── */
-type Notification = { id: string; project_id?: string; type: string; payload?: unknown; read_at: string | null; created_at?: string };
+type AppNotification = { id: string; project_id: string | null; type: string; payload: Record<string, unknown>; read_at: string | null; created_at: string };
 
 export function MobileNav(props: {
-  displayName: string; role: string; initials: string; unreadCount: number; disputeCount: number; notifications: Notification[];
+  displayName: string; role: string; initials: string; unreadCount: number; disputeCount: number; notifications: AppNotification[];
 }) {
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
