@@ -20,9 +20,20 @@ export const PayoutLogo = ({ method, size = 20 }: { method: string; size?: numbe
   );
 
   if (method === "payoneer") return (
-    <span className="flex items-center justify-center overflow-hidden rounded-full bg-[#FF4800]" style={{width:s,height:s}}>
-      <svg width={s*0.65} height={s*0.65} viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm-.176 18.667c-.47 0-.863-.166-1.176-.498-.314-.333-.47-.762-.47-1.288 0-.533.156-.965.47-1.295.313-.33.706-.496 1.176-.496.46 0 .848.165 1.163.496.314.33.471.762.471 1.295 0 .526-.157.955-.47 1.288-.316.332-.704.498-1.164.498zm3.157-8.48c-.304.5-.74.94-1.31 1.323-.356.236-.802.484-1.337.743-.535.258-.895.49-1.08.694-.186.203-.278.463-.278.779v.515h-2.21v-.68c0-.637.137-1.164.41-1.582.275-.417.735-.797 1.382-1.14.606-.322 1.027-.578 1.264-.767.474-.374.71-.838.71-1.39 0-.44-.16-.795-.48-1.066-.32-.27-.766-.405-1.34-.405-.623 0-1.106.172-1.447.514-.342.343-.534.852-.579 1.527l-2.255-.215c.078-1.157.49-2.065 1.234-2.726.744-.66 1.76-.99 3.048-.99 1.28 0 2.296.315 3.047.945.75.63 1.126 1.463 1.126 2.497 0 .686-.167 1.26-.505 1.424z"/>
+    <span className="flex items-center justify-center overflow-hidden rounded-full bg-white border border-slate-100" style={{width:s,height:s}}>
+      <svg width={s*0.82} height={s*0.82} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="payoneer-g" x1="1" y1="0.5" x2="0" y2="0.5" gradientUnits="objectBoundingBox">
+            <stop offset="0%"   stop-color="#FF4500"/>
+            <stop offset="20%"  stop-color="#FF8C00"/>
+            <stop offset="40%"  stop-color="#FFD700"/>
+            <stop offset="55%"  stop-color="#7CFC00"/>
+            <stop offset="70%"  stop-color="#00CED1"/>
+            <stop offset="85%"  stop-color="#6A5ACD"/>
+            <stop offset="100%" stop-color="#FF69B4"/>
+          </linearGradient>
+        </defs>
+        <circle cx="50" cy="50" r="36" fill="none" stroke="url(#payoneer-g)" strokeWidth="14"/>
       </svg>
     </span>
   );
@@ -36,9 +47,24 @@ export const PayoutLogo = ({ method, size = 20 }: { method: string; size?: numbe
   );
 
   if (method === "raenest") return (
-    <span className="flex items-center justify-center overflow-hidden rounded-full bg-[#6C3AE0]" style={{width:s,height:s}}>
-      <svg width={s*0.55} height={s*0.55} viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
-        <path d="M4 3h8.5C15.538 3 18 5.462 18 8.5S15.538 14 12.5 14H8v7H4V3zm4 7.5h4.5c.828 0 1.5-.672 1.5-1.5S13.328 7.5 12.5 7.5H8v3z"/>
+    <span className="flex items-center justify-center overflow-hidden rounded-full bg-white border border-slate-100" style={{width:s,height:s}}>
+      <svg width={s*0.82} height={s*0.82} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="raenest-g" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%"   stopColor="#A78BFA"/>
+            <stop offset="50%"  stopColor="#6366F1"/>
+            <stop offset="100%" stopColor="#3730A3"/>
+          </linearGradient>
+        </defs>
+        {/* Outer ring */}
+        <ellipse cx="50" cy="50" rx="36" ry="36" fill="none" stroke="url(#raenest-g)" strokeWidth="13"/>
+        {/* Inner twist — top lobe */}
+        <path d="M50 14 C70 14 80 32 65 42 C55 49 45 49 35 42 C20 32 30 14 50 14Z"
+          fill="url(#raenest-g)" opacity="0.9"/>
+        {/* Cover bottom half of ring to create open feel */}
+        <ellipse cx="50" cy="50" rx="22" ry="22" fill="white"/>
+        {/* Re-draw top arc over cover */}
+        <path d="M14 50 A36 36 0 0 1 86 50" fill="none" stroke="url(#raenest-g)" strokeWidth="13"/>
       </svg>
     </span>
   );
