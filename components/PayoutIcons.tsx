@@ -87,18 +87,35 @@ export const METHODS = [
   { value: "raenest",    label: "Raenest" },
 ];
 
-export const DETAIL_LABEL: Record<string, string> = {
-  local_bank: "Account number & bank name",
-  paypal:     "PayPal email address",
-  payoneer:   "Payoneer email address",
-  wise:       "Wise email or account details",
-  raenest:    "Raenest email address",
+export type FieldDef = {
+  key: string;
+  label: string;
+  placeholder: string;
+  type?: "text" | "email" | "select";
+  options?: string[];
 };
 
-export const DETAIL_PLACEHOLDER: Record<string, string> = {
-  local_bank: "e.g. 0123456789 — GTBank",
-  paypal:     "e.g. you@email.com",
-  payoneer:   "e.g. you@email.com",
-  wise:       "e.g. you@email.com",
-  raenest:    "e.g. you@email.com",
+// Defines which fields to collect per payout method
+export const METHOD_FIELDS: Record<string, FieldDef[]> = {
+  paypal: [
+    { key: "email", label: "PayPal email address", placeholder: "you@paypal.com", type: "email" },
+  ],
+  payoneer: [
+    { key: "email", label: "Payoneer email address", placeholder: "you@email.com", type: "email" },
+  ],
+  local_bank: [
+    { key: "bank_name",      label: "Bank name",           placeholder: "e.g. GTBank" },
+    { key: "account_number", label: "Account number",      placeholder: "e.g. 0123456789" },
+    { key: "routing",        label: "Routing / sort code", placeholder: "e.g. 058152522" },
+  ],
+  wise: [
+    { key: "bank_name",      label: "Bank name",       placeholder: "e.g. Wise" },
+    { key: "account_number", label: "Account number",  placeholder: "e.g. 9876543210" },
+    { key: "routing",        label: "Routing number",  placeholder: "e.g. 026073150" },
+  ],
+  raenest: [
+    { key: "bank_name",      label: "Bank name",      placeholder: "e.g. Raenest" },
+    { key: "account_number", label: "Account number", placeholder: "e.g. 1234567890" },
+    { key: "account_type",   label: "Account type",   placeholder: "Select type", type: "select", options: ["Checking", "Savings"] },
+  ],
 };

@@ -1,18 +1,39 @@
 "use client";
 
 import { useState } from "react";
-import { PayoutLogo, METHODS, DETAIL_LABEL, DETAIL_PLACEHOLDER } from "@/components/PayoutIcons";
+import { PayoutLogo, METHODS, METHOD_FIELDS } from "@/components/PayoutIcons";
+
+function parseDetails(raw: string | null | undefined): Record<string, string> {
+  if (!raw) return {};
+  try { return JSON.parse(raw); } catch { return { email: raw }; }
+}
 
 export function WithdrawModal({
   available, currency, savedMethod, savedDetails,
 }: {
   available: number; currency: string; savedMethod?: string | null; savedDetails?: string | null;
 }) {
-  const [open, setOpen]       = useState(false);
-  const [method, setMethod]   = useState(savedMethod ?? "local_bank");
-  const [amount, setAmount]   = useState("");
-  const [details, setDetails] = useState(savedDetails ?? "");
-  const [done, setDone]       = useState(false);
+  const [open, setOpen]     = useState(false);
+  const [method, setMethod] = useState(savedMethod ?? "local_bank");
+  const [amount, setAmount] = useState("");
+  const [values, setValues] = useState<Record<string, string>>(parseDetails(savedDetails));
+  const [done, setDone]     = useState(false);
+
+  const fields = METHOD_FIELDS[method] ?? [];
+  const isComplete = fields.every(f => (values[f.key] ?? "").trim() !== "");
+
+  function handleMethodChange(m: string) {
+    setMethod(m);
+    if (m === savedMethod) {
+      setValues(parseDetails(savedDetails));
+    } else {
+      setValues({});
+    }
+  }
+
+  function setField(key: string, val: string) {
+    setValues(prev => ({ ...prev, [key]: val }));
+  }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -23,8 +44,8 @@ export function WithdrawModal({
     setOpen(false);
     setDone(false);
     setAmount("");
-    setDetails(savedDetails ?? "");
     setMethod(savedMethod ?? "local_bank");
+    setValues(parseDetails(savedDetails));
   }
 
   const fmt = (n: number) =>
@@ -76,7 +97,7 @@ export function WithdrawModal({
                     <div className="flex flex-wrap gap-2">
                       {METHODS.map(m => (
                         <button key={m.value} type="button"
-                          onClick={() => { setMethod(m.value); if (m.value !== savedMethod) setDetails(""); else setDetails(savedDetails ?? ""); }}
+                          onClick={() => handleMethodChange(m.value)}
                           className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-[12px] font-medium transition ${
                             method === m.value
                               ? "border-emerald-500 bg-emerald-50 text-emerald-700"
@@ -90,22 +111,37 @@ export function WithdrawModal({
                     </div>
                   </div>
 
-                  {/* Details */}
-                  <div>
-                    <label className="mb-1.5 block text-[13px] font-medium text-slate-700">{DETAIL_LABEL[method]}</label>
-                    <input
-                      type="text" required
-                      value={details} onChange={e => setDetails(e.target.value)}
-                      placeholder={savedMethod === method && savedDetails ? savedDetails : DETAIL_PLACEHOLDER[method]}
-                      className="w-full rounded-lg border border-slate-200 px-3 py-2 text-[14px] text-slate-900 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-                    />
-                    {savedMethod === method && savedDetails && (
-                      <p className="mt-1 text-[11px] text-slate-400">Pre-filled from your saved payout method</p>
-                    )}
-                  </div>
+                  {/* Dynamic fields */}
+                  {fields.map(field => (
+                    <div key={field.key}>
+                      <label className="mb-1.5 block text-[13px] font-medium text-slate-700">{field.label}</label>
+                      {field.type === "select" ? (
+                        <select
+                          required value={values[field.key] ?? ""}
+                          onChange={e => setField(field.key, e.target.value)}
+                          className="w-full rounded-lg border border-slate-200 px-3 py-2 text-[14px] text-slate-900 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                        >
+                          <option value="">Select…</option>
+                          {field.options?.map(o => <option key={o} value={o}>{o}</option>)}
+                        </select>
+                      ) : (
+                        <input
+                          type={field.type ?? "text"} required
+                          value={values[field.key] ?? ""}
+                          onChange={e => setField(field.key, e.target.value)}
+                          placeholder={field.placeholder}
+                          className="w-full rounded-lg border border-slate-200 px-3 py-2 text-[14px] text-slate-900 placeholder:text-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                        />
+                      )}
+                    </div>
+                  ))}
 
-                  <button type="submit"
-                    className="w-full rounded-xl bg-emerald-500 py-3 text-[14px] font-semibold text-white hover:bg-emerald-600 transition"
+                  {savedMethod === method && savedDetails && (
+                    <p className="text-[11px] text-slate-400">Pre-filled from your saved payout method</p>
+                  )}
+
+                  <button type="submit" disabled={!isComplete || !amount}
+                    className="w-full rounded-xl bg-emerald-500 py-3 text-[14px] font-semibold text-white hover:bg-emerald-600 disabled:opacity-50 transition"
                   >
                     Submit request
                   </button>
