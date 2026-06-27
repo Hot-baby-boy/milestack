@@ -18,11 +18,15 @@ const DETAIL_LABEL: Record<string, string> = {
   raenest:    "Raenest email address",
 };
 
-export function WithdrawModal({ available, currency }: { available: number; currency: string }) {
+export function WithdrawModal({
+  available, currency, savedMethod, savedDetails,
+}: {
+  available: number; currency: string; savedMethod?: string | null; savedDetails?: string | null;
+}) {
   const [open, setOpen]       = useState(false);
-  const [method, setMethod]   = useState("local_bank");
+  const [method, setMethod]   = useState(savedMethod ?? "local_bank");
   const [amount, setAmount]   = useState("");
-  const [details, setDetails] = useState("");
+  const [details, setDetails] = useState(savedDetails ?? "");
   const [done, setDone]       = useState(false);
 
   function handleSubmit(e: React.FormEvent) {
@@ -34,8 +38,8 @@ export function WithdrawModal({ available, currency }: { available: number; curr
     setOpen(false);
     setDone(false);
     setAmount("");
-    setDetails("");
-    setMethod("local_bank");
+    setDetails(savedDetails ?? "");
+    setMethod(savedMethod ?? "local_bank");
   }
 
   const fmt = (n: number) =>

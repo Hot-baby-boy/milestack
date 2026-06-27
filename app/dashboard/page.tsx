@@ -32,7 +32,7 @@ export default async function DashboardPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const { data: profile } = await supabase.from("profiles").select("role, display_name, email").eq("id", user.id).single();
+  const { data: profile } = await supabase.from("profiles").select("role, display_name, email, payout_method, payout_details").eq("id", user.id).single();
   const role = profile?.role ?? "freelancer";
   const firstName = (profile?.display_name ?? profile?.email ?? "there").split(" ")[0];
 
@@ -150,7 +150,7 @@ export default async function DashboardPage() {
               </div>
               {role === "freelancer" && (
                 <div className="mt-3 flex items-center gap-2 sm:mt-4">
-                  <WithdrawModal available={released} currency={currency}/>
+                  <WithdrawModal available={released} currency={currency} savedMethod={profile?.payout_method} savedDetails={profile?.payout_details}/>
                   <Link href="/dashboard/payments" className="inline-flex h-[34px] items-center rounded-full border border-white/20 px-4 text-[13px] font-semibold text-white/70 hover:text-white transition">
                     Payments →
                   </Link>

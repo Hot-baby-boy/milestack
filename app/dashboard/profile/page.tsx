@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ProfileForm } from "./ProfileForm";
 import { PortfolioSection } from "./PortfolioSection";
+import { PayoutMethodForm } from "./PayoutMethodForm";
 
 export default async function ProfilePage() {
   const supabase = await createClient();
@@ -10,7 +11,7 @@ export default async function ProfilePage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role, display_name, bio, skills, hourly_rate, avatar_url, handle")
+    .select("role, display_name, bio, skills, hourly_rate, avatar_url, handle, payout_method, payout_details")
     .eq("id", user.id)
     .single();
 
@@ -100,6 +101,14 @@ export default async function ProfilePage() {
 
         {profile?.role === "freelancer" && (
           <PortfolioSection items={itemsWithAttachments} />
+        )}
+
+        {profile?.role === "freelancer" && (
+          <PayoutMethodForm
+            initialMethod={profile?.payout_method ?? null}
+            initialDetails={profile?.payout_details ?? null}
+            userId={user.id}
+          />
         )}
       </div>
     </div>
