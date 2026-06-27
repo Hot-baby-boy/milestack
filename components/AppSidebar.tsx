@@ -114,14 +114,26 @@ function SidebarContent({ displayName, role, initials, unreadCount, disputeCount
   );
 }
 
-/* ── Desktop sidebar only (no mobile bar here) ─────────────────────────────── */
+/* ── Desktop sidebar — uses inline styles for layout, Tailwind only for display toggle */
 export function AppSidebar(props: {
   displayName: string; role: string; initials: string; unreadCount: number; disputeCount: number;
 }) {
   return (
-    <aside className="hidden w-[240px] flex-shrink-0 lg:flex lg:flex-col lg:sticky lg:top-0 lg:h-screen"
-      style={{background:"linear-gradient(155deg,#16223C 0%,#0F172A 50%,#060A14 100%)",padding:"22px 14px"}}>
-      <SidebarContent {...props}/>
+    <aside
+      className="hidden lg:flex"
+      style={{
+        width: 240,
+        flexShrink: 0,
+        flexDirection: "column",
+        position: "sticky",
+        top: 0,
+        height: "100vh",
+        overflowY: "auto",
+        padding: "22px 14px",
+        background: "linear-gradient(155deg,#16223C 0%,#0F172A 50%,#060A14 100%)",
+      }}
+    >
+      <SidebarContent {...props} />
     </aside>
   );
 }
@@ -134,8 +146,8 @@ export function MobileNav(props: {
   const close = () => setOpen(false);
   return (
     <>
-      {/* Sticky top bar — full width, only on mobile */}
-      <div className="sticky top-0 z-40 flex h-[60px] w-full items-center justify-between border-b border-slate-200 bg-white px-4 lg:hidden">
+      {/* Sticky top bar — full width on mobile, hidden on desktop */}
+      <div className="lg:hidden" style={{position:"sticky",top:0,zIndex:40,display:"flex",height:60,width:"100%",alignItems:"center",justifyContent:"space-between",borderBottom:"1px solid #E6E9EF",background:"#fff",padding:"0 16px"}}>
         <Link href="/dashboard" className="flex items-center gap-2 text-[16px] font-extrabold text-[#0F172A]">
           <LogoMark/>
           Milestack
