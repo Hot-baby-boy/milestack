@@ -47,24 +47,31 @@ export const PayoutLogo = ({ method, size = 20 }: { method: string; size?: numbe
   );
 
   if (method === "raenest") return (
-    <span className="flex items-center justify-center overflow-hidden rounded-full bg-white border border-slate-100" style={{width:s,height:s}}>
-      <svg width={s*0.82} height={s*0.82} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <span className="flex items-center justify-center overflow-hidden rounded-lg" style={{width:s,height:s,background:"#4B3FE4"}}>
+      <svg width={s*0.78} height={s*0.78} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
         <defs>
-          <linearGradient id="raenest-g" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%"   stopColor="#A78BFA"/>
-            <stop offset="50%"  stopColor="#6366F1"/>
-            <stop offset="100%" stopColor="#3730A3"/>
+          <linearGradient id="rn-cream" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%"   stopColor="#F5EAD4"/>
+            <stop offset="60%"  stopColor="#E8D5B7"/>
+            <stop offset="100%" stopColor="#C4AA88"/>
+          </linearGradient>
+          <linearGradient id="rn-shadow" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%"   stopColor="#C4AA88"/>
+            <stop offset="100%" stopColor="#A08060"/>
           </linearGradient>
         </defs>
-        {/* Outer ring */}
-        <ellipse cx="50" cy="50" rx="36" ry="36" fill="none" stroke="url(#raenest-g)" strokeWidth="13"/>
-        {/* Inner twist — top lobe */}
-        <path d="M50 14 C70 14 80 32 65 42 C55 49 45 49 35 42 C20 32 30 14 50 14Z"
-          fill="url(#raenest-g)" opacity="0.9"/>
-        {/* Cover bottom half of ring to create open feel */}
-        <ellipse cx="50" cy="50" rx="22" ry="22" fill="white"/>
-        {/* Re-draw top arc over cover */}
-        <path d="M14 50 A36 36 0 0 1 86 50" fill="none" stroke="url(#raenest-g)" strokeWidth="13"/>
+        {/* Back-left arc of ribbon (darker, behind) */}
+        <path d="M50 18 C28 18 12 32 12 50 C12 68 28 82 50 82 C56 82 61 81 66 79"
+          fill="none" stroke="url(#rn-shadow)" strokeWidth="11" strokeLinecap="round"/>
+        {/* Front-right arc of ribbon (lighter, in front) */}
+        <path d="M34 21 C39 19 44 18 50 18 C72 18 88 32 88 50 C88 68 72 82 50 82"
+          fill="none" stroke="url(#rn-cream)" strokeWidth="11" strokeLinecap="round"/>
+        {/* Twist crossing — the key feature: ribbon loops through itself */}
+        <path d="M66 79 C60 76 54 70 50 62 C46 54 44 46 38 40 C34 35 28 32 22 34"
+          fill="none" stroke="url(#rn-cream)" strokeWidth="11" strokeLinecap="round"/>
+        {/* Cover the crossing point to create depth */}
+        <path d="M34 21 C30 28 28 36 30 44 C32 52 38 58 44 62"
+          fill="none" stroke="url(#rn-shadow)" strokeWidth="11" strokeLinecap="round"/>
       </svg>
     </span>
   );
