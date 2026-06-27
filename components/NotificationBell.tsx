@@ -61,30 +61,39 @@ export function NotificationBell({
       </button>
 
       {open && (
-        <div className="absolute right-0 z-10 mt-2 w-72 rounded-xl border border-slate-200 bg-white shadow-lg">
-          <div className="border-b border-slate-100 px-4 py-2 text-sm font-semibold text-slate-900">
-            Notifications
+        <>
+          {/* Backdrop */}
+          <div className="fixed inset-0 z-20" onClick={() => setOpen(false)}/>
+          {/* Panel — full width on mobile, fixed width on desktop */}
+          <div className="fixed left-3 right-3 top-[72px] z-30 rounded-xl border border-slate-200 bg-white shadow-xl sm:absolute sm:left-auto sm:right-0 sm:top-auto sm:mt-2 sm:w-80">
+            <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
+              <span className="text-[14px] font-semibold text-slate-900">Notifications</span>
+              {unreadCount > 0 && (
+                <span className="rounded-full bg-red-100 px-2 py-0.5 text-[11px] font-semibold text-red-600">{unreadCount} new</span>
+              )}
+            </div>
+            <div className="max-h-[60vh] overflow-y-auto">
+              {!notifications.length && (
+                <p className="px-4 py-6 text-center text-[13px] text-slate-400">No notifications yet.</p>
+              )}
+              {notifications.map((n) => (
+                <button
+                  key={n.id}
+                  onClick={() => { if (!n.read_at) markNotificationRead(n.id); setOpen(false); }}
+                  className={`flex w-full items-start gap-3 px-4 py-3 text-left hover:bg-slate-50 border-b border-slate-50 last:border-0 ${
+                    n.read_at ? "opacity-60" : ""
+                  }`}
+                >
+                  <span className={`mt-0.5 h-2 w-2 flex-shrink-0 rounded-full ${n.read_at ? "bg-slate-200" : "bg-emerald-500"}`}/>
+                  <div className="min-w-0 flex-1">
+                    <p className={`text-[13px] ${n.read_at ? "text-slate-500" : "font-medium text-slate-900"}`}>{describe(n)}</p>
+                    <p className="mt-0.5 text-[11px] text-slate-400">{new Date(n.created_at).toLocaleString()}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="max-h-80 overflow-y-auto">
-            {!notifications.length && (
-              <p className="p-4 text-sm text-slate-500">No notifications yet.</p>
-            )}
-            {notifications.map((n) => (
-              <button
-                key={n.id}
-                onClick={() => !n.read_at && markNotificationRead(n.id)}
-                className={`block w-full px-4 py-3 text-left text-sm hover:bg-slate-50 ${
-                  n.read_at ? "text-slate-500" : "font-medium text-slate-900"
-                }`}
-              >
-                {describe(n)}
-                <div className="mt-0.5 text-xs text-slate-400">
-                  {new Date(n.created_at).toLocaleString()}
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
+        </>
       )}
     </div>
   );
