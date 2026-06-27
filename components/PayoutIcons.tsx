@@ -47,7 +47,7 @@ export const PayoutLogo = ({ method, size = 20 }: { method: string; size?: numbe
   );
 
   if (method === "raenest") return (
-    <span className="flex items-center justify-center overflow-hidden rounded-lg" style={{width:s,height:s,background:"#4B3FE4"}}>
+    <span className="flex items-center justify-center overflow-hidden rounded-full" style={{width:s,height:s,background:"#4B3FE4"}}>
       <svg width={s*0.78} height={s*0.78} viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="rn-cream" x1="0" y1="0" x2="1" y2="1">
