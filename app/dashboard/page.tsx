@@ -151,7 +151,7 @@ export default async function DashboardPage() {
               {role === "freelancer" && (
                 <div className="mt-3 flex items-center gap-2 sm:mt-4">
                   <WithdrawModal available={released} currency={currency}/>
-                  <Link href="/dashboard/payments" className="inline-flex items-center rounded-full border border-white/20 px-3 py-1.5 text-[13px] font-semibold text-white/70 hover:text-white transition sm:px-4">
+                  <Link href="/dashboard/payments" className="inline-flex h-[34px] items-center rounded-full border border-white/20 px-4 text-[13px] font-semibold text-white/70 hover:text-white transition">
                     Payments →
                   </Link>
                 </div>

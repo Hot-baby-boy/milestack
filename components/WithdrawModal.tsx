@@ -45,7 +45,7 @@ export function WithdrawModal({ available, currency }: { available: number; curr
     <>
       <button
         onClick={() => setOpen(true)}
-        className="mt-3 inline-flex items-center rounded-full bg-white/10 border border-white/20 px-4 py-1.5 text-[13px] font-semibold text-white hover:bg-white/20 transition sm:mt-4"
+        className="inline-flex h-[34px] items-center rounded-full border border-white/20 bg-white/10 px-4 text-[13px] font-semibold text-white hover:bg-white/20 transition"
       >
         Withdraw →
       </button>
