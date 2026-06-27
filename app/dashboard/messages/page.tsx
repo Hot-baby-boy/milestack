@@ -29,7 +29,8 @@ export default async function MessagesPage() {
         .limit(100)
     : { data: [] as { id: string; project_id: string; body: string; sender_id: string; created_at: string }[] };
 
-  const latestByProject: Record<string, (typeof latestMessages)[0]> = {};
+  type MsgRow = { id: string; project_id: string; body: string; sender_id: string; created_at: string };
+  const latestByProject: Record<string, MsgRow> = {};
   for (const msg of (latestMessages ?? [])) {
     if (!latestByProject[msg.project_id]) latestByProject[msg.project_id] = msg;
   }
