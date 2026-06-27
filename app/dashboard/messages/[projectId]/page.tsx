@@ -63,7 +63,7 @@ export default async function MessagesProjectPage({
       >
         <div className="flex h-full flex-col overflow-hidden">
           {/* Chat header */}
-          <div className="flex h-[60px] flex-shrink-0 items-center gap-3 border-b border-slate-100 bg-white px-4 lg:h-[72px] lg:px-6">
+          <div className="flex h-[60px] flex-shrink-0 items-center gap-3 border-b border-slate-100 bg-white pl-4 pr-4 lg:h-[72px] lg:pl-6 lg:pr-20">
             <Link href="/dashboard/messages"
               className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-700 lg:hidden"
             >
