@@ -134,28 +134,38 @@ export default async function DashboardPage() {
         {/* Earnings card */}
         <div className="relative mb-5 overflow-hidden rounded-2xl p-5 text-white sm:mb-6 sm:rounded-[24px] sm:p-8" style={{background:"linear-gradient(155deg,#16223C 0%,#0F172A 50%,#060A14 100%)"}}>
           <div className="pointer-events-none absolute -right-16 -top-24 h-64 w-64 rounded-full sm:-right-[70px] sm:-top-[130px] sm:h-[360px] sm:w-[360px]" style={{background:"radial-gradient(circle,rgba(16,185,129,0.22),transparent 70%)"}}/>
-          {/* Mobile: stacked 2-col grid */}
           <div className="relative">
-            <div className="mb-4 sm:mb-0">
-              <div className="mb-1.5 font-mono text-[11px] uppercase tracking-[0.07em] text-slate-400 sm:text-[12px]">
-                {role === "freelancer" ? "Available to withdraw" : "Total released"}
+            {/* Main figure */}
+            <div className="mb-4">
+              <div className="mb-1.5 font-mono text-[10px] uppercase tracking-[0.07em] text-slate-400 sm:text-[12px]">
+                {role === "freelancer" ? "Total earned" : "Total released"}
               </div>
-              <div className="font-mono text-[32px] font-extrabold leading-none tracking-tight sm:text-[40px]">{fmtShort(released)}</div>
+              {/* Show currency code small, number large so it doesn't overflow */}
+              <div className="flex items-baseline gap-1.5">
+                <span className="font-mono text-[13px] font-semibold text-slate-400 sm:text-[16px]">{currency}</span>
+                <span className="font-mono text-[28px] font-extrabold leading-none tracking-tight sm:text-[40px]">
+                  {released.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </span>
+              </div>
               {role === "freelancer" && released > 0 && (
                 <Link href="/dashboard/payments" className="mt-3 inline-flex items-center rounded-full bg-emerald-500 px-3 py-1 text-xs font-semibold text-white hover:bg-emerald-400 sm:mt-4 sm:px-4 sm:py-1.5 sm:text-sm">
                   View payments →
                 </Link>
               )}
             </div>
-            <div className="grid grid-cols-3 gap-3 border-t border-white/10 pt-4 sm:flex sm:gap-[34px] sm:border-0 sm:pt-0">
+            {/* Secondary stats — 3-col on mobile */}
+            <div className="grid grid-cols-3 gap-2 border-t border-white/10 pt-4 sm:flex sm:gap-[34px] sm:border-0 sm:pt-0">
               {[
-                { label: "In escrow",       val: inEscrow },
-                { label: "Pending release", val: pendingRel },
-                { label: "Lifetime",        val: lifetime },
+                { label: "In escrow",    val: inEscrow },
+                { label: "Pending",      val: pendingRel },
+                { label: "Lifetime",     val: lifetime },
               ].map(({ label, val }) => (
                 <div key={label}>
-                  <div className="mb-1 font-mono text-[10px] uppercase tracking-[0.04em] text-slate-400 sm:text-[11.5px]">{label}</div>
-                  <div className="font-mono text-[14px] font-bold sm:text-[19px]">{fmtShort(val)}</div>
+                  <div className="mb-1 font-mono text-[9px] uppercase tracking-[0.04em] text-slate-400 sm:text-[11.5px]">{label}</div>
+                  <div className="font-mono text-[13px] font-bold sm:text-[19px]">
+                    <span className="text-[9px] text-slate-400 sm:text-[12px]">{currency} </span>
+                    {val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </div>
                 </div>
               ))}
             </div>

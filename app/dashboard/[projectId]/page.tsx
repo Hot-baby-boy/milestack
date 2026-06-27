@@ -136,20 +136,26 @@ export default async function ProjectPage({
             <p className="px-4 py-5 text-sm text-slate-500">No milestones yet.{isFreelancer && " Click \"Add Milestone\" to create one."}</p>
           ) : (
             <ul className="divide-y divide-slate-50">
-              {milestones.map((m) => (
-                <li key={m.id} className="flex items-center gap-3 px-4 py-3 sm:px-5">
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-[13.5px] font-semibold text-[#0F172A]">{m.title}</p>
-                    <p className="mt-0.5 font-mono text-[11.5px] text-slate-500">
-                      ${Number(m.amount).toLocaleString()}{m.due_date && <> · {m.due_date}</>}
-                    </p>
-                  </div>
-                  <div className="flex flex-shrink-0 flex-col items-end gap-1.5 sm:flex-row sm:items-center sm:gap-2">
-                    <StatusPill status={m.status} />
-                    <MilestoneActions milestoneId={m.id} projectId={project.id} status={m.status} isFreelancer={isFreelancer} isClient={isClient}/>
-                  </div>
-                </li>
-              ))}
+              {milestones.map((m) => {
+                // Format date as "Jun 25" instead of "2026-06-25" to prevent wrapping
+                const dueDisplay = m.due_date
+                  ? new Date(m.due_date + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })
+                  : null;
+                return (
+                  <li key={m.id} className="flex items-center gap-3 px-4 py-3 sm:px-5">
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-[13.5px] font-semibold text-[#0F172A]">{m.title}</p>
+                      <p className="mt-0.5 whitespace-nowrap font-mono text-[11px] text-slate-500 sm:text-[11.5px]">
+                        ${Number(m.amount).toLocaleString()}{dueDisplay && <> · {dueDisplay}</>}
+                      </p>
+                    </div>
+                    <div className="flex flex-shrink-0 items-center gap-2">
+                      <StatusPill status={m.status} />
+                      <MilestoneActions milestoneId={m.id} projectId={project.id} status={m.status} isFreelancer={isFreelancer} isClient={isClient}/>
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </div>
