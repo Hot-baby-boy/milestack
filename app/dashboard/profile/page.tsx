@@ -79,7 +79,7 @@ export default async function ProfilePage() {
 
   return (
     <div className="min-h-screen">
-      <div className="sticky top-0 z-30 hidden h-[72px] items-center border-b border-slate-200 bg-white px-8 lg:flex">
+      <div className="sticky top-0 z-30 hidden h-[72px] items-center border-b border-slate-200 bg-white pl-8 pr-16 lg:flex">
         <h1 className="text-[19px] font-bold tracking-tight text-[#0F172A]">Portfolio &amp; Settings</h1>
       </div>
       <div className="mx-auto max-w-2xl px-4 py-8 sm:px-8">

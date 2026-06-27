@@ -87,7 +87,7 @@ export default async function ProjectPage({
   return (
     <div className="min-h-screen">
       {/* Desktop top bar */}
-      <div className="sticky top-0 z-30 hidden h-[72px] items-center justify-between border-b border-slate-200 bg-white px-8 lg:flex">
+      <div className="sticky top-0 z-30 hidden h-[72px] items-center justify-between border-b border-slate-200 bg-white pl-8 pr-16 lg:flex">
         <div className="flex min-w-0 items-center gap-3">
           <Link href="/dashboard/workspaces" className="flex-shrink-0 text-sm text-slate-400 hover:text-slate-700">← Workspaces</Link>
           <span className="text-slate-300">/</span>

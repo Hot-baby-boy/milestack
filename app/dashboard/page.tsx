@@ -95,7 +95,7 @@ export default async function DashboardPage() {
   return (
     <div className="flex flex-col">
       {/* Desktop top bar */}
-      <div className="sticky top-0 z-30 hidden h-[72px] items-center justify-between border-b border-slate-200 bg-white px-8 lg:flex">
+      <div className="sticky top-0 z-30 hidden h-[72px] items-center justify-between border-b border-slate-200 bg-white pl-8 pr-16 lg:flex">
         <h1 className="text-[19px] font-bold tracking-tight text-[#0F172A]">Dashboard</h1>
         <div className="flex items-center gap-3">
           {role === "freelancer" && <NewProjectForm/>}
