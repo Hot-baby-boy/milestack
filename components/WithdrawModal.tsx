@@ -2,10 +2,16 @@
 
 import { useState } from "react";
 import { PayoutLogo, METHODS, METHOD_FIELDS } from "@/components/PayoutIcons";
+import Link from "next/link";
 
 function parseDetails(raw: string | null | undefined): Record<string, string> {
   if (!raw) return {};
   try { return JSON.parse(raw); } catch { return { email: raw }; }
+}
+
+function detailSummary(method: string, details: Record<string, string>): string {
+  const fields = METHOD_FIELDS[method] ?? [];
+  return fields.map(f => details[f.key]).filter(Boolean).join(" · ");
 }
 
 export function WithdrawModal({
@@ -14,25 +20,20 @@ export function WithdrawModal({
   available: number; currency: string; savedMethod?: string | null; savedDetails?: string | null;
 }) {
   const [open, setOpen]     = useState(false);
-  const [method, setMethod] = useState(savedMethod ?? "local_bank");
+  const [method, setMethod] = useState(savedMethod ?? "");
   const [amount, setAmount] = useState("");
-  const [values, setValues] = useState<Record<string, string>>(parseDetails(savedDetails));
   const [done, setDone]     = useState(false);
 
-  const fields = METHOD_FIELDS[method] ?? [];
-  const isComplete = fields.every(f => (values[f.key] ?? "").trim() !== "");
+  const saved = parseDetails(savedDetails);
+  // Is the currently selected method the one they saved in settings?
+  const isUsingSaved = method === savedMethod && !!savedDetails;
+  const methodLabel = METHODS.find(m => m.value === method)?.label ?? "";
 
-  function handleMethodChange(m: string) {
-    setMethod(m);
-    if (m === savedMethod) {
-      setValues(parseDetails(savedDetails));
-    } else {
-      setValues({});
-    }
-  }
-
-  function setField(key: string, val: string) {
-    setValues(prev => ({ ...prev, [key]: val }));
+  function handleClose() {
+    setOpen(false);
+    setDone(false);
+    setAmount("");
+    setMethod(savedMethod ?? "");
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -40,16 +41,10 @@ export function WithdrawModal({
     setDone(true);
   }
 
-  function handleClose() {
-    setOpen(false);
-    setDone(false);
-    setAmount("");
-    setMethod(savedMethod ?? "local_bank");
-    setValues(parseDetails(savedDetails));
-  }
-
   const fmt = (n: number) =>
     `${currency} ${n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  const canSubmit = !!amount && !!method && (isUsingSaved);
 
   return (
     <>
@@ -91,13 +86,13 @@ export function WithdrawModal({
                     </div>
                   </div>
 
-                  {/* Method */}
+                  {/* Method selector */}
                   <div>
                     <label className="mb-2 block text-[13px] font-medium text-slate-700">Payout method</label>
                     <div className="flex flex-wrap gap-2">
                       {METHODS.map(m => (
                         <button key={m.value} type="button"
-                          onClick={() => handleMethodChange(m.value)}
+                          onClick={() => setMethod(m.value)}
                           className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-[12px] font-medium transition ${
                             method === m.value
                               ? "border-emerald-500 bg-emerald-50 text-emerald-700"
@@ -111,37 +106,37 @@ export function WithdrawModal({
                     </div>
                   </div>
 
-                  {/* Dynamic fields */}
-                  {fields.map(field => (
-                    <div key={field.key}>
-                      <label className="mb-1.5 block text-[13px] font-medium text-slate-700">{field.label}</label>
-                      {field.type === "select" ? (
-                        <select
-                          required value={values[field.key] ?? ""}
-                          onChange={e => setField(field.key, e.target.value)}
-                          className="w-full rounded-lg border border-slate-200 px-3 py-2 text-[14px] text-slate-900 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-                        >
-                          <option value="">Select…</option>
-                          {field.options?.map(o => <option key={o} value={o}>{o}</option>)}
-                        </select>
-                      ) : (
-                        <input
-                          type={field.type ?? "text"} required
-                          value={values[field.key] ?? ""}
-                          onChange={e => setField(field.key, e.target.value)}
-                          placeholder={field.placeholder}
-                          className="w-full rounded-lg border border-slate-200 px-3 py-2 text-[14px] text-slate-900 placeholder:text-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-                        />
-                      )}
+                  {/* If selected method matches saved — show summary, no fields */}
+                  {method && isUsingSaved && (
+                    <div className="rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3">
+                      <div className="flex items-center gap-2 mb-1">
+                        <PayoutLogo method={method} size={20}/>
+                        <span className="text-[13px] font-semibold text-emerald-800">{methodLabel}</span>
+                        <svg className="h-4 w-4 text-emerald-500 ml-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+                      </div>
+                      <p className="text-[12px] text-emerald-700">{detailSummary(method, saved)}</p>
                     </div>
-                  ))}
-
-                  {savedMethod === method && savedDetails && (
-                    <p className="text-[11px] text-slate-400">Pre-filled from your saved payout method</p>
                   )}
 
-                  <button type="submit" disabled={!isComplete || !amount}
-                    className="w-full rounded-xl bg-emerald-500 py-3 text-[14px] font-semibold text-white hover:bg-emerald-600 disabled:opacity-50 transition"
+                  {/* If selected method differs from saved — prompt them to update settings */}
+                  {method && !isUsingSaved && (
+                    <div className="rounded-xl border border-amber-100 bg-amber-50 px-4 py-3 text-[12.5px] text-amber-800">
+                      You haven't saved <strong>{methodLabel}</strong> details yet.{" "}
+                      <Link href="/dashboard/profile" onClick={handleClose}
+                        className="font-semibold underline hover:text-amber-900"
+                      >
+                        Add it in Settings →
+                      </Link>
+                    </div>
+                  )}
+
+                  {/* No method selected yet */}
+                  {!method && (
+                    <p className="text-[12px] text-slate-400">Select a method above to continue.</p>
+                  )}
+
+                  <button type="submit" disabled={!canSubmit}
+                    className="w-full rounded-xl bg-emerald-500 py-3 text-[14px] font-semibold text-white hover:bg-emerald-600 disabled:opacity-40 transition"
                   >
                     Submit request
                   </button>
