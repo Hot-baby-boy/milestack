@@ -16,7 +16,7 @@ export default async function MessagesPage() {
 
   const { data: latestMessages } = projectIds.length
     ? await supabase
-        .from("chat_messages")
+        .from("messages")
         .select("id, project_id, body, sender_id, created_at")
         .in("project_id", projectIds)
         .order("created_at", { ascending: false })

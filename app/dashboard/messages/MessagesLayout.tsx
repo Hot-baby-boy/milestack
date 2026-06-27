@@ -52,7 +52,7 @@ export function MessagesLayout({
     const projectIds = projects.map(p => p.id);
     const channel = supabase
       .channel("messages-list-preview")
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "chat_messages" }, (payload) => {
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages" }, (payload) => {
         const msg = payload.new as { project_id: string; body: string; sender_id: string; created_at: string };
         if (projectIds.includes(msg.project_id)) {
           setLivePreview(prev => ({ ...prev, [msg.project_id]: msg }));
