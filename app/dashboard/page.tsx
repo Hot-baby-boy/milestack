@@ -3,6 +3,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { NewProjectForm } from "./NewProjectForm";
 import { NotificationBell } from "@/components/NotificationBell";
+import { WithdrawModal } from "@/components/WithdrawModal";
 
 const AVATAR_COLORS = [
   "from-orange-500 to-amber-400","from-blue-600 to-blue-400","from-emerald-600 to-emerald-400",
@@ -147,10 +148,13 @@ export default async function DashboardPage() {
                   {released.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </span>
               </div>
-              {role === "freelancer" && released > 0 && (
-                <Link href="/dashboard/payments" className="mt-3 inline-flex items-center rounded-full bg-emerald-500 px-3 py-1 text-xs font-semibold text-white hover:bg-emerald-400 sm:mt-4 sm:px-4 sm:py-1.5 sm:text-sm">
-                  View payments →
-                </Link>
+              {role === "freelancer" && (
+                <div className="mt-3 flex items-center gap-2 sm:mt-4">
+                  <WithdrawModal available={released} currency={currency}/>
+                  <Link href="/dashboard/payments" className="inline-flex items-center rounded-full border border-white/20 px-3 py-1.5 text-[13px] font-semibold text-white/70 hover:text-white transition sm:px-4">
+                    Payments →
+                  </Link>
+                </div>
               )}
             </div>
             {/* Secondary stats — 3-col on mobile */}
