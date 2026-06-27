@@ -139,7 +139,7 @@ export default async function DashboardPage() {
             {/* Main figure */}
             <div className="mb-4">
               <div className="mb-1.5 font-mono text-[10px] uppercase tracking-[0.07em] text-slate-400 sm:text-[12px]">
-                {role === "freelancer" ? "Total earned" : "Total released"}
+                {role === "freelancer" ? "Available to withdraw" : "Total released"}
               </div>
               {/* Show currency code small, number large so it doesn't overflow */}
               <div className="flex items-baseline gap-1.5">
