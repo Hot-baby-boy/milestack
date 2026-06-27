@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { AppSidebar, MobileNav } from "@/components/AppSidebar";
+import { NotificationBell } from "@/components/NotificationBell";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -15,7 +16,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   const { data: notifications } = await supabase
     .from("notifications")
-    .select("id, type, read_at")
+    .select("id, project_id, type, payload, read_at, created_at")
     .order("created_at", { ascending: false })
     .limit(30);
 
@@ -26,7 +27,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const role        = profile?.role ?? "freelancer";
   const initials    = displayName.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase();
 
-  const p = { displayName, role, initials, unreadCount, disputeCount };
+  const p = { displayName, role, initials, unreadCount, disputeCount, notifications: notifications ?? [] };
 
   return (
     /*
@@ -50,6 +51,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
       {/* ── Right side: mobile top bar + page content ── */}
       <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", overflow: "hidden" }}>
         <MobileNav {...p} />
+        {/* Desktop: persistent notification bell fixed to top-right of content area */}
+        <div className="pointer-events-none fixed right-5 top-4 z-50 hidden lg:block">
+          <div className="pointer-events-auto">
+            <NotificationBell notifications={p.notifications} unreadCount={unreadCount + disputeCount}/>
+          </div>
+        </div>
         <main style={{ flex: 1, minWidth: 0, overflowY: "auto" }}>
           {children}
         </main>

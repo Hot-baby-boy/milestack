@@ -2,7 +2,6 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { NewProjectForm } from "./NewProjectForm";
-import { NotificationBell } from "@/components/NotificationBell";
 import { WithdrawModal } from "@/components/WithdrawModal";
 
 const AVATAR_COLORS = [
@@ -99,7 +98,6 @@ export default async function DashboardPage() {
       <div className="sticky top-0 z-30 hidden h-[72px] items-center justify-between border-b border-slate-200 bg-white px-8 lg:flex">
         <h1 className="text-[19px] font-bold tracking-tight text-[#0F172A]">Dashboard</h1>
         <div className="flex items-center gap-3">
-          <NotificationBell notifications={notifications ?? []} unreadCount={unreadCount}/>
           {role === "freelancer" && <NewProjectForm/>}
         </div>
       </div>
@@ -116,9 +114,8 @@ export default async function DashboardPage() {
                 : "Everything is up to date"}
             </p>
           </div>
-          {/* Mobile: actions in greeting row. Desktop: actions in sticky top bar */}
+          {/* Mobile: new project button only — bell is in MobileNav */}
           <div className="flex flex-shrink-0 items-center gap-2 lg:hidden">
-            <NotificationBell notifications={notifications ?? []} unreadCount={unreadCount}/>
             {role === "freelancer" && <NewProjectForm/>}
           </div>
         </div>

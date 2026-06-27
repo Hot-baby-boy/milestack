@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { logout } from "@/app/(auth)/actions";
+import { NotificationBell } from "@/components/NotificationBell";
 
 export const LogoMark = () => (
   <span className="inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-[9px] bg-gradient-to-br from-slate-800 to-slate-950">
@@ -116,7 +117,7 @@ function SidebarContent({ displayName, role, initials, unreadCount, disputeCount
 
 /* ── Desktop sidebar — uses inline styles for layout, Tailwind only for display toggle */
 export function AppSidebar(props: {
-  displayName: string; role: string; initials: string; unreadCount: number; disputeCount: number;
+  displayName: string; role: string; initials: string; unreadCount: number; disputeCount: number; notifications: Notification[];
 }) {
   return (
     <aside
@@ -139,8 +140,10 @@ export function AppSidebar(props: {
 }
 
 /* ── Mobile top bar + drawer (rendered in layout separately) ────────────────── */
+type Notification = { id: string; project_id?: string; type: string; payload?: unknown; read_at: string | null; created_at?: string };
+
 export function MobileNav(props: {
-  displayName: string; role: string; initials: string; unreadCount: number; disputeCount: number;
+  displayName: string; role: string; initials: string; unreadCount: number; disputeCount: number; notifications: Notification[];
 }) {
   const [open, setOpen] = useState(false);
   const close = () => setOpen(false);
@@ -152,12 +155,8 @@ export function MobileNav(props: {
           <LogoMark/>
           Milestack
         </Link>
-        <div className="flex items-center gap-3">
-          {(props.unreadCount + props.disputeCount) > 0 && (
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-red-500 font-mono text-[10px] font-bold text-white">
-              {props.unreadCount + props.disputeCount}
-            </span>
-          )}
+        <div className="flex items-center gap-2">
+          <NotificationBell notifications={props.notifications} unreadCount={props.unreadCount + props.disputeCount}/>
           <button onClick={() => setOpen(v => !v)}
             className="flex h-9 w-9 items-center justify-center rounded-[9px] border border-slate-200 text-slate-600"
             aria-label="Open menu"
