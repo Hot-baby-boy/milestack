@@ -6,6 +6,7 @@ import { MilestoneActions } from "./MilestoneActions";
 import { NewMilestoneForm } from "./NewMilestoneForm";
 import { CopyLinkBox } from "./CopyLinkBox";
 import { InviteClientButton } from "./InviteClientButton";
+import { DeleteWorkspaceButton } from "./DeleteWorkspaceButton";
 import { TransactionsTable } from "@/components/TransactionsTable";
 import { ContractPanel } from "./ContractPanel";
 import { ChatPanel } from "@/components/ChatPanel";
@@ -94,7 +95,10 @@ export default async function ProjectPage({
           <h1 className="truncate text-[17px] font-bold text-[#0F172A]">{project.name}</h1>
           <span className="flex-shrink-0 rounded-md bg-slate-100 px-2 py-0.5 font-mono text-xs text-slate-500">{project.code}</span>
         </div>
-        {isFreelancer && <NewMilestoneForm projectId={project.id}/>}
+        <div className="flex items-center gap-2">
+          {isFreelancer && <DeleteWorkspaceButton projectId={project.id} />}
+          {isFreelancer && <NewMilestoneForm projectId={project.id}/>}
+        </div>
       </div>
 
       <div className="px-4 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-7">
@@ -107,7 +111,12 @@ export default async function ProjectPage({
               <span className="flex-shrink-0 rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] text-slate-500">{project.code}</span>
             </div>
           </div>
-          {isFreelancer && <div className="flex-shrink-0 pt-4"><NewMilestoneForm projectId={project.id}/></div>}
+          {isFreelancer && (
+            <div className="flex flex-shrink-0 items-center gap-2 pt-4">
+              <DeleteWorkspaceButton projectId={project.id} />
+              <NewMilestoneForm projectId={project.id}/>
+            </div>
+          )}
         </div>
 
         {inviteLink && <div className="mb-4"><CopyLinkBox link={inviteLink} /></div>}

@@ -39,6 +39,29 @@ export async function createProject(formData: FormData): Promise<{ error: string
   return { error: "Couldn't generate a unique project code. Please try again." };
 }
 
+export async function deleteWorkspace(projectId: string): Promise<{ error: string } | void> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  // Only the freelancer (project creator) can delete
+  const { data: project } = await supabase
+    .from("projects").select("freelancer_id").eq("id", projectId).single();
+  if (!project) return { error: "Workspace not found." };
+  if (project.freelancer_id !== user.id) return { error: "Only the freelancer can delete this workspace." };
+
+  // Block deletion if any milestone has moved beyond draft
+  const { data: milestones } = await supabase
+    .from("milestones").select("status").eq("project_id", projectId);
+  const hasFunds = (milestones ?? []).some(m => m.status !== "draft" && m.status !== "cancelled");
+  if (hasFunds) return { error: "Cannot delete a workspace with funded or active milestones." };
+
+  // Delete milestones first, then project (cascade would also work but let's be explicit)
+  await supabase.from("milestones").delete().eq("project_id", projectId);
+  const { error } = await supabase.from("projects").delete().eq("id", projectId);
+  if (error) return { error: error.message };
+}
+
 export async function inviteClient(formData: FormData): Promise<ActionResult> {
   const projectId = String(formData.get("projectId") ?? "");
   const clientName = String(formData.get("clientName") ?? "").trim();
