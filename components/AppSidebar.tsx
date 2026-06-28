@@ -83,6 +83,7 @@ function SidebarContent({ displayName, role, initials, unreadCount, disputeCount
       <nav className="flex flex-1 flex-col gap-[2px]">
         {NAV.map(item => (
           <NavItem key={item.href + item.label} {...item}
+            label={item.label === "Portfolio" && role === "client" ? "Profile" : item.label}
             badge={item.label === "Messages" ? unreadCount : undefined}
             onClick={onClose}
           />
