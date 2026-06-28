@@ -5,11 +5,24 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { login } from "../actions";
 
+function EyeIcon({ open }: { open: boolean }) {
+  return open ? (
+    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+    </svg>
+  ) : (
+    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24M1 1l22 22"/>
+    </svg>
+  );
+}
+
 function LoginForm() {
   const searchParams = useSearchParams();
   const next = searchParams.get("next") ?? "";
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   async function onSubmit(formData: FormData) {
     setError(null);
@@ -26,57 +39,47 @@ function LoginForm() {
 
       <form action={onSubmit} className="mt-5 space-y-4">
         <input type="hidden" name="next" value={next} />
+
         <div>
           <label className="block text-sm font-medium text-slate-700">Email address</label>
-          <input
-            name="email"
-            type="email"
-            required
-            placeholder="you@email.com"
+          <input name="email" type="email" required placeholder="you@email.com"
             className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
           />
         </div>
+
         <div>
           <div className="flex items-center justify-between">
             <label className="block text-sm font-medium text-slate-700">Password</label>
-            <Link href="/forgot-password" className="text-sm font-medium text-emerald-600">
-              Forgot?
-            </Link>
+            <Link href="/forgot-password" className="text-sm font-medium text-emerald-600">Forgot?</Link>
           </div>
-          <input
-            name="password"
-            type="password"
-            required
-            placeholder="••••••••"
-            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-          />
+          <div className="relative mt-1">
+            <input
+              name="password"
+              type={showPassword ? "text" : "password"}
+              required placeholder="••••••••"
+              className="w-full rounded-lg border border-slate-300 px-3 py-2 pr-10 text-sm text-slate-900 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+            />
+            <button type="button" tabIndex={-1} onClick={() => setShowPassword(v => !v)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+            ><EyeIcon open={showPassword} /></button>
+          </div>
         </div>
 
         {error && <p className="text-sm text-red-600">{error}</p>}
 
-        <button
-          type="submit"
-          disabled={pending}
+        <button type="submit" disabled={pending}
           className="w-full rounded-lg bg-emerald-500 py-2 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:opacity-60"
-        >
-          {pending ? "Logging in…" : "Log in"}
-        </button>
+        >{pending ? "Logging in…" : "Log in"}</button>
       </form>
 
       <p className="mt-5 text-center text-sm text-slate-500">
         New to Milestack?{" "}
-        <Link href={next ? `/signup?next=${encodeURIComponent(next)}` : "/signup"} className="font-medium text-emerald-600">
-          Create an account
-        </Link>
+        <Link href={next ? `/signup?next=${encodeURIComponent(next)}` : "/signup"} className="font-medium text-emerald-600">Create an account</Link>
       </p>
     </>
   );
 }
 
 export default function LoginPage() {
-  return (
-    <Suspense fallback={null}>
-      <LoginForm />
-    </Suspense>
-  );
+  return <Suspense fallback={null}><LoginForm /></Suspense>;
 }
