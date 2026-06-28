@@ -25,14 +25,12 @@ export function MilestonesList({
   isFreelancer,
   isClient,
   initialMilestones,
-  hideHeader,
 }: {
   projectId: string;
   freelancerId: string;
   isFreelancer: boolean;
   isClient: boolean;
   initialMilestones: Milestone[];
-  hideHeader?: boolean;
 }) {
   const [milestones, setMilestones] = useState<Milestone[]>(initialMilestones);
 
@@ -75,13 +73,11 @@ export function MilestonesList({
   }, [initialMilestones]);
 
   return (
-    <div className={hideHeader ? "" : "mb-4 overflow-hidden rounded-2xl border border-slate-200 bg-white"}>
-      {!hideHeader && (
-        <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3 sm:px-5">
-          <h2 className="text-[14px] font-bold text-[#0F172A] sm:text-sm">Milestones</h2>
-          {isFreelancer && <div className="lg:hidden"><NewMilestoneForm projectId={projectId} /></div>}
-        </div>
-      )}
+    <div className="mb-4 overflow-hidden rounded-2xl border border-slate-200 bg-white">
+      <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3 sm:px-5">
+        <h2 className="text-[14px] font-bold text-[#0F172A] sm:text-sm">Milestones</h2>
+        {isFreelancer && <div className="lg:hidden"><NewMilestoneForm projectId={projectId} /></div>}
+      </div>
 
       {!milestones.length ? (
         <p className="px-4 py-5 text-sm text-slate-500">
