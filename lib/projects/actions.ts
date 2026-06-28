@@ -15,7 +15,7 @@ function generateCode() {
   return `MSK-${suffix}`;
 }
 
-export async function createProject(formData: FormData): Promise<ActionResult> {
+export async function createProject(formData: FormData): Promise<{ error: string } | { projectId: string }> {
   const name = String(formData.get("name") ?? "").trim();
   if (!name) return { error: "Please enter a workspace name." };
 
@@ -32,8 +32,8 @@ export async function createProject(formData: FormData): Promise<ActionResult> {
       .select("id")
       .single();
 
-    if (!error) redirect(`/dashboard/${data.id}`);
-    if (error.code !== "23505") return { error: error.message }; // not a unique-violation, give up
+    if (!error) return { projectId: data.id };
+    if (error.code !== "23505") return { error: error.message };
   }
 
   return { error: "Couldn't generate a unique project code. Please try again." };

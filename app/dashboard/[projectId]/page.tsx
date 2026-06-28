@@ -4,8 +4,8 @@ import Link from "next/link";
 import { StatusPill } from "@/components/StatusPill";
 import { MilestoneActions } from "./MilestoneActions";
 import { NewMilestoneForm } from "./NewMilestoneForm";
-import { InviteClientForm } from "./InviteClientForm";
 import { CopyLinkBox } from "./CopyLinkBox";
+import { InviteClientButton } from "./InviteClientButton";
 import { TransactionsTable } from "@/components/TransactionsTable";
 import { ContractPanel } from "./ContractPanel";
 import { ChatPanel } from "@/components/ChatPanel";
@@ -113,10 +113,9 @@ export default async function ProjectPage({
         {inviteLink && <div className="mb-4"><CopyLinkBox link={inviteLink} /></div>}
 
         {!project.client_id && isFreelancer && !inviteLink && (
-          <div className="mb-4 rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
-            <h2 className="text-sm font-semibold text-slate-900">Invite your client</h2>
-            <p className="mt-1 text-sm text-slate-500">Share a link — no account required until they accept.</p>
-            <div className="mt-3"><InviteClientForm projectId={project.id} /></div>
+          <div className="mb-4 flex items-center gap-3 rounded-xl border border-amber-100 bg-amber-50 px-4 py-3">
+            <span className="text-[13px] text-amber-700 flex-1">No client has joined yet.</span>
+            <InviteClientButton projectId={project.id} />
           </div>
         )}
 

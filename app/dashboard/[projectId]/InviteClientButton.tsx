@@ -15,6 +15,7 @@ export function InviteClientButton({ projectId }: { projectId: string }) {
     const result = await inviteClient(formData);
     setPending(false);
     if (result?.error) setError(result.error);
+    // on success inviteClient redirects, so modal closes automatically
   }
 
   return (
@@ -38,13 +39,21 @@ export function InviteClientButton({ projectId }: { projectId: string }) {
                   <label className="mb-1 block text-sm font-medium text-slate-700">
                     Client name <span className="font-normal text-slate-400">(optional)</span>
                   </label>
-                  <input name="clientName" type="text" autoFocus placeholder="e.g. Lagos Retail Co."
+                  <input
+                    name="clientName"
+                    type="text"
+                    autoFocus
+                    placeholder="e.g. Lagos Retail Co."
                     className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                   />
                 </div>
                 <div>
                   <label className="mb-1 block text-sm font-medium text-slate-700">Client email</label>
-                  <input name="clientEmail" type="email" required placeholder="client@email.com"
+                  <input
+                    name="clientEmail"
+                    type="email"
+                    required
+                    placeholder="client@email.com"
                     className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                   />
                   {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
@@ -67,51 +76,5 @@ export function InviteClientButton({ projectId }: { projectId: string }) {
         </>
       )}
     </>
-  );
-}
-
-export function InviteClientForm({ projectId }: { projectId: string }) {
-  const [error, setError] = useState<string | null>(null);
-  const [pending, setPending] = useState(false);
-
-  async function onSubmit(formData: FormData) {
-    setError(null);
-    setPending(true);
-    const result = await inviteClient(formData);
-    setPending(false);
-    if (result?.error) setError(result.error);
-  }
-
-  return (
-    <form action={onSubmit} className="space-y-3">
-      <input type="hidden" name="projectId" value={projectId} />
-      <div>
-        <label className="block text-sm font-medium text-slate-700">Client name</label>
-        <input
-          name="clientName"
-          type="text"
-          placeholder="Lagos Retail Co."
-          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-        />
-      </div>
-      <div>
-        <label className="block text-sm font-medium text-slate-700">Client email</label>
-        <input
-          name="clientEmail"
-          type="email"
-          required
-          placeholder="client@email.com"
-          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-        />
-      </div>
-      {error && <p className="text-sm text-red-600">{error}</p>}
-      <button
-        type="submit"
-        disabled={pending}
-        className="w-full rounded-lg bg-emerald-500 py-2 text-sm font-semibold text-white hover:bg-emerald-600 disabled:opacity-60"
-      >
-        {pending ? "Creating link…" : "Generate invite link"}
-      </button>
-    </form>
   );
 }
