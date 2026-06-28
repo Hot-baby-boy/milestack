@@ -16,6 +16,9 @@ type Project = {
 type Preview = {
   project_id: string; body: string; sender_id: string; created_at: string;
 };
+type OtherProfile = {
+  id: string; display_name: string | null; email: string; handle: string | null;
+};
 
 function avatar(name: string) {
   const color = AVATAR_COLORS[name.charCodeAt(0) % AVATAR_COLORS.length];
@@ -33,11 +36,13 @@ function timeLabel(iso: string) {
 }
 
 export function MessagesLayout({
-  projects, previews, activeProjectId, children,
+  projects, previews, activeProjectId, currentUserId, profileMap, children,
 }: {
   projects: Project[];
   previews: Preview[];
   activeProjectId?: string;
+  currentUserId?: string;
+  profileMap?: Record<string, OtherProfile>;
   children: React.ReactNode;
 }) {
   const [livePreview, setLivePreview] = useState<Record<string, Preview>>(() => {
@@ -86,7 +91,10 @@ export function MessagesLayout({
         ) : (
           <div className="flex-1 overflow-y-auto divide-y divide-slate-50">
             {projects.map(project => {
-              const { color, inits } = avatar(project.name);
+              const otherId = currentUserId === project.client_id ? project.freelancer_id : project.client_id;
+              const other = profileMap?.[otherId];
+              const displayName = other?.display_name ?? other?.email ?? project.name;
+              const { color, inits } = avatar(displayName);
               const last = livePreview[project.id];
               const preview = last?.body
                 ? (last.body.length > 55 ? last.body.slice(0, 55) + "…" : last.body)
@@ -94,27 +102,32 @@ export function MessagesLayout({
               const isActive = activeProjectId === project.id;
 
               return (
-                <Link key={project.id}
-                  href={`/dashboard/messages/${project.id}`}
-                  className={`flex w-full items-center gap-3 px-5 py-3.5 transition ${
-                    isActive
-                      ? "border-r-2 border-emerald-500 bg-emerald-50"
-                      : "hover:bg-slate-50"
-                  }`}
-                >
-                  <div className={`flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br ${color} font-mono text-[13px] font-bold text-white`}>
-                    {inits}
-                  </div>
-                  <div className="min-w-0 flex-1">
+                <div key={project.id} className={`flex w-full items-center gap-3 px-5 py-3.5 transition ${
+                  isActive ? "border-r-2 border-emerald-500 bg-emerald-50" : "hover:bg-slate-50"
+                }`}>
+                  {/* Avatar — links to public profile if handle exists */}
+                  {other?.handle ? (
+                    <Link href={`/p/${other.handle}`} onClick={e => e.stopPropagation()}
+                      className={`flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br ${color} font-mono text-[13px] font-bold text-white hover:opacity-80 transition`}
+                      title={`View ${displayName}'s profile`}
+                    >{inits}</Link>
+                  ) : (
+                    <div className={`flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br ${color} font-mono text-[13px] font-bold text-white`}>
+                      {inits}
+                    </div>
+                  )}
+                  {/* Clicking the text row opens the chat */}
+                  <Link href={`/dashboard/messages/${project.id}`} className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-1">
-                      <span className="truncate text-[13.5px] font-semibold text-[#0F172A]">{project.name}</span>
+                      <span className="truncate text-[13.5px] font-semibold text-[#0F172A]">{displayName}</span>
                       {last?.created_at && (
                         <span className="flex-shrink-0 text-[11px] text-slate-400">{timeLabel(last.created_at)}</span>
                       )}
                     </div>
                     <p className={`truncate text-[12px] ${isActive ? "text-emerald-700" : "text-slate-500"}`}>{preview}</p>
-                  </div>
-                </Link>
+                    <p className="truncate text-[11px] text-slate-400">{project.name}</p>
+                  </Link>
+                </div>
               );
             })}
           </div>

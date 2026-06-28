@@ -54,12 +54,27 @@ export default async function MessagesProjectPage({
     .eq("project_id", projectId)
     .order("created_at", { ascending: true });
 
+  // Fetch the "other" person's profile for left panel and chat header
+  const otherIds = [...new Set(
+    (projects ?? []).map(p => p.freelancer_id === user.id ? p.client_id : p.freelancer_id).filter(Boolean)
+  )];
+  const { data: otherProfiles } = otherIds.length
+    ? await supabase.from("profiles").select("id, display_name, email, handle").in("id", otherIds)
+    : { data: [] as { id: string; display_name: string | null; email: string; handle: string | null }[] };
+  const profileMap = Object.fromEntries((otherProfiles ?? []).map(p => [p.id, p]));
+
+  const otherId = user.id === project.client_id ? project.freelancer_id : project.client_id;
+  const otherProfile = profileMap[otherId];
+  const otherName = otherProfile?.display_name ?? otherProfile?.email ?? project.name;
+
   return (
     <div style={{height:"100%"}}>
       <MessagesLayout
         projects={projects ?? []}
         previews={Object.values(previewMap)}
         activeProjectId={projectId}
+        currentUserId={user.id}
+        profileMap={profileMap}
       >
         <div className="flex h-full flex-col overflow-hidden">
           {/* Chat header */}
@@ -70,8 +85,14 @@ export default async function MessagesProjectPage({
               <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 18l-6-6 6-6"/></svg>
             </Link>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-[15px] font-bold text-[#0F172A]">{project.name}</p>
-              <p className="font-mono text-[11px] text-slate-400">{project.code}</p>
+              {otherProfile?.handle ? (
+                <Link href={`/p/${otherProfile.handle}`}
+                  className="truncate text-[15px] font-bold text-[#0F172A] hover:text-emerald-600 transition"
+                >{otherName}</Link>
+              ) : (
+                <p className="truncate text-[15px] font-bold text-[#0F172A]">{otherName}</p>
+              )}
+              <p className="font-mono text-[11px] text-slate-400">{project.name} · {project.code}</p>
             </div>
 
             {/* Call buttons */}
