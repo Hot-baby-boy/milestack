@@ -59,6 +59,23 @@ export default async function PublicProfilePage({
     attachments: attachmentsWithUrls.filter((a) => a.portfolio_item_id === item.id),
   }));
 
+  const { data: reviews } = await supabase
+    .from("reviews")
+    .select("id, rating, body, created_at, reviewer_id")
+    .eq("freelancer_id", profile.id)
+    .order("created_at", { ascending: false });
+
+  const reviewerIds = [...new Set((reviews ?? []).map(r => r.reviewer_id))];
+  const { data: reviewerProfiles } = reviewerIds.length
+    ? await supabase.from("profiles").select("id, display_name, email").in("id", reviewerIds)
+    : { data: [] as { id: string; display_name: string | null; email: string }[] };
+
+  const reviewerMap = Object.fromEntries((reviewerProfiles ?? []).map(p => [p.id, p]));
+
+  const avgRating = (reviews ?? []).length
+    ? (reviews!.reduce((s, r) => s + r.rating, 0) / reviews!.length)
+    : null;
+
   const name = profile.display_name ?? handle;
 
   return (
@@ -80,8 +97,22 @@ export default async function PublicProfilePage({
           <div>
             <h1 className="text-xl font-bold text-slate-900">{name}</h1>
             <p className="text-sm capitalize text-slate-500">{profile.role}</p>
+            {/* Star rating summary */}
+            {avgRating !== null && (
+              <div className="mt-1 flex items-center gap-1.5">
+                <div className="flex">
+                  {[1,2,3,4,5].map(n => (
+                    <svg key={n} className={`h-4 w-4 ${avgRating >= n ? "text-amber-400" : avgRating >= n - 0.5 ? "text-amber-300" : "text-slate-200"}`} viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                  ))}
+                </div>
+                <span className="text-[13px] font-semibold text-slate-700">{avgRating.toFixed(1)}</span>
+                <span className="text-[12px] text-slate-400">({reviews!.length} review{reviews!.length !== 1 ? "s" : ""})</span>
+              </div>
+            )}
             {profile.hourly_rate && (
-              <p className="mt-1 text-sm font-medium text-slateald-700">
+              <p className="mt-1 text-sm font-medium text-slate-700">
                 USD {Number(profile.hourly_rate).toLocaleString()}/hr
               </p>
             )}
@@ -102,6 +133,45 @@ export default async function PublicProfilePage({
             )}
           </div>
         </div>
+
+        {/* Reviews */}
+        {(reviews ?? []).length > 0 && (
+          <section className="mb-8">
+            <h2 className="mb-4 text-base font-semibold text-slate-900">Client Reviews</h2>
+            <div className="space-y-3">
+              {(reviews ?? []).map(r => {
+                const rp = reviewerMap[r.reviewer_id];
+                const fullName = rp?.display_name ?? rp?.email ?? "Client";
+                const parts = fullName.split(" ");
+                const displayName = parts.length > 1
+                  ? `${parts[0]} ${parts[parts.length - 1][0]}.`
+                  : parts[0];
+                const date = new Date(r.created_at).toLocaleDateString([], { month: "short", year: "numeric" });
+                return (
+                  <div key={r.id} className="rounded-xl border border-slate-200 bg-white px-5 py-4">
+                    <div className="mb-2 flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100 text-[12px] font-bold text-emerald-700">
+                          {displayName[0].toUpperCase()}
+                        </div>
+                        <span className="text-[13px] font-semibold text-slate-800">{displayName}</span>
+                      </div>
+                      <span className="text-[11px] text-slate-400">{date}</span>
+                    </div>
+                    <div className="mb-2 flex">
+                      {[1,2,3,4,5].map(n => (
+                        <svg key={n} className={`h-3.5 w-3.5 ${r.rating >= n ? "text-amber-400" : "text-slate-200"}`} viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
+                      ))}
+                    </div>
+                    {r.body && <p className="text-[13px] leading-relaxed text-slate-600">{r.body}</p>}
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        )}
 
         {/* Portfolio */}
         {itemsWithAttachments.length > 0 && (

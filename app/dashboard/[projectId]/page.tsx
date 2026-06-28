@@ -150,7 +150,7 @@ export default async function ProjectPage({
                     </div>
                     <div className="flex flex-shrink-0 items-center gap-2">
                       <StatusPill status={m.status} />
-                      <MilestoneActions milestoneId={m.id} projectId={project.id} status={m.status} amount={Number(m.amount)} title={m.title} isFreelancer={isFreelancer} isClient={isClient}/>
+                      <MilestoneActions milestoneId={m.id} projectId={project.id} status={m.status} amount={Number(m.amount)} title={m.title} freelancerId={project.freelancer_id} isFreelancer={isFreelancer} isClient={isClient}/>
                     </div>
                   </li>
                 );

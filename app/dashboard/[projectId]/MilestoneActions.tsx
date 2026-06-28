@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { transitionMilestone } from "@/lib/milestones/actions";
 import { fundMilestone, releaseMilestone } from "@/lib/payments/service";
+import { submitReview } from "@/lib/reviews/actions";
 
 type Action = { label: string; status: string; variant: "primary" | "ghost" | "danger" };
 
@@ -191,12 +192,136 @@ function FundModal({
   );
 }
 
+function StarPicker({ value, onChange }: { value: number; onChange: (v: number) => void }) {
+  const [hover, setHover] = useState(0);
+  return (
+    <div className="flex gap-1">
+      {[1, 2, 3, 4, 5].map((n) => (
+        <button
+          key={n}
+          type="button"
+          onClick={() => onChange(n)}
+          onMouseEnter={() => setHover(n)}
+          onMouseLeave={() => setHover(0)}
+          className="transition"
+        >
+          <svg className={`h-8 w-8 transition ${(hover || value) >= n ? "text-amber-400" : "text-slate-200"}`} viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          </svg>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function ReviewModal({
+  title,
+  freelancerId,
+  milestoneId,
+  projectId,
+  onDone,
+}: {
+  title: string;
+  freelancerId: string;
+  milestoneId: string;
+  projectId: string;
+  onDone: () => void;
+}) {
+  const [rating, setRating] = useState(0);
+  const [body, setBody] = useState("");
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [submitted, setSubmitted] = useState(false);
+
+  async function onSubmit() {
+    if (!rating) return;
+    setPending(true);
+    const result = await submitReview(milestoneId, projectId, freelancerId, rating, body);
+    setPending(false);
+    if (result?.error) { setError(result.error); return; }
+    setSubmitted(true);
+  }
+
+  return (
+    <>
+      <div className="fixed inset-0 z-40 bg-slate-900/40" onClick={onDone} />
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="w-full max-w-md rounded-2xl bg-white shadow-xl">
+
+          {submitted ? (
+            <div className="flex flex-col items-center px-8 py-10 text-center">
+              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100">
+                <svg className="h-8 w-8 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 6L9 17l-5-5"/>
+                </svg>
+              </div>
+              <h2 className="mb-1 text-[17px] font-bold text-[#0F172A]">Thank you!</h2>
+              <p className="mb-6 text-[13px] text-slate-500">Your review has been posted on the freelancer&apos;s public profile.</p>
+              <button onClick={onDone} className="rounded-xl bg-emerald-500 px-8 py-2.5 text-sm font-semibold text-white hover:bg-emerald-600 transition">
+                Done
+              </button>
+            </div>
+          ) : (
+            <>
+              <div className="border-b border-slate-100 px-6 py-5">
+                <h2 className="text-[17px] font-bold text-[#0F172A]">Rate this milestone</h2>
+                <p className="mt-0.5 truncate text-[13px] text-slate-500">{title}</p>
+              </div>
+
+              <div className="px-6 pt-6">
+                <p className="mb-3 text-[13px] font-medium text-slate-700">How would you rate the work?</p>
+                <StarPicker value={rating} onChange={setRating} />
+                {rating > 0 && (
+                  <p className="mt-2 text-[12px] text-slate-400">
+                    {["", "Poor", "Fair", "Good", "Very good", "Excellent"][rating]}
+                  </p>
+                )}
+              </div>
+
+              <div className="px-6 pt-4">
+                <label className="mb-1.5 block text-[13px] font-medium text-slate-700">
+                  Write a review <span className="font-normal text-slate-400">(optional)</span>
+                </label>
+                <textarea
+                  value={body}
+                  onChange={(e) => setBody(e.target.value)}
+                  rows={3}
+                  placeholder="Describe your experience working with this freelancer…"
+                  className="w-full resize-none rounded-xl border border-slate-200 px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                />
+                {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
+              </div>
+
+              <div className="flex gap-2 px-6 py-5">
+                <button
+                  onClick={onSubmit}
+                  disabled={!rating || pending}
+                  className="flex-1 rounded-xl bg-emerald-500 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:opacity-50"
+                >
+                  {pending ? "Posting…" : "Post review"}
+                </button>
+                <button
+                  onClick={onDone}
+                  className="rounded-xl border border-slate-200 px-5 py-2.5 text-sm text-slate-500 transition hover:text-slate-700"
+                >
+                  Skip
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    </>
+  );
+}
+
 export function MilestoneActions({
   milestoneId,
   projectId,
   status,
   amount,
   title,
+  freelancerId,
   isFreelancer,
   isClient,
 }: {
@@ -205,21 +330,20 @@ export function MilestoneActions({
   status: string;
   amount: number;
   title: string;
+  freelancerId: string;
   isFreelancer: boolean;
   isClient: boolean;
 }) {
   const [pending, setPending] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showFundModal, setShowFundModal] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
 
   const actions = actionsFor(status, isFreelancer, isClient);
   if (!actions.length) return null;
 
   async function act(newStatus: string) {
-    if (newStatus === "funded") {
-      setShowFundModal(true);
-      return;
-    }
+    if (newStatus === "funded") { setShowFundModal(true); return; }
     setPending(newStatus);
     setError(null);
     const result =
@@ -227,7 +351,8 @@ export function MilestoneActions({
         ? await releaseMilestone(milestoneId, projectId)
         : await transitionMilestone(milestoneId, projectId, newStatus);
     setPending(null);
-    if (result?.error) setError(result.error);
+    if (result?.error) { setError(result.error); return; }
+    if (newStatus === "released" && isClient) setShowReviewModal(true);
   }
 
   async function confirmFund(_method: string) {
@@ -268,6 +393,16 @@ export function MilestoneActions({
           onClose={() => { setShowFundModal(false); setError(null); }}
           pending={pending === "funded"}
           error={error}
+        />
+      )}
+
+      {showReviewModal && (
+        <ReviewModal
+          title={title}
+          freelancerId={freelancerId}
+          milestoneId={milestoneId}
+          projectId={projectId}
+          onDone={() => setShowReviewModal(false)}
         />
       )}
     </>
