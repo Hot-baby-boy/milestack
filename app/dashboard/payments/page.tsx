@@ -75,8 +75,8 @@ export default async function PaymentsPage() {
           ))}
         </div>
 
-        {/* Disputed balance — clients only, only if there are disputed milestones */}
-        {role === "client" && disputedBal > 0 && (
+        {/* Disputed balance — clients only, always visible for reassurance */}
+        {role === "client" && (
           <div className="mb-5 overflow-hidden rounded-2xl border border-orange-200 bg-orange-50 sm:mb-6">
             {/* Header */}
             <div className="flex items-center justify-between gap-3 border-b border-orange-100 px-5 py-4">
