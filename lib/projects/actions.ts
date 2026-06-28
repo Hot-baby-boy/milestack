@@ -46,9 +46,9 @@ export async function deleteWorkspace(projectId: string): Promise<{ error: strin
 
   // Only the freelancer (project creator) can delete
   const { data: project } = await supabase
-    .from("projects").select("freelancer_id").eq("id", projectId).single();
+    .from("projects").select("freelancer_id, client_id").eq("id", projectId).single();
   if (!project) return { error: "Workspace not found." };
-  if (project.freelancer_id !== user.id) return { error: "Only the freelancer can delete this workspace." };
+  if (project.freelancer_id !== user.id && project.client_id !== user.id) return { error: "You are not a member of this workspace." };
 
   // Block deletion if any milestone has moved beyond draft
   const { data: milestones } = await supabase
