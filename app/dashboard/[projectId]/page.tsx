@@ -96,7 +96,7 @@ export default async function ProjectPage({
           <span className="flex-shrink-0 rounded-md bg-slate-100 px-2 py-0.5 font-mono text-xs text-slate-500">{project.code}</span>
         </div>
         <div className="flex items-center gap-2">
-          {(isFreelancer || isClient) && <DeleteWorkspaceButton projectId={project.id} />}
+          {(isFreelancer || isClient) && !project.client_id && <DeleteWorkspaceButton projectId={project.id} />}
           {isFreelancer && <NewMilestoneForm projectId={project.id}/>}
         </div>
       </div>
@@ -113,7 +113,7 @@ export default async function ProjectPage({
           </div>
           {(isFreelancer || isClient) && (
             <div className="flex flex-shrink-0 items-center gap-2 pt-4">
-              <DeleteWorkspaceButton projectId={project.id} />
+              {!project.client_id && <DeleteWorkspaceButton projectId={project.id} />}
               {isFreelancer && <NewMilestoneForm projectId={project.id}/>}
             </div>
           )}
