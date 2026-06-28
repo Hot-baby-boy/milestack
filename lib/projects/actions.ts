@@ -71,6 +71,8 @@ export async function inviteClient(formData: FormData): Promise<ActionResult> {
   if (!projectId || !clientEmail) return { error: "Please enter the client's email." };
 
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
   const token = crypto.randomUUID();
 
   const { error } = await supabase.from("invitations").insert({
