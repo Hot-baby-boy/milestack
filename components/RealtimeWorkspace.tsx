@@ -20,7 +20,7 @@ export function RealtimeWorkspace({ projectId }: { projectId: string }) {
         filter: `id=eq.${projectId}`,
       }, () => router.refresh())
       .on("postgres_changes", {
-        event: "*", schema: "public", table: "ledger_entries",
+        event: "*", schema: "public", table: "transactions",
         filter: `project_id=eq.${projectId}`,
       }, () => router.refresh())
       .subscribe();
