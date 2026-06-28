@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { transitionMilestone } from "@/lib/milestones/actions";
 import { fundMilestone, releaseMilestone } from "@/lib/payments/service";
 import { submitReview } from "@/lib/reviews/actions";
@@ -336,14 +336,19 @@ export function MilestoneActions({
 }) {
   const [pending, setPending] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [optimisticStatus, setOptimisticStatus] = useState(status);
   const [showFundModal, setShowFundModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
 
-  const actions = actionsFor(status, isFreelancer, isClient);
+  // Sync when parent passes a new status (from realtime)
+  useEffect(() => { setOptimisticStatus(status); }, [status]);
+
+  const actions = actionsFor(optimisticStatus, isFreelancer, isClient);
   if (!actions.length && !showReviewModal) return null;
 
   async function act(newStatus: string) {
     if (newStatus === "funded") { setShowFundModal(true); return; }
+    setOptimisticStatus(newStatus); // instant UI update
     setPending(newStatus);
     setError(null);
     const result =
@@ -351,16 +356,22 @@ export function MilestoneActions({
         ? await releaseMilestone(milestoneId, projectId)
         : await transitionMilestone(milestoneId, projectId, newStatus);
     setPending(null);
-    if (result?.error) { setError(result.error); return; }
+    if (result?.error) {
+      setOptimisticStatus(status); // revert on error
+      setError(result.error);
+      return;
+    }
     if (newStatus === "released" && isClient) setShowReviewModal(true);
   }
 
   async function confirmFund(_method: string) {
+    setOptimisticStatus("funded");
     setPending("funded");
     setError(null);
     const result = await fundMilestone(milestoneId, projectId);
     setPending(null);
     if (result?.error) {
+      setOptimisticStatus(status);
       setError(result.error);
     } else {
       setShowFundModal(false);

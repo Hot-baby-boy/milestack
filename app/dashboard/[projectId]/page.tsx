@@ -1,8 +1,7 @@
 import { redirect, notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import { StatusPill } from "@/components/StatusPill";
-import { MilestoneActions } from "./MilestoneActions";
+import { MilestonesList } from "./MilestonesList";
 import { NewMilestoneForm } from "./NewMilestoneForm";
 import { CopyLinkBox } from "./CopyLinkBox";
 import { InviteClientButton } from "./InviteClientButton";
@@ -137,38 +136,13 @@ export default async function ProjectPage({
         )}
 
         {/* Milestones */}
-        <div className="mb-4 overflow-hidden rounded-2xl border border-slate-200 bg-white">
-          <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3 sm:px-5">
-            <h2 className="text-[14px] font-bold text-[#0F172A] sm:text-sm">Milestones</h2>
-            {isFreelancer && <div className="lg:hidden"><NewMilestoneForm projectId={project.id}/></div>}
-          </div>
-          {!milestones?.length ? (
-            <p className="px-4 py-5 text-sm text-slate-500">No milestones yet.{isFreelancer && " Click \"Add Milestone\" to create one."}</p>
-          ) : (
-            <ul className="divide-y divide-slate-50">
-              {milestones.map((m) => {
-                // Format date as "Jun 25" instead of "2026-06-25" to prevent wrapping
-                const dueDisplay = m.due_date
-                  ? new Date(m.due_date + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })
-                  : null;
-                return (
-                  <li key={m.id} className="px-4 py-3 sm:px-5">
-                    <div className="flex items-center gap-3">
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-[13.5px] font-semibold text-[#0F172A]">{m.title}</p>
-                        <p className="mt-0.5 whitespace-nowrap font-mono text-[11px] text-slate-500 sm:text-[11.5px]">
-                          ${Number(m.amount).toLocaleString()}{dueDisplay && <> · {dueDisplay}</>}
-                        </p>
-                      </div>
-                      <StatusPill status={m.status} />
-                    </div>
-                    <MilestoneActions milestoneId={m.id} projectId={project.id} status={m.status} amount={Number(m.amount)} title={m.title} freelancerId={project.freelancer_id} isFreelancer={isFreelancer} isClient={isClient}/>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </div>
+        <MilestonesList
+          projectId={project.id}
+          freelancerId={project.freelancer_id}
+          isFreelancer={isFreelancer}
+          isClient={isClient}
+          initialMilestones={milestones ?? []}
+        />
 
         {/* Chat */}
         <div className="mb-4 overflow-hidden rounded-2xl border border-slate-200 bg-white">
