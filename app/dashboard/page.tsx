@@ -33,7 +33,11 @@ export default async function DashboardPage() {
 
   const { data: profile } = await supabase.from("profiles").select("role, display_name, email, payout_method, payout_details").eq("id", user.id).single();
   const role = profile?.role ?? "freelancer";
-  const firstName = (profile?.display_name ?? profile?.email ?? "there").split(" ")[0];
+  const fullName = profile?.display_name
+    ?? (user.user_metadata?.full_name as string | undefined)
+    ?? profile?.email
+    ?? "there";
+  const firstName = fullName.split(" ")[0];
 
   const { data: projects } = await supabase.from("projects").select("id, code, name, status, client_id, freelancer_id, created_at").order("created_at", { ascending: false });
   const projectIds = (projects ?? []).map(p => p.id);
