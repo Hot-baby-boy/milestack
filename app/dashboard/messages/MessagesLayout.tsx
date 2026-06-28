@@ -17,7 +17,7 @@ type Preview = {
   project_id: string; body: string; sender_id: string; created_at: string;
 };
 type OtherProfile = {
-  id: string; display_name: string | null; email: string; handle: string | null;
+  id: string; display_name: string | null; email: string; handle: string | null; avatar_url?: string | null;
 };
 
 function avatar(name: string) {
@@ -108,12 +108,20 @@ export function MessagesLayout({
                   {/* Avatar — links to public profile if handle exists */}
                   {other?.handle ? (
                     <Link href={`/p/${other.handle}`} onClick={e => e.stopPropagation()}
-                      className={`flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br ${color} font-mono text-[13px] font-bold text-white hover:opacity-80 transition`}
+                      className="relative flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full hover:opacity-80 transition"
                       title={`View ${displayName}'s profile`}
-                    >{inits}</Link>
+                    >
+                      {other.avatar_url ? (
+                        <img src={other.avatar_url} alt={displayName} className="h-11 w-11 rounded-full object-cover" />
+                      ) : (
+                        <div className={`flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br ${color} font-mono text-[13px] font-bold text-white`}>{inits}</div>
+                      )}
+                    </Link>
                   ) : (
                     <div className={`flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br ${color} font-mono text-[13px] font-bold text-white`}>
-                      {inits}
+                      {other?.avatar_url ? (
+                        <img src={other.avatar_url} alt={displayName} className="h-11 w-11 rounded-full object-cover" />
+                      ) : inits}
                     </div>
                   )}
                   {/* Clicking the text row opens the chat */}

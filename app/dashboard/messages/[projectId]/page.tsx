@@ -59,8 +59,8 @@ export default async function MessagesProjectPage({
     (projects ?? []).map(p => p.freelancer_id === user.id ? p.client_id : p.freelancer_id).filter(Boolean)
   )];
   const { data: otherProfiles } = otherIds.length
-    ? await supabase.from("profiles").select("id, display_name, email, handle").in("id", otherIds)
-    : { data: [] as { id: string; display_name: string | null; email: string; handle: string | null }[] };
+    ? await supabase.from("profiles").select("id, display_name, email, handle, avatar_url").in("id", otherIds)
+    : { data: [] as { id: string; display_name: string | null; email: string; handle: string | null; avatar_url: string | null }[] };
   const profileMap = Object.fromEntries((otherProfiles ?? []).map(p => [p.id, p]));
 
   const otherId = user.id === project.client_id ? project.freelancer_id : project.client_id;
