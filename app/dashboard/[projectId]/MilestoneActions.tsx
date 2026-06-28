@@ -340,7 +340,7 @@ export function MilestoneActions({
   const [showReviewModal, setShowReviewModal] = useState(false);
 
   const actions = actionsFor(status, isFreelancer, isClient);
-  if (!actions.length) return null;
+  if (!actions.length && !showReviewModal) return null;
 
   async function act(newStatus: string) {
     if (newStatus === "funded") { setShowFundModal(true); return; }
