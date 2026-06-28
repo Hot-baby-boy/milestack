@@ -150,17 +150,17 @@ export default async function ProjectPage({
                   ? new Date(m.due_date + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })
                   : null;
                 return (
-                  <li key={m.id} className="flex items-center gap-3 px-4 py-3 sm:px-5">
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-[13.5px] font-semibold text-[#0F172A]">{m.title}</p>
-                      <p className="mt-0.5 whitespace-nowrap font-mono text-[11px] text-slate-500 sm:text-[11.5px]">
-                        ${Number(m.amount).toLocaleString()}{dueDisplay && <> · {dueDisplay}</>}
-                      </p>
-                    </div>
-                    <div className="flex flex-shrink-0 items-center gap-2">
+                  <li key={m.id} className="px-4 py-3 sm:px-5">
+                    <div className="flex items-center gap-3">
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-[13.5px] font-semibold text-[#0F172A]">{m.title}</p>
+                        <p className="mt-0.5 whitespace-nowrap font-mono text-[11px] text-slate-500 sm:text-[11.5px]">
+                          ${Number(m.amount).toLocaleString()}{dueDisplay && <> · {dueDisplay}</>}
+                        </p>
+                      </div>
                       <StatusPill status={m.status} />
-                      <MilestoneActions milestoneId={m.id} projectId={project.id} status={m.status} amount={Number(m.amount)} title={m.title} freelancerId={project.freelancer_id} isFreelancer={isFreelancer} isClient={isClient}/>
                     </div>
+                    <MilestoneActions milestoneId={m.id} projectId={project.id} status={m.status} amount={Number(m.amount)} title={m.title} freelancerId={project.freelancer_id} isFreelancer={isFreelancer} isClient={isClient}/>
                   </li>
                 );
               })}

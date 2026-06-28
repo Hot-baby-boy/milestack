@@ -369,8 +369,8 @@ export function MilestoneActions({
 
   return (
     <>
-      <div className="flex flex-col items-end gap-1">
-        <div className="flex gap-1.5">
+      <div className="mt-2 flex flex-col items-end gap-1">
+        <div className="flex flex-wrap justify-end gap-1.5">
           {actions.map((a) => (
             <button
               key={a.status}

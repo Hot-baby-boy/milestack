@@ -85,7 +85,7 @@ export default async function ProfilePage() {
       <div className="mx-auto max-w-2xl px-4 py-8 sm:px-8">
         <div className="mb-6 flex items-center justify-between">
           <h1 className="text-xl font-semibold text-slate-900">Your profile</h1>
-          {profile?.handle && (
+          {profile?.role === "freelancer" && profile?.handle && (
             <a
               href={`/p/${profile.handle}`}
               className="text-sm font-medium text-emerald-600 hover:underline"
@@ -94,6 +94,9 @@ export default async function ProfilePage() {
             >
               View public profile →
             </a>
+          )}
+          {profile?.role === "freelancer" && !profile?.handle && (
+            <span className="text-sm text-slate-400">Set a handle to get your public profile link</span>
           )}
         </div>
 
