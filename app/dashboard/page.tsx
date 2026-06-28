@@ -111,7 +111,15 @@ export default async function DashboardPage() {
         {/* Greeting */}
         <div className="mb-5 flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <h2 className="text-[18px] font-bold tracking-tight text-[#0F172A] sm:text-[21px]">Welcome back, {firstName} 👋</h2>
+            <h2 className="text-[18px] font-bold tracking-tight text-[#0F172A] sm:text-[21px]">
+              Welcome back, {firstName}{" "}
+              <img
+                src="https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/Waving%20hand/3D/waving_hand_3d.png"
+                alt="👋"
+                className="inline-block h-7 w-7 align-middle sm:h-8 sm:w-8"
+                style={{ marginTop: "-4px" }}
+              />
+            </h2>
             <p className="mt-1 text-[12.5px] text-slate-500 sm:text-[13.5px]">
               {needsAction > 0 ? `${needsAction} milestone${needsAction !== 1 ? "s" : ""} need${needsAction === 1 ? "s" : ""} action`
                 : activeOrders.length > 0 ? `${activeOrders.length} active order${activeOrders.length !== 1 ? "s" : ""}`
