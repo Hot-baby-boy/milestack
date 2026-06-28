@@ -10,6 +10,7 @@ import { DeleteWorkspaceButton } from "./DeleteWorkspaceButton";
 import { TransactionsTable } from "@/components/TransactionsTable";
 import { ContractPanel } from "./ContractPanel";
 import { ChatPanel } from "@/components/ChatPanel";
+import { RealtimeWorkspace } from "@/components/RealtimeWorkspace";
 import { FilesList } from "./FilesList";
 
 export default async function ProjectPage({
@@ -87,6 +88,7 @@ export default async function ProjectPage({
 
   return (
     <div className="min-h-screen">
+      <RealtimeWorkspace projectId={project.id} />
       {/* Desktop top bar */}
       <div className="sticky top-0 z-30 hidden h-[72px] items-center justify-between border-b border-slate-200 bg-white pl-8 pr-16 lg:flex">
         <div className="flex min-w-0 items-center gap-3">
