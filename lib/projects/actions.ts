@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { sendNotificationEmail } from "@/lib/email/resend";
 
 export type ActionResult = { error: string } | void;
 
@@ -80,6 +81,33 @@ export async function inviteClient(formData: FormData): Promise<ActionResult> {
   });
 
   if (error) return { error: error.message };
+
+  // Send invite email to client
+  const { data: project } = await supabase
+    .from("projects").select("name, code").eq("id", projectId).single();
+  const { data: freelancerProfile } = await supabase
+    .from("profiles").select("display_name, email").eq("id", user.id).single();
+  const freelancerName = freelancerProfile?.display_name ?? freelancerProfile?.email ?? "Your freelancer";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://milestack.vercel.app";
+  const inviteUrl = `${siteUrl}/invite/${token}`;
+
+  await sendNotificationEmail(
+    clientEmail,
+    `${freelancerName} invited you to a workspace on Milestack`,
+    `Hi${clientName ? ` ${clientName}` : ""},
+
+${freelancerName} has invited you to collaborate on "${project?.name ?? "a workspace"}" (${project?.code ?? ""}) on Milestack.
+
+Milestack protects your payments with milestone-based escrow — funds are only released when work is approved.
+
+Click the link below to accept the invitation and join the workspace:
+
+${inviteUrl}
+
+This link is unique to you. If you didn't expect this invitation, you can safely ignore this email.
+
+— The Milestack Team`
+  );
 
   redirect(`/dashboard/${projectId}?invited=1&token=${token}`);
 }
