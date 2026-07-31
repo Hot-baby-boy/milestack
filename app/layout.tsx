@@ -4,6 +4,9 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Milestack",
   description: "Trust and payments for freelancers and their clients.",
+  icons: {
+    icon: "/icon.svg",
+  },
 };
 
 export default function RootLayout({
