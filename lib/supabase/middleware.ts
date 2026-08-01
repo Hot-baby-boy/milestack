@@ -1,4 +1,3 @@
-import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 const PUBLIC_PATHS = [
@@ -11,52 +10,47 @@ const PUBLIC_PATHS = [
   "/auth/confirm",
   "/invite",
   "/admin/login",
+  "/p/",
 ];
 
-export async function updateSession(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request });
-
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value),
-          );
-          supabaseResponse = NextResponse.next({ request });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options),
-          );
-        },
-      },
-    },
+// Check for Supabase session cookie without any network call.
+// Full token validation still happens in every server component via getUser().
+function hasSession(request: NextRequest): boolean {
+  const projectRef = process.env.NEXT_PUBLIC_SUPABASE_URL
+    ?.replace("https://", "")
+    .split(".")[0] ?? "";
+  const cookieName = `sb-${projectRef}-auth-token`;
+  return (
+    request.cookies.has(cookieName) ||
+    request.cookies.has("sb-access-token") ||
+    // Supabase sometimes splits the token across chunks
+    [...request.cookies.getAll().map(c => c.name)].some(n => n.startsWith("sb-") && n.includes("-auth-token"))
   );
+}
 
-  const { data: { session } } = await supabase.auth.getSession();
-  const user = session?.user ?? null;
-
+export async function updateSession(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const isPublic = PUBLIC_PATHS.some((path) => pathname.startsWith(path));
+  const loggedIn = hasSession(request);
 
-  if (!user && !isPublic && pathname !== "/") {
+  if (!loggedIn && !isPublic && pathname !== "/") {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
+    url.search = `?next=${encodeURIComponent(pathname)}`;
     return NextResponse.redirect(url);
   }
 
-  if (user && (pathname === "/login" || pathname === "/signup")) {
+  if (loggedIn && (pathname === "/login" || pathname === "/signup")) {
     const requestedNext = request.nextUrl.searchParams.get("next");
-    const safeNext = requestedNext?.startsWith("/") && !requestedNext.startsWith("//") ? requestedNext : null;
+    const safeNext =
+      requestedNext?.startsWith("/") && !requestedNext.startsWith("//")
+        ? requestedNext
+        : null;
     const url = request.nextUrl.clone();
     url.search = "";
     url.pathname = safeNext ?? "/dashboard";
     return NextResponse.redirect(url);
   }
 
-  return supabaseResponse;
+  return NextResponse.next({ request });
 }
