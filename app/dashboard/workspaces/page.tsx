@@ -42,11 +42,10 @@ export default async function WorkspacesPage() {
     : { data: [] as { id: string; project_id: string; amount: number; status: string; currency: string }[] };
 
   const ms = milestones ?? [];
-  const currency = ms[0]?.currency ?? "USD";
-  const fmt = (n: number) => `${currency} ${n.toLocaleString(undefined, { minimumFractionDigits: 0 })}`;
-
   function projectMeta(projectId: string) {
     const pms = ms.filter(m => m.project_id === projectId);
+    const currency = pms[0]?.currency ?? "NGN";
+    const fmt = (n: number) => `${currency} ${n.toLocaleString(undefined, { minimumFractionDigits: 0 })}`;
     const total = pms.reduce((s, m) => s + Number(m.amount), 0);
     const rel = pms.filter(m => m.status === "released").reduce((s, m) => s + Number(m.amount), 0);
     const pct = total > 0 ? Math.round((rel / total) * 100) : 0;
@@ -57,7 +56,7 @@ export default async function WorkspacesPage() {
     else if (pms.some(m => m.status === "funded")) status = "funded";
     else if (pms.some(m => m.status === "approved")) status = "approved";
     else if (pms.length > 0 && pms.every(m => m.status === "released")) status = "released";
-    return { total, rel, pct, status, milestoneCount: pms.length };
+    return { total, rel, pct, status, milestoneCount: pms.length, fmt };
   }
 
   return (
@@ -96,7 +95,7 @@ export default async function WorkspacesPage() {
         ) : (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-[18px] xl:grid-cols-3">
             {(projects ?? []).map(project => {
-              const { total, rel, pct, status, milestoneCount } = projectMeta(project.id);
+              const { total, rel, pct, status, milestoneCount, fmt } = projectMeta(project.id);
               const pill = STATUS_PILL[status] ?? STATUS_PILL.draft;
               const color = AVATAR_COLORS[project.name.charCodeAt(0) % AVATAR_COLORS.length];
               const inits = project.name.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase();

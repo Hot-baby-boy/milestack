@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { requireAdmin, adminLogout } from "./actions";
+import { requireAdmin, adminLogout, refundDisputedMilestone, releaseDisputedMilestoneToFreelancer } from "./actions";
 import { Logo } from "@/components/Logo";
 import { ProjectSearch } from "./ProjectSearch";
 
@@ -73,6 +73,13 @@ export default async function AdminConsolePage({
     .select("id, milestone_id, from_status, to_status, actor_id, created_at")
     .order("created_at", { ascending: false })
     .limit(50);
+
+  // ---- Disputed milestones (need admin resolution) ----
+  const { data: disputedMilestones } = await supabase
+    .from("milestones")
+    .select("id, title, amount, currency, project_id, projects(name, code)")
+    .eq("status", "disputed")
+    .order("updated_at", { ascending: false });
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
@@ -209,7 +216,7 @@ export default async function AdminConsolePage({
 
         {/* Tab nav */}
         <div className="mb-6 flex gap-4 border-b border-slate-700">
-          {(["users", "audit"] as const).map((t) => (
+          {(["users", "disputes", "audit"] as const).map((t) => (
             <Link
               key={t}
               href={`/admin?tab=${t}${code ? `&code=${code}` : ""}`}
@@ -219,10 +226,63 @@ export default async function AdminConsolePage({
                   : "text-slate-400 hover:text-white"
               }`}
             >
-              {t === "audit" ? "Audit log" : "Users"}
+              {t === "audit" ? "Audit log" : t === "disputes" ? `Disputes${disputedMilestones?.length ? ` (${disputedMilestones.length})` : ""}` : "Users"}
             </Link>
           ))}
         </div>
+
+        {/* Disputes tab */}
+        {tab === "disputes" && (
+          <div className="space-y-4">
+            {!disputedMilestones?.length && (
+              <p className="rounded-xl border border-slate-700 bg-slate-800 p-4 text-sm text-slate-400">
+                No disputed milestones right now.
+              </p>
+            )}
+            {(disputedMilestones ?? []).map((m) => {
+              const project = Array.isArray(m.projects) ? m.projects[0] : m.projects;
+              async function handleRefund(formData: FormData) {
+                "use server";
+                await refundDisputedMilestone(formData);
+              }
+              async function handleReleaseAnyway(formData: FormData) {
+                "use server";
+                await releaseDisputedMilestoneToFreelancer(formData);
+              }
+              return (
+                <div key={m.id} className="rounded-xl border border-red-500/30 bg-slate-800 p-4">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <p className="font-semibold text-white">{m.title}</p>
+                      <p className="mt-0.5 text-xs text-slate-400">
+                        {project?.name} · <span className="font-mono text-amber-400">{project?.code}</span> · {m.currency} {Number(m.amount).toLocaleString()}
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <form action={handleRefund}>
+                        <input type="hidden" name="milestone_id" value={m.id} />
+                        <button className="rounded-lg border border-red-400/40 px-3 py-1.5 text-xs font-semibold text-red-300 hover:bg-red-500/10">
+                          Refund to client
+                        </button>
+                      </form>
+                      <form action={handleReleaseAnyway}>
+                        <input type="hidden" name="milestone_id" value={m.id} />
+                        <button className="rounded-lg border border-emerald-400/40 px-3 py-1.5 text-xs font-semibold text-emerald-300 hover:bg-emerald-500/10">
+                          Release to freelancer
+                        </button>
+                      </form>
+                      <Link href={`/dashboard/${m.project_id}`}
+                        className="rounded-lg border border-slate-600 px-3 py-1.5 text-xs font-semibold text-slate-300 hover:bg-slate-700"
+                      >
+                        View workspace
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
 
         {/* Users tab */}
         {tab === "users" && (

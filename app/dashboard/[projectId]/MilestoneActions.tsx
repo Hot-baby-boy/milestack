@@ -2,8 +2,26 @@
 
 import { useState, useEffect } from "react";
 import { transitionMilestone } from "@/lib/milestones/actions";
-import { fundMilestone, releaseMilestone } from "@/lib/payments/service";
+import { initFundMilestone, confirmFundMilestone, releaseMilestone } from "@/lib/payments/service";
 import { submitReview } from "@/lib/reviews/actions";
+
+const PROTECTION_FEE_RATE = 0.10;
+
+declare global {
+  interface Window {
+    PaystackPop?: {
+      setup(config: {
+        key: string;
+        email: string;
+        amount: number;
+        ref: string;
+        currency: string;
+        onClose: () => void;
+        callback: (response: { reference: string }) => void;
+      }): { openIframe: () => void };
+    };
+  }
+}
 
 type Action = { label: string; status: string; variant: "primary" | "ghost" | "danger" };
 
@@ -35,52 +53,6 @@ const VARIANT_CLASSES: Record<Action["variant"], string> = {
   danger: "border border-red-200 text-red-600 hover:bg-red-50",
 };
 
-const PAYMENT_METHODS = [
-  {
-    id: "paypal",
-    label: "PayPal",
-    description: "Pay via your PayPal account",
-    icon: (
-      <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none">
-        <path d="M7.5 3h6.5C17.5 3 20 5 19.5 8.5 18.9 12.5 16 14 12.5 14H10L9 19H5.5L7.5 3Z" stroke="#003087" strokeWidth="1.5" strokeLinejoin="round"/>
-        <path d="M9.5 7h5C17 7 18.5 8.5 18 11c-.5 3-3 4-5.5 4H9" stroke="#009cde" strokeWidth="1.5" strokeLinejoin="round"/>
-      </svg>
-    ),
-  },
-  {
-    id: "card",
-    label: "Debit / Credit Card",
-    description: "Visa, Mastercard, Verve",
-    icon: (
-      <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="2" y="5" width="20" height="14" rx="2"/>
-        <path d="M2 10h20M6 15h2M10 15h4"/>
-      </svg>
-    ),
-  },
-  {
-    id: "bank",
-    label: "Bank Transfer",
-    description: "Direct bank payment",
-    icon: (
-      <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M3 10l9-7 9 7M5 10v7a1 1 0 001 1h12a1 1 0 001-1v-7M9 21v-5a1 1 0 011-1h4a1 1 0 011 1v5"/>
-      </svg>
-    ),
-  },
-  {
-    id: "usdc",
-    label: "USDC / Crypto",
-    description: "Stablecoin payment",
-    icon: (
-      <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="9"/>
-        <path d="M15 8.5a4 4 0 00-6 3.5 4 4 0 006 3.5M12 6v2M12 16v2"/>
-      </svg>
-    ),
-  },
-];
-
 function FundModal({
   amount,
   title,
@@ -91,12 +63,29 @@ function FundModal({
 }: {
   amount: number;
   title: string;
-  onConfirm: (method: string) => void;
+  onConfirm: () => void;
   onClose: () => void;
   pending: boolean;
   error: string | null;
 }) {
-  const [selected, setSelected] = useState<string | null>(null);
+  const fee = amount * PROTECTION_FEE_RATE;
+  const total = amount + fee;
+  const fmt = (n: number) => `₦${n.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+
+  // Paystack Inline's script insists on finding itself inside a real <form>
+  // element in the DOM at load time — next/script re-parents scripts into
+  // <head> regardless of JSX position, which breaks that check. Inject it
+  // by hand instead, once, into a form we control directly.
+  useEffect(() => {
+    if (document.getElementById("paystack-inline-script")) return;
+    const form = document.createElement("form");
+    form.style.display = "none";
+    const script = document.createElement("script");
+    script.id = "paystack-inline-script";
+    script.src = "https://js.paystack.co/v1/inline.js";
+    form.appendChild(script);
+    document.body.appendChild(form);
+  }, []);
 
   return (
     <>
@@ -110,51 +99,18 @@ function FundModal({
             <p className="mt-0.5 truncate text-[13px] text-slate-500">{title}</p>
           </div>
 
-          {/* Amount */}
-          <div className="mx-6 mt-5 rounded-xl bg-emerald-50 px-4 py-3 text-center">
-            <p className="text-[12px] font-medium text-emerald-700">Amount to fund</p>
-            <p className="text-[28px] font-bold text-emerald-700">
-              ${amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-            </p>
-            <p className="text-[11px] text-emerald-600">Held securely in escrow until you release it.</p>
-          </div>
-
-          {/* Payment methods */}
-          <div className="px-6 pt-5">
-            <p className="mb-3 text-[11.5px] font-semibold uppercase tracking-wide text-slate-400">
-              Choose payment method
-            </p>
-            <div className="space-y-2">
-              {PAYMENT_METHODS.map((m) => (
-                <button
-                  key={m.id}
-                  type="button"
-                  onClick={() => setSelected(m.id)}
-                  className={`flex w-full items-center gap-3 rounded-xl border px-4 py-3 text-left transition ${
-                    selected === m.id
-                      ? "border-emerald-400 bg-emerald-50 ring-1 ring-emerald-400"
-                      : "border-slate-200 hover:border-slate-300 hover:bg-slate-50"
-                  }`}
-                >
-                  <div className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg ${selected === m.id ? "bg-emerald-100 text-emerald-600" : "bg-slate-100 text-slate-500"}`}>
-                    {m.icon}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[13.5px] font-semibold text-[#0F172A]">{m.label}</p>
-                    <p className="text-[12px] text-slate-400">{m.description}</p>
-                  </div>
-                  <div className={`flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full border-2 transition ${
-                    selected === m.id ? "border-emerald-500 bg-emerald-500" : "border-slate-300"
-                  }`}>
-                    {selected === m.id && (
-                      <svg viewBox="0 0 10 10" className="h-2.5 w-2.5" fill="none">
-                        <path d="M2 5l2 2 4-4" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    )}
-                  </div>
-                </button>
-              ))}
+          {/* Amount breakdown */}
+          <div className="mx-6 mt-5 space-y-1.5 rounded-xl bg-emerald-50 px-4 py-3">
+            <div className="flex justify-between text-[13px] text-emerald-700">
+              <span>Milestone</span><span>{fmt(amount)}</span>
             </div>
+            <div className="flex justify-between text-[13px] text-emerald-700">
+              <span>Project Protection Fee (10%)</span><span>{fmt(fee)}</span>
+            </div>
+            <div className="flex justify-between border-t border-emerald-200 pt-1.5 text-[15px] font-bold text-emerald-800">
+              <span>Total to pay</span><span>{fmt(total)}</span>
+            </div>
+            <p className="pt-1 text-[11px] text-emerald-600">Held securely in escrow until you release it.</p>
           </div>
 
           {/* Escrow note */}
@@ -172,11 +128,11 @@ function FundModal({
           {/* Actions */}
           <div className="flex gap-2 px-6 py-5">
             <button
-              onClick={() => selected && onConfirm(selected)}
-              disabled={!selected || pending}
+              onClick={onConfirm}
+              disabled={pending}
               className="flex-1 rounded-xl bg-emerald-500 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-600 disabled:opacity-50"
             >
-              {pending ? "Processing…" : "Confirm payment"}
+              {pending ? "Processing…" : "Pay with Paystack"}
             </button>
             <button
               onClick={onClose}
@@ -364,18 +320,43 @@ export function MilestoneActions({
     if (newStatus === "released" && isClient) setShowReviewModal(true);
   }
 
-  async function confirmFund(_method: string) {
-    setOptimisticStatus("funded");
+  async function confirmFund() {
     setPending("funded");
     setError(null);
-    const result = await fundMilestone(milestoneId, projectId);
-    setPending(null);
-    if (result?.error) {
-      setOptimisticStatus(status);
-      setError(result.error);
-    } else {
-      setShowFundModal(false);
+
+    const intent = await initFundMilestone(milestoneId, projectId);
+    if ("error" in intent) {
+      setPending(null);
+      setError(intent.error);
+      return;
     }
+
+    const paystack = window.PaystackPop;
+    if (!paystack) {
+      setPending(null);
+      setError("Payment system is still loading — try again in a moment.");
+      return;
+    }
+
+    paystack.setup({
+      key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!,
+      email: intent.email,
+      amount: intent.amountKobo,
+      ref: intent.reference,
+      currency: "NGN",
+      onClose: () => setPending(null),
+      callback: (response) => {
+        confirmFundMilestone(response.reference, projectId).then((result) => {
+          setPending(null);
+          if (result?.error) {
+            setError(result.error);
+            return;
+          }
+          setOptimisticStatus("funded");
+          setShowFundModal(false);
+        });
+      },
+    }).openIframe();
   }
 
   return (

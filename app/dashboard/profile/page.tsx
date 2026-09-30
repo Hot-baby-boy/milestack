@@ -110,7 +110,6 @@ export default async function ProfilePage() {
           <PayoutMethodForm
             initialMethod={profile?.payout_method ?? null}
             initialDetails={profile?.payout_details ?? null}
-            userId={user.id}
           />
         )}
       </div>

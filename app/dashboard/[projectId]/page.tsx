@@ -39,7 +39,7 @@ export default async function ProjectPage({
 
   const { data: milestones } = await supabase
     .from("milestones")
-    .select("id, title, amount, due_date, status")
+    .select("id, title, amount, currency, due_date, status")
     .eq("project_id", projectId)
     .order("created_at", { ascending: true });
 

@@ -79,12 +79,11 @@ export const PayoutLogo = ({ method, size = 20 }: { method: string; size?: numbe
   return null;
 };
 
+// Nigeria pilot: bank transfer (via Paystack) is the only real payout rail.
+// Other methods are left defined below for a future non-Nigeria pilot, but
+// hidden from the picker for now.
 export const METHODS = [
   { value: "local_bank", label: "Local Bank" },
-  { value: "paypal",     label: "PayPal" },
-  { value: "payoneer",   label: "Payoneer" },
-  { value: "wise",       label: "Wise" },
-  { value: "raenest",    label: "Raenest" },
 ];
 
 export type FieldDef = {

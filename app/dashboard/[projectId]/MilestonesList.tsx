@@ -10,6 +10,7 @@ type Milestone = {
   id: string;
   title: string;
   amount: number;
+  currency: string;
   due_date: string | null;
   status: string;
 };
@@ -91,7 +92,7 @@ export function MilestonesList({
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-[13.5px] font-semibold text-[#0F172A]">{m.title}</p>
                   <p className="mt-0.5 whitespace-nowrap font-mono text-[11px] text-slate-500 sm:text-[11.5px]">
-                    ${Number(m.amount).toLocaleString()}{fmtDate(m.due_date) && <> · {fmtDate(m.due_date)}</>}
+                    {m.currency} {Number(m.amount).toLocaleString()}{fmtDate(m.due_date) && <> · {fmtDate(m.due_date)}</>}
                   </p>
                 </div>
                 <StatusPill status={m.status} />

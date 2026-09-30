@@ -2,8 +2,50 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { resolveBankAccount } from "@/lib/paystack";
 
 export type ActionResult = { error: string } | { success: true };
+
+export async function resolveBankAccountAction(
+  bankCode: string,
+  accountNumber: string,
+): Promise<{ error: string } | { accountName: string }> {
+  if (!bankCode || !accountNumber) return { error: "Choose a bank and enter the account number." };
+  try {
+    const result = await resolveBankAccount(accountNumber, bankCode);
+    return { accountName: result.account_name };
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Could not verify that account." };
+  }
+}
+
+export async function savePayoutBankAccount(params: {
+  bankCode: string;
+  bankName: string;
+  accountNumber: string;
+  accountName: string;
+}): Promise<ActionResult> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Not authenticated." };
+
+  const { error } = await supabase.from("profiles").update({
+    payout_method: "local_bank",
+    payout_details: JSON.stringify({
+      bank_code: params.bankCode,
+      bank_name: params.bankName,
+      account_number: params.accountNumber,
+      account_name: params.accountName,
+    }),
+    // Any previously-created Paystack recipient pointed at the OLD account
+    // — clear it so the next release creates a fresh one for the new details.
+    paystack_recipient_code: null,
+  }).eq("id", user.id);
+
+  if (error) return { error: error.message };
+  revalidatePath("/dashboard/profile");
+  return { success: true };
+}
 
 export async function updateProfile(_prev: unknown, formData: FormData): Promise<ActionResult> {
   const display_name = String(formData.get("display_name") ?? "").trim() || null;
