@@ -9,6 +9,7 @@ const PUBLIC_PATHS = [
   "/auth/callback",
   "/auth/confirm",
   "/invite",
+  "/proposal",
   "/admin/login",
   "/p/",
 ];

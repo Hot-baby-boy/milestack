@@ -3,15 +3,21 @@ import { createClient } from "@/lib/supabase/server";
 import { ProfileForm } from "./ProfileForm";
 import { PortfolioSection } from "./PortfolioSection";
 import { PayoutMethodForm } from "./PayoutMethodForm";
+import { TalentListingForm } from "./TalentListingForm";
 
-export default async function ProfilePage() {
+export default async function ProfilePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ linkedin?: string; msg?: string }>;
+}) {
+  const { linkedin, msg } = await searchParams;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role, display_name, bio, skills, hourly_rate, avatar_url, handle, payout_method, payout_details")
+    .select("role, display_name, bio, skills, hourly_rate, avatar_url, handle, payout_method, payout_details, headline, linkedin_url, linkedin_name, linkedin_verified_at, talent_listed")
     .eq("id", user.id)
     .single();
 
@@ -104,6 +110,20 @@ export default async function ProfilePage() {
 
         {profile?.role === "freelancer" && (
           <PortfolioSection items={itemsWithAttachments} />
+        )}
+
+        {profile?.role === "freelancer" && (
+          <TalentListingForm
+            headline={profile.headline ?? null}
+            linkedinUrl={profile.linkedin_url ?? null}
+            linkedinName={profile.linkedin_name ?? null}
+            verified={!!profile.linkedin_verified_at}
+            listed={!!profile.talent_listed}
+            hasHandle={!!profile.handle}
+            hasBio={!!profile.bio?.trim()}
+            hasSkills={(profile.skills ?? []).length > 0}
+            notice={linkedin ? { status: linkedin, msg } : null}
+          />
         )}
 
         {profile?.role === "freelancer" && (

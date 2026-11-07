@@ -18,6 +18,8 @@ const NAV = [
     icon: <><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></> },
   { href: "/dashboard/workspaces", label: "Workspaces",
     icon: <path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/> },
+  { href: "/dashboard/talent", label: "Talent",
+    icon: <><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0113 0"/><path d="M16 4.5a3.5 3.5 0 010 7M18 20a5.5 5.5 0 00-3-4.9"/></> },
   { href: "/dashboard/milestones", label: "Milestones",
     icon: <><path d="M5 3v18"/><path d="M5 4h11l-3 4 3 4H5"/></> },
   { href: "/dashboard/payments", label: "Payments",
@@ -75,7 +77,7 @@ function SidebarContent({ displayName, role, initials, unreadCount, disputeCount
         Milestack
       </Link>
       <nav className="flex flex-1 flex-col gap-[2px]">
-        {NAV.map(item => (
+        {NAV.filter(item => item.href !== "/dashboard/talent" || role === "client").map(item => (
           <NavItem key={item.href + item.label} {...item}
             label={item.label === "Portfolio" && role === "client" ? "Profile" : item.label}
             badge={item.label === "Messages" ? unreadCount : undefined}
