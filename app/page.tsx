@@ -21,14 +21,17 @@ const CheckIcon = () => (
 );
 
 const FAQ_ITEMS = [
-  { q: "Is Milestack a marketplace?", a: "No. You bring your own clients from wherever you already work — LinkedIn, referrals, WhatsApp, email, or anywhere else. Milestack only handles the trust and payment layer once you've already agreed to work together." },
+  { q: "Is Milestack a marketplace?", a: "No. There's no bidding, no proposal race and no paying to rank higher. You can bring your own clients from wherever you already work — LinkedIn, referrals, WhatsApp, email — and Milestack handles the trust and payment layer. The Talent Space is an optional extra: a client-only directory where LinkedIn-verified freelancers can be found, and where the first conversation still happens on LinkedIn." },
+  { q: "How does the Talent Space work?", a: "Freelancers connect their LinkedIn account, complete their profile, and list themselves. Only clients can browse the directory. A client opens a freelancer's profile and clicks Contact on LinkedIn to start the conversation there. Once you've agreed on the work, the client sends you a Milestack project link with the milestones. You accept it, and the work runs in a protected workspace with escrow." },
+  { q: "How are freelancers verified?", a: "Freelancers connect their LinkedIn account through LinkedIn's official sign-in, which proves they control that account. We never scrape LinkedIn. A verified badge shows the account is real and belongs to them. It is not a background check, so clients should still review portfolios and reviews before hiring." },
+  { q: "Can clients message freelancers on Milestack first?", a: "No, by design. The first conversation happens on LinkedIn, where both sides can see each other's professional history. Once you agree to work together, the client sends a project link and everything moves into a Milestack workspace with chat, files and escrow." },
   { q: "How does escrow actually work?", a: "Your client deposits milestone funds through our payment partner before work begins. Funds stay held until the client approves the milestone, then release directly to you with no manual transfer needed." },
   { q: "Does Milestack hold my money?", a: "No. Milestack doesn't custody funds directly. Payments run through regulated payment infrastructure, so funds sit with licensed financial partners, not with Milestack itself." },
   { q: "What happens if a client and freelancer disagree?", a: "Either side can open a case in the Dispute Center with evidence, files, and chat history attached. Our resolution team reviews the milestone and makes a binding decision on the funds in escrow." },
   { q: "Do I need to verify my identity?", a: "Yes. Both freelancers and clients complete a one-time identity verification before funding or receiving any payments." },
-  { q: "What does Milestack cost?", a: "Milestack is free for freelancers to join — you keep 100% of every project you complete. Clients pay a 10% Project Protection Fee on top of the project amount when they fund a workspace. On a $1,000 project, the client pays $1,100 total, and you receive the full $1,000." },
-  { q: "Why do clients pay the fee instead of freelancers?", a: "We wanted freelancers to keep every dollar they earn, so the cost of running Milestack's protection — escrow, identity verification, fraud prevention, milestone management, and dispute resolution — is built into what the client pays, not deducted from your payout." },
-  { q: "What's the Verified Freelancer Membership?", a: "It's an optional $5/month upgrade for freelancers. It adds a verified badge on your public profile, unlimited client workspaces, a professional portfolio profile, and priority support." },
+  { q: "What does Milestack cost?", a: "Joining is free for freelancers, and you pay nothing in a month where you don't get a funded job. In months you do, there's a flat $5 fee. Clients pay a 10% Project Protection Fee on top of the project amount when they fund a workspace. On a $1,000 project, the client pays $1,100 and you receive the full $1,000, less the $5 in a month it applies." },
+  { q: "Why do clients pay the protection fee instead of freelancers?", a: "The cost of running Milestack's protection — escrow, fraud prevention, milestone management, and dispute resolution — is built into what the client pays, so freelancers aren't charged a cut of every project. The only freelancer fee is the flat $5 in months you get a funded job." },
+  { q: "How does the Talent Space fee work?", a: "Listing yourself is free. If a month goes by without a funded job through Milestack, you pay nothing. In a month where you get one, a flat $5 is taken from your payout. It's a flat fee, not a percentage, and it's the same whether the job is $100 or $10,000." },
 ];
 
 function FaqItem({ q, a }: { q: string; a: string }) {
@@ -74,6 +77,7 @@ export default function LandingPage() {
           <div className="hidden items-center gap-9 md:flex">
             <a href="#features" className="text-sm font-medium text-slate-500 hover:text-slate-900">Product</a>
             <a href="#how" className="text-sm font-medium text-slate-500 hover:text-slate-900">How it works</a>
+            <a href="#talent" className="text-sm font-medium text-slate-500 hover:text-slate-900">Talent</a>
             <a href="#pricing" className="text-sm font-medium text-slate-500 hover:text-slate-900">Pricing</a>
             <a href="#faq" className="text-sm font-medium text-slate-500 hover:text-slate-900">Security</a>
           </div>
@@ -91,6 +95,7 @@ export default function LandingPage() {
           <div className="border-t border-slate-200 bg-white px-6 py-5 flex flex-col gap-4 md:hidden shadow-lg">
             <a href="#features" className="text-base font-medium text-slate-600" onClick={() => setNavOpen(false)}>Product</a>
             <a href="#how" className="text-base font-medium text-slate-600" onClick={() => setNavOpen(false)}>How it works</a>
+            <a href="#talent" className="text-base font-medium text-slate-600" onClick={() => setNavOpen(false)}>Talent</a>
             <a href="#pricing" className="text-base font-medium text-slate-600" onClick={() => setNavOpen(false)}>Pricing</a>
             <a href="#faq" className="text-base font-medium text-slate-600" onClick={() => setNavOpen(false)}>Security</a>
             <div className="flex flex-col gap-2.5 pt-2">
@@ -116,7 +121,11 @@ export default function LandingPage() {
                 Found A Client?<br/>
                 <span className="bg-gradient-to-r from-emerald-700 to-emerald-400 bg-clip-text text-transparent">We&apos;ll Secure The Deal.</span>
               </h1>
-              <p className="mb-9 max-w-md text-lg leading-relaxed text-slate-500">Protect payments, track milestones, and get paid with confidence.</p>
+              <p className="mb-4 max-w-md text-lg leading-relaxed text-slate-500">Protect payments, track milestones, and get paid with confidence.</p>
+              <p className="mb-9 max-w-md text-[15px] leading-relaxed text-slate-500">
+                Looking for talent instead? Clients can now find <span className="font-semibold text-slate-700">LinkedIn-verified freelancers</span> in the{" "}
+                <a href="#talent" className="font-semibold text-emerald-700 underline decoration-emerald-300 underline-offset-2 hover:text-emerald-800">Talent Space</a>.
+              </p>
               <div className="mb-7 flex flex-wrap gap-4">
                 <Link href="/signup" className="rounded-[10px] bg-emerald-500 px-6 py-3 text-sm font-semibold text-white shadow-md hover:bg-emerald-600 transition-colors">Start a Workspace</Link>
                 <a href="#how" className="flex items-center gap-2 rounded-[10px] border border-slate-200 px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors">
@@ -200,9 +209,9 @@ export default function LandingPage() {
         <div className="mx-auto max-w-[1180px] px-6">
           <h2 className="mb-2.5 text-3xl font-bold tracking-tight text-slate-900">
             You found the client.{" "}
-            <span className="bg-gradient-to-r from-emerald-700 to-emerald-400 bg-clip-text text-transparent">Keep every dollar you earn.</span>
+            <span className="bg-gradient-to-r from-emerald-700 to-emerald-400 bg-clip-text text-transparent">Pay nothing until you earn.</span>
           </h2>
-          <p className="text-base text-slate-500">Clients pay for protection. Freelancers keep 100% of their project earnings.</p>
+          <p className="text-base text-slate-500">Clients pay 10% for protection. Freelancers pay a flat $5 only in months they get a funded job.</p>
         </div>
       </section>
 
@@ -219,7 +228,7 @@ export default function LandingPage() {
           <div className="relative mx-auto max-w-[760px]">
             <div className="absolute left-[27px] top-2 bottom-2 w-0.5 bg-gradient-to-b from-emerald-500 to-slate-200"/>
             {[
-              { n:"01", title:"Invite Your Client", body:"Send a workspace link by email, WhatsApp, LinkedIn, or any channel you already use. No marketplace account required on either side." },
+              { n:"01", title:"Invite Your Client", body:"Send a workspace link by email, WhatsApp, LinkedIn, or any channel you already use. Or accept a project link a client sends you from the Talent Space. No bidding or marketplace account required." },
               { n:"02", title:"Create Milestones", body:"Break the project into clear, priced milestones with deadlines, deliverables, and scope — set once, visible to both sides." },
               { n:"03", title:"Client Funds Project", body:"Your client deposits the milestone amount plus a 10% Project Protection Fee into escrow before work begins. You receive 100% of the agreed amount." },
               { n:"04", title:"Deliver Work", body:"Upload files, share progress, and message your client inside the workspace — one shared record for the whole project." },
@@ -234,6 +243,58 @@ export default function LandingPage() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── TALENT SPACE ── */}
+      <section id="talent" className="py-28">
+        <div className="mx-auto max-w-[1180px] px-6">
+          <div className="mx-auto mb-14 max-w-[680px] text-center">
+            <div className="mb-4 inline-flex items-center gap-2 font-mono text-xs font-semibold uppercase tracking-widest text-emerald-700">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"/>The Talent Space
+            </div>
+            <h2 className="mb-4 text-4xl font-bold tracking-tight text-slate-900">Get found. Keep your clients. Never start over.</h2>
+            <p className="text-lg text-slate-500">A client-only directory of LinkedIn-verified freelancers. No bidding wars, no ranking fees, and no losing your account and your clients overnight.</p>
+          </div>
+
+          <div className="mx-auto mb-12 grid max-w-[980px] gap-4 sm:grid-cols-3">
+            {[
+              { n:"1", title:"Get verified", body:"Connect your LinkedIn account through LinkedIn's official sign-in and list yourself." },
+              { n:"2", title:"Get contacted", body:"Clients browse, open your profile, and reach out to you directly on LinkedIn." },
+              { n:"3", title:"Work protected", body:"The client sends a project link. You accept, and escrow protects every milestone." },
+            ].map((s) => (
+              <div key={s.n} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-full bg-emerald-500 font-mono text-sm font-bold text-white">{s.n}</div>
+                <h3 className="mb-1.5 text-base font-bold text-slate-900">{s.title}</h3>
+                <p className="text-sm leading-relaxed text-slate-500">{s.body}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mx-auto grid max-w-[980px] gap-6 sm:grid-cols-2">
+            <div className="rounded-3xl border border-slate-200 bg-gradient-to-b from-slate-50 to-emerald-50/30 p-9">
+              <span className="mb-3 inline-flex rounded-full bg-emerald-100 px-3 py-1 font-mono text-[11px] font-semibold uppercase tracking-wider text-emerald-700">For freelancers</span>
+              <h3 className="mb-2 text-xl font-bold text-slate-900">Your clients stay yours</h3>
+              <p className="mb-5 text-sm leading-relaxed text-slate-500">Tired of platforms that block you and make you start from zero? Your Milestack workspace, reviews and client relationships belong to you.</p>
+              <ul className="mb-7 space-y-3">
+                {["Free to list. Pay $5 only in months you get a funded job","LinkedIn-verified badge on your profile","Clients contact you on LinkedIn, not a bidding inbox","Reviews and portfolio travel with you"].map(f => (
+                  <li key={f} className="flex items-start gap-2.5 text-sm text-slate-700"><CheckIcon/>{f}</li>
+                ))}
+              </ul>
+              <Link href="/signup" className="inline-block rounded-[10px] bg-emerald-500 px-6 py-3 text-sm font-semibold text-white hover:bg-emerald-600 transition-colors">List yourself</Link>
+            </div>
+            <div className="rounded-3xl border border-slate-200 bg-white p-9 shadow-sm">
+              <span className="mb-3 inline-flex rounded-full bg-slate-100 px-3 py-1 font-mono text-[11px] font-semibold uppercase tracking-wider text-slate-600">For clients</span>
+              <h3 className="mb-2 text-xl font-bold text-slate-900">Hire people who are real</h3>
+              <p className="mb-5 text-sm leading-relaxed text-slate-500">Browse freelancers whose LinkedIn accounts are verified, check their reviews and portfolios, then hire with your payment held safely until the work is approved.</p>
+              <ul className="mb-7 space-y-3">
+                {["Only clients can see the Talent Space","Talk to them on LinkedIn first, see their real history","Send a project link with milestones agreed","Pay into escrow and release only when you approve"].map(f => (
+                  <li key={f} className="flex items-start gap-2.5 text-sm text-slate-700"><CheckIcon/>{f}</li>
+                ))}
+              </ul>
+              <Link href="/signup" className="inline-block rounded-[10px] border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-800 hover:bg-slate-50 transition-colors">Find talent</Link>
+            </div>
           </div>
         </div>
       </section>
@@ -469,8 +530,8 @@ export default function LandingPage() {
             <div className="mb-4 inline-flex items-center gap-2 font-mono text-xs font-semibold uppercase tracking-widest text-emerald-700">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"/>Pricing
             </div>
-            <h2 className="mb-4 text-4xl font-bold tracking-tight text-slate-900">Freelancers keep 100%. Clients pay for protection.</h2>
-            <p className="text-lg text-slate-500">Milestack is free to join for freelancers. Clients pay a transparent Project Protection Fee only when they fund a project.</p>
+            <h2 className="mb-4 text-4xl font-bold tracking-tight text-slate-900">Clients pay for protection. Freelancers pay only when they earn.</h2>
+            <p className="text-lg text-slate-500">Milestack is free to join. Clients pay a transparent Project Protection Fee when they fund a project, and freelancers pay a flat $5 only in months they get a funded job.</p>
           </div>
           <div className="mx-auto grid max-w-[980px] gap-6 sm:grid-cols-2 items-stretch">
             {/* Project protection fee */}
@@ -480,7 +541,7 @@ export default function LandingPage() {
                 10%
                 <span className="mt-2 block font-sans text-sm font-normal text-slate-500">paid by the client, on top of the project amount</span>
               </div>
-              <p className="mb-4 text-sm leading-relaxed text-slate-500">Charged to the client when they fund a project — never deducted from what the freelancer earns.</p>
+              <p className="mb-4 text-sm leading-relaxed text-slate-500">Charged to the client when they fund a project, on top of the amount the freelancer earns.</p>
               <p className="mb-8 text-xs leading-relaxed text-slate-400">Covers escrow protection, identity verification, fraud prevention, milestone management, secure payment processing, and dispute resolution.</p>
               <Link href="/signup" className="mt-auto rounded-[10px] bg-emerald-500 px-6 py-3 text-center text-sm font-semibold text-white hover:bg-emerald-600 transition-colors">Start a Workspace</Link>
             </div>
@@ -488,23 +549,23 @@ export default function LandingPage() {
             <div className="relative flex flex-col overflow-hidden rounded-3xl bg-slate-900 p-10 shadow-2xl">
               <div className="absolute inset-0 pointer-events-none" style={{background:"radial-gradient(420px 280px at 100% 0%, rgba(16,185,129,0.22), transparent 70%)"}}/>
               <div className="relative">
-                <span className="mb-3 inline-flex w-fit rounded-full bg-white/10 px-3 py-1 font-mono text-[11px] font-semibold uppercase tracking-wider text-white">Optional · For Freelancers</span>
-                <div className="mb-1 mt-3 text-lg font-bold text-white">Verified Freelancer Membership</div>
-                <div className="mb-1 font-mono text-5xl font-extrabold text-white">$5<span className="font-sans text-sm font-normal text-slate-400">/month</span></div>
-                <p className="mb-6 text-sm text-slate-400">Stand out to clients and run unlimited workspaces.</p>
+                <span className="mb-3 inline-flex w-fit rounded-full bg-white/10 px-3 py-1 font-mono text-[11px] font-semibold uppercase tracking-wider text-white">For Freelancers</span>
+                <div className="mb-1 mt-3 text-lg font-bold text-white">Talent Space</div>
+                <div className="mb-1 font-mono text-5xl font-extrabold text-white">$5<span className="font-sans text-sm font-normal text-slate-400">/month, only if you get a job</span></div>
+                <p className="mb-6 text-sm text-slate-400">Free to list. No funded job that month means nothing to pay.</p>
                 <ul className="mb-8 space-y-3">
-                  {["Verified freelancer badge","Professional profile","Unlimited client workspaces","Portfolio profile","Priority support"].map(f => (
+                  {["LinkedIn-verified badge","Listing in the client-only Talent Space","Portfolio and reviews on your profile","Flat fee, however big the project"].map(f => (
                     <li key={f} className="flex items-start gap-2.5 text-sm text-slate-200">
                       <CheckIcon/>
                       {f}
                     </li>
                   ))}
                 </ul>
-                <Link href="/signup" className="block rounded-[10px] bg-white px-6 py-3 text-center text-sm font-semibold text-slate-900 hover:bg-slate-100 transition-colors">Get Verified</Link>
+                <Link href="/signup" className="block rounded-[10px] bg-white px-6 py-3 text-center text-sm font-semibold text-slate-900 hover:bg-slate-100 transition-colors">Join the Talent Space</Link>
               </div>
             </div>
           </div>
-          <p className="mt-8 text-center text-sm text-slate-500">You found the client. Keep every dollar you earn. Running a larger team? <a href="#" className="font-semibold text-slate-900 underline">Talk to us</a> about custom terms.</p>
+          <p className="mt-8 text-center text-sm text-slate-500">You found the client. Pay nothing until you earn. Running a larger team? <a href="#" className="font-semibold text-slate-900 underline">Talk to us</a> about custom terms.</p>
         </div>
       </section>
 
@@ -533,6 +594,7 @@ export default function LandingPage() {
               <p className="mb-8 text-lg text-slate-400">Set up your first workspace in under five minutes — with no marketplace listing, no waiting to get picked.</p>
               <div className="flex flex-wrap justify-center gap-4">
                 <Link href="/signup" className="rounded-[10px] bg-emerald-500 px-7 py-3 text-sm font-semibold text-white hover:bg-emerald-600 transition-colors shadow-md">Start a Workspace</Link>
+                <a href="#talent" className="rounded-[10px] border border-white/25 px-7 py-3 text-sm font-semibold text-white hover:bg-white/10 transition-colors">Find Talent</a>
                 <a href="#how" className="rounded-[10px] border border-white/25 px-7 py-3 text-sm font-semibold text-white hover:bg-white/10 transition-colors">See How It Works</a>
               </div>
             </div>
