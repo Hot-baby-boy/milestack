@@ -1,14 +1,15 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useState, useTransition } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { saveTalentListing } from "@/lib/talent/actions";
+import { saveTalentListing, uploadCv, removeCv } from "@/lib/talent/actions";
 
 const inputClass = "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-emerald-500 focus:outline-none";
 
 export function TalentListingForm({
-  headline, linkedinUrl, linkedinName, verified, listed, hasHandle, hasBio, hasSkills, notice,
+  headline, linkedinUrl, linkedinName, verified, listed, hasHandle, hasBio, hasSkills, notice, cvName,
 }: {
+  cvName: string | null;
   headline: string | null;
   linkedinUrl: string | null;
   linkedinName: string | null;
@@ -20,6 +21,8 @@ export function TalentListingForm({
   notice: { status: string; msg?: string } | null;
 }) {
   const [state, formAction, pending] = useActionState(saveTalentListing, null);
+  const [cvState, cvAction, cvPending] = useActionState(uploadCv, null);
+  const [removing, startRemoving] = useTransition();
   const [linking, setLinking] = useState(false);
   const [linkError, setLinkError] = useState<string | null>(null);
 
@@ -115,6 +118,33 @@ export function TalentListingForm({
           {pending ? "Saving…" : "Save listing"}
         </button>
       </form>
+
+      <div className="mt-6 border-t border-slate-100 pt-5">
+        <h3 className="text-[14px] font-semibold text-[#0F172A]">CV (optional)</h3>
+        <p className="mb-3 mt-1 text-[12.5px] text-slate-500">
+          A PDF under 5 MB. Only clients can download it, and only while you&apos;re listed.
+        </p>
+        {cvName && (
+          <div className="mb-3 flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 text-[13px] text-slate-700">
+            <span className="truncate">📄 {cvName}</span>
+            <button type="button" disabled={removing}
+              onClick={() => startRemoving(async () => { await removeCv(); })}
+              className="ml-3 flex-shrink-0 text-[12.5px] font-medium text-red-600 hover:underline disabled:opacity-50">
+              {removing ? "Removing…" : "Remove"}
+            </button>
+          </div>
+        )}
+        <form action={cvAction} className="flex flex-wrap items-center gap-3">
+          <input type="file" name="cv" accept="application/pdf" required
+            className="text-[13px] text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-100 file:px-3 file:py-2 file:text-[13px] file:font-medium file:text-slate-700 hover:file:bg-slate-200" />
+          <button type="submit" disabled={cvPending}
+            className="rounded-xl border border-slate-300 px-4 py-2 text-[13px] font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50">
+            {cvPending ? "Uploading…" : cvName ? "Replace CV" : "Upload CV"}
+          </button>
+        </form>
+        {cvState && "error" in cvState && <p className="mt-2 text-[13px] text-red-600">{cvState.error}</p>}
+        {cvState && "success" in cvState && <p className="mt-2 text-[13px] text-emerald-600">CV saved.</p>}
+      </div>
     </div>
   );
 }

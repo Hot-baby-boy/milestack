@@ -2,12 +2,15 @@ import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
+import { loadPortfolioWithFiles } from "@/lib/portfolio/load";
 import { ContactButton } from "./ContactButton";
+import { CvButton } from "./CvButton";
 
 type TalentProfile = {
   id: string; handle: string; display_name: string | null; headline: string | null;
   bio: string | null; skills: string[]; hourly_rate: number | null; avatar_url: string | null;
   linkedin_name: string | null; linkedin_url: string; avg_rating: number | null; review_count: number;
+  has_cv: boolean; cv_name: string | null;
 };
 
 export default async function TalentProfilePage({ params }: { params: Promise<{ handle: string }> }) {
@@ -26,9 +29,7 @@ export default async function TalentProfilePage({ params }: { params: Promise<{ 
   const { data: contact } = await supabase
     .from("talent_contacts").select("id").eq("client_id", user.id).eq("freelancer_id", t.id).maybeSingle();
 
-  const { data: portfolio } = await supabase
-    .from("portfolio_items").select("id, title, description, external_url")
-    .eq("user_id", t.id).order("position", { ascending: true });
+  const portfolio = await loadPortfolioWithFiles(supabase, t.id);
 
   const { data: reviews } = await supabase
     .from("reviews").select("id, rating, body, created_at")
@@ -71,7 +72,10 @@ export default async function TalentProfilePage({ params }: { params: Promise<{ 
       </div>
 
       <div className="mb-8 rounded-2xl border border-slate-200 bg-white p-5">
-        <ContactButton freelancerId={t.id} />
+        <div className="flex flex-wrap items-start gap-3">
+          <ContactButton freelancerId={t.id} />
+          {t.has_cv && <CvButton freelancerId={t.id} cvName={t.cv_name} />}
+        </div>
         {contact ? (
           <div className="mt-4 border-t border-slate-100 pt-4">
             <p className="mb-2 text-[13px] text-slate-500">
@@ -89,20 +93,48 @@ export default async function TalentProfilePage({ params }: { params: Promise<{ 
         )}
       </div>
 
-      {(portfolio ?? []).length > 0 && (
+      {portfolio.length > 0 && (
         <section className="mb-8">
           <h2 className="mb-3 text-base font-semibold text-slate-900">Portfolio</h2>
           <div className="space-y-3">
-            {portfolio!.map((p) => (
-              <div key={p.id} className="rounded-xl border border-slate-200 bg-white p-4">
-                <h3 className="font-medium text-slate-900">{p.title}</h3>
-                {p.description && <p className="mt-1 text-sm text-slate-500">{p.description}</p>}
-                {p.external_url && (
-                  <a href={p.external_url} target="_blank" rel="noopener noreferrer"
-                    className="mt-2 inline-block text-xs font-medium text-emerald-600 hover:underline">View project →</a>
-                )}
-              </div>
-            ))}
+            {portfolio.map((p) => {
+              const images = p.attachments.filter((a) => a.attachment_type === "image" && a.signedUrl);
+              const others = p.attachments.filter((a) => a.attachment_type !== "image" && a.signedUrl);
+              return (
+                <div key={p.id} className="rounded-xl border border-slate-200 bg-white p-4">
+                  <h3 className="font-medium text-slate-900">{p.title}</h3>
+                  {p.description && <p className="mt-1 text-sm text-slate-500">{p.description}</p>}
+
+                  {images.length > 0 && (
+                    <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
+                      {images.map((img) => (
+                        <a key={img.id} href={img.signedUrl!} target="_blank" rel="noopener noreferrer"
+                          className="relative block aspect-[4/3] overflow-hidden rounded-lg border border-slate-100 bg-slate-50">
+                          <Image src={img.signedUrl!} alt={img.name} fill className="object-cover" sizes="(max-width: 640px) 50vw, 200px" />
+                        </a>
+                      ))}
+                    </div>
+                  )}
+
+                  {(others.length > 0 || p.external_url) && (
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {others.map((f) => (
+                        <a key={f.id} href={f.signedUrl!} target="_blank" rel="noopener noreferrer"
+                          className="flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs text-slate-600 hover:border-emerald-300">
+                          {f.attachment_type === "link" ? "🔗" : "📄"} {f.name}
+                        </a>
+                      ))}
+                      {p.external_url && (
+                        <a href={p.external_url} target="_blank" rel="noopener noreferrer"
+                          className="flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-1.5 text-xs text-slate-600 hover:border-emerald-300">
+                          🔗 View project
+                        </a>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </section>
       )}

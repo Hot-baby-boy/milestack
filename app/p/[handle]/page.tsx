@@ -2,6 +2,7 @@ import { redirect, notFound } from "next/navigation";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import { AppHeader } from "@/components/AppHeader";
+import { loadPortfolioWithFiles } from "@/lib/portfolio/load";
 
 export default async function PublicProfilePage({
   params,
@@ -24,40 +25,7 @@ export default async function PublicProfilePage({
 
   if (!profile) notFound();
 
-  const { data: portfolioItems } = await supabase
-    .from("portfolio_items")
-    .select("id, title, description, external_url")
-    .eq("user_id", profile.id)
-    .order("position", { ascending: true });
-
-  const itemIds = (portfolioItems ?? []).map((i) => i.id);
-  const { data: allAttachments } = itemIds.length
-    ? await supabase
-        .from("portfolio_attachments")
-        .select("id, portfolio_item_id, attachment_type, name, url, storage_path, mime")
-        .in("portfolio_item_id", itemIds)
-    : { data: [] as {
-        id: string; portfolio_item_id: string; attachment_type: string;
-        name: string; url: string | null; storage_path: string | null; mime: string | null;
-      }[] };
-
-  // Build signed URLs
-  const attachmentsWithUrls = await Promise.all(
-    (allAttachments ?? []).map(async (a) => {
-      if (a.storage_path) {
-        const { data } = await supabase.storage
-          .from("portfolio")
-          .createSignedUrl(a.storage_path, 3600);
-        return { ...a, signedUrl: data?.signedUrl ?? null };
-      }
-      return { ...a, signedUrl: a.url };
-    })
-  );
-
-  const itemsWithAttachments = (portfolioItems ?? []).map((item) => ({
-    ...item,
-    attachments: attachmentsWithUrls.filter((a) => a.portfolio_item_id === item.id),
-  }));
+  const itemsWithAttachments = await loadPortfolioWithFiles(supabase, profile.id);
 
   const { data: reviews } = await supabase
     .from("reviews")
