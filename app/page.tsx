@@ -2,6 +2,16 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { HeroSlideshow, type HeroSlide } from "@/components/HeroSlideshow";
+
+// Role labels only. No names or quotes: these are stock photos, not real users.
+const HERO_SLIDES: HeroSlide[] = [
+  { src: "/hero/freelancer-laptop.webp",     alt: "A freelancer working on a laptop",       role: "Freelance developer", side: "freelancer" },
+  { src: "/hero/client-clipboard.webp",      alt: "A client holding a project brief",       role: "Client with a project", side: "client" },
+  { src: "/hero/freelancer-bench.webp",      alt: "A freelancer working on a laptop",       role: "Freelance designer",  side: "freelancer" },
+  { src: "/hero/freelancer-notebook.webp",   alt: "A freelancer planning work in a notebook", role: "Freelance writer",  side: "freelancer" },
+  { src: "/hero/freelancer-headphones.webp", alt: "A freelancer smiling at a laptop",       role: "Freelance video editor", side: "freelancer" },
+];
 
 const LogoMark = () => (
   <span className="inline-flex h-[34px] w-[34px] items-center justify-center rounded-[9px] bg-gradient-to-br from-slate-700 to-slate-900 flex-shrink-0">
@@ -139,19 +149,24 @@ export default function LandingPage() {
                     <span key={i} className="flex h-[26px] w-[26px] items-center justify-center rounded-full border-2 border-white bg-gradient-to-br from-slate-700 to-slate-900 font-mono text-[9px] font-bold text-white" style={{marginLeft: n === 0 ? 0 : -8}}>{i}</span>
                   ))}
                 </div>
-                Trusted by freelancers and clients in 30+ countries
+                Built for freelancers in Nigeria and beyond
               </div>
             </div>
 
             {/* Visual */}
-            <div className="relative h-[420px] lg:h-[480px]">
+            <div className="relative lg:h-[480px]">
+              <HeroSlideshow
+                slides={HERO_SLIDES}
+                className="relative mb-6 h-[300px] w-full lg:absolute lg:inset-y-0 lg:right-0 lg:mb-0 lg:h-auto lg:w-[58%]"
+              />
+              <div className="relative h-[490px] lg:absolute lg:inset-0 lg:h-auto">
               {[
                 { title:"Launch Support", amount:"$800.00", pill:"RELEASED", pillCls:"bg-emerald-50 text-emerald-700", iconBg:"#ECFDF5", icon:<path d="M5 13l4 4L19 7" stroke="#059669" strokeWidth="2"/>, top:0, delay:"0s" },
                 { title:"Final Build", amount:"$3,000.00", pill:"APPROVED", pillCls:"bg-blue-50 text-blue-700", iconBg:"#EFF6FF", icon:<><path d="M9 12l2 2 4-4" stroke="#2563EB" strokeWidth="2"/><circle cx="12" cy="12" r="9" stroke="#2563EB" strokeWidth="2"/></>, top:108, delay:"1.2s" },
                 { title:"Wireframes", amount:"$1,200.00", pill:"IN PROGRESS", pillCls:"bg-orange-50 text-orange-700", iconBg:"#FFF7ED", icon:<><circle cx="12" cy="12" r="9" stroke="#C2660D" strokeWidth="2"/><path d="M12 7v5l3 3" stroke="#C2660D" strokeWidth="2"/></>, top:216, delay:"2.1s" },
                 { title:"Discovery Call", amount:"$500.00", pill:"FUNDED", pillCls:"bg-slate-100 text-slate-600", iconBg:"#F1F5F9", icon:<><rect x="4" y="10" width="16" height="10" rx="2" stroke="#334155" strokeWidth="2"/><path d="M8 10V7a4 4 0 018 0v3" stroke="#334155" strokeWidth="2"/></>, top:324, delay:"0.6s" },
               ].map((c) => (
-                <div key={c.title} className="absolute left-0 w-full" style={{top:c.top, animation:`floaty 6s ease-in-out infinite`, animationDelay:c.delay}}>
+                <div key={c.title} className="absolute left-0 z-10 w-full lg:w-[64%]" style={{top:c.top, animation:`floaty 6s ease-in-out infinite`, animationDelay:c.delay}}>
                   <div className="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-md">
                     <div className="flex items-center gap-3">
                       <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-[9px]" style={{background:c.iconBg}}>
@@ -166,7 +181,7 @@ export default function LandingPage() {
                   </div>
                 </div>
               ))}
-              <div className="absolute bottom-1.5 right-1.5 z-10 flex items-center gap-3 rounded-2xl bg-slate-900 px-4 py-3 shadow-2xl" style={{animation:"pulseglow 3.4s ease-in-out infinite"}}>
+              <div className="absolute bottom-1.5 left-0 z-20 flex items-center gap-3 rounded-2xl bg-slate-900 px-4 py-3 shadow-2xl" style={{animation:"pulseglow 3.4s ease-in-out infinite"}}>
                 <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/20">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#34D399" strokeWidth="2"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg>
                 </div>
@@ -174,6 +189,7 @@ export default function LandingPage() {
                   <div className="font-mono text-[10.5px] tracking-widest text-slate-400">SECURED IN ESCROW</div>
                   <div className="font-mono text-base font-bold text-white">$4,500.00</div>
                 </div>
+              </div>
               </div>
             </div>
           </div>
