@@ -149,7 +149,7 @@ export default function LandingPage() {
                     <span key={i} className="flex h-[26px] w-[26px] items-center justify-center rounded-full border-2 border-white bg-gradient-to-br from-slate-700 to-slate-900 font-mono text-[9px] font-bold text-white" style={{marginLeft: n === 0 ? 0 : -8}}>{i}</span>
                   ))}
                 </div>
-                Built for freelancers in Nigeria and beyond
+                Trusted by freelancers and clients in 30+ countries
               </div>
             </div>
 
