@@ -67,8 +67,9 @@ export default async function TalentPage({
       </div>
 
       <div className="px-4 py-5 sm:px-8 sm:py-8">
-        <p className="mb-4 text-[13.5px] text-slate-500">
-          LinkedIn-verified freelancers. Find someone, contact them on LinkedIn, then send them a project link here.
+        <h2 className="text-[24px] font-bold tracking-tight text-[#0F172A]">LinkedIn-verified freelancers</h2>
+        <p className="mb-5 mt-1 text-[14.5px] text-slate-500">
+          Find someone, contact them on LinkedIn, then send them a project link here.
         </p>
 
         <form className="mb-5 flex flex-wrap gap-2">
