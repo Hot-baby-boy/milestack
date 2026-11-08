@@ -25,6 +25,21 @@ export async function saveTalentListing(_prev: unknown, formData: FormData): Pro
   return { success: true };
 }
 
+export async function saveCategory(_prev: unknown, formData: FormData): Promise<TalentResult> {
+  const category = String(formData.get("category") ?? "").trim();
+  const niches = formData.getAll("niches").map((n) => String(n));
+
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("set_talent_category", {
+    p_category: category || null,
+    p_niches: niches,
+  });
+
+  if (error) return { error: error.message };
+  revalidatePath("/dashboard/profile");
+  return { success: true };
+}
+
 // Records that a client clicked "Contact on LinkedIn" and returns the
 // freelancer's LinkedIn URL to open. The URL is only ever released to a
 // client, by a database function that also checks the freelancer is listed.

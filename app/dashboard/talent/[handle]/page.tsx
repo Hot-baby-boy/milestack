@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import { loadPortfolioWithFiles } from "@/lib/portfolio/load";
+import { loadCategories } from "@/lib/talent/categories";
 import { ContactButton } from "./ContactButton";
 import { CvButton } from "./CvButton";
 
@@ -11,6 +12,7 @@ type TalentProfile = {
   bio: string | null; skills: string[]; hourly_rate: number | null; avatar_url: string | null;
   linkedin_name: string | null; linkedin_url: string; avg_rating: number | null; review_count: number;
   has_cv: boolean; cv_name: string | null;
+  category: string | null; niches: string[];
 };
 
 export default async function TalentProfilePage({ params }: { params: Promise<{ handle: string }> }) {
@@ -30,6 +32,7 @@ export default async function TalentProfilePage({ params }: { params: Promise<{ 
     .from("talent_contacts").select("id").eq("client_id", user.id).eq("freelancer_id", t.id).maybeSingle();
 
   const portfolio = await loadPortfolioWithFiles(supabase, t.id);
+  const tree = await loadCategories(supabase);
 
   const { data: reviews } = await supabase
     .from("reviews").select("id, rating, body, created_at")
@@ -52,6 +55,13 @@ export default async function TalentProfilePage({ params }: { params: Promise<{ 
         <div>
           <h1 className="text-xl font-bold text-slate-900">{name}</h1>
           <p className="text-sm text-slate-600">{t.headline}</p>
+          {t.category && (
+            <p className="mt-1 text-[12px] font-semibold uppercase tracking-wide text-slate-400">
+              <Link href={`/dashboard/talent?category=${t.category}`} className="hover:text-slate-600">
+                {tree.labelOf(t.category)}
+              </Link>
+            </p>
+          )}
           <p className="mt-1 text-[13px] font-medium text-[#0A66C2]">
             ✓ LinkedIn verified{t.linkedin_name ? ` as ${t.linkedin_name}` : ""}
           </p>
@@ -65,6 +75,16 @@ export default async function TalentProfilePage({ params }: { params: Promise<{ 
       </div>
 
       {t.bio && <p className="mb-4 text-sm leading-relaxed text-slate-600">{t.bio}</p>}
+      {(t.niches ?? []).length > 0 && (
+        <div className="mb-3 flex flex-wrap gap-2">
+          {t.niches.map((n) => (
+            <Link key={n} href={`/dashboard/talent?category=${t.category}&niche=${n}`}
+              className="rounded-full border border-slate-300 px-3 py-0.5 text-xs font-medium text-slate-700 hover:border-emerald-400">
+              {tree.labelOf(n)}
+            </Link>
+          ))}
+        </div>
+      )}
       <div className="mb-6 flex flex-wrap gap-2">
         {(t.skills ?? []).map((s) => (
           <span key={s} className="rounded-full bg-emerald-50 px-3 py-0.5 text-xs font-medium text-emerald-700">{s}</span>

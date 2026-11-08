@@ -16,6 +16,7 @@ export async function signup(formData: FormData): Promise<ActionResult> {
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
   const role = String(formData.get("role") ?? "client");
+  const category = String(formData.get("category") ?? "").trim();
   const next = safeNext(String(formData.get("next") ?? ""));
 
   if (!fullName || !email || !password) {
@@ -24,8 +25,15 @@ export async function signup(formData: FormData): Promise<ActionResult> {
   if (role !== "freelancer" && role !== "client") {
     return { error: "Invalid role." };
   }
-
   const supabase = await createClient();
+
+  // Freelancers must pick a category whenever the category list exists.
+  if (role === "freelancer" && !category) {
+    const { data: mains } = await supabase
+      .from("talent_categories").select("slug").is("parent_slug", null).limit(1);
+    if (mains?.length) return { error: "Choose what kind of work you do." };
+  }
+
   const confirmUrl = new URL(`${process.env.NEXT_PUBLIC_SITE_URL}/auth/confirm`);
   if (next) confirmUrl.searchParams.set("next", next);
 
@@ -33,7 +41,8 @@ export async function signup(formData: FormData): Promise<ActionResult> {
     email,
     password,
     options: {
-      data: { full_name: fullName, role },
+      // The database checks the category again; it only keeps a valid one.
+      data: { full_name: fullName, role, category: role === "freelancer" ? category : "" },
       emailRedirectTo: confirmUrl.toString(),
     },
   });

@@ -4,6 +4,8 @@ import { ProfileForm } from "./ProfileForm";
 import { PortfolioSection } from "./PortfolioSection";
 import { PayoutMethodForm } from "./PayoutMethodForm";
 import { TalentListingForm } from "./TalentListingForm";
+import { CategoryForm, ProfileStrength, type Strength } from "./CategoryForm";
+import { loadCategories } from "@/lib/talent/categories";
 
 export default async function ProfilePage({
   searchParams,
@@ -17,7 +19,7 @@ export default async function ProfilePage({
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role, display_name, bio, skills, hourly_rate, avatar_url, handle, payout_method, payout_details, headline, linkedin_url, linkedin_name, linkedin_verified_at, talent_listed, cv_name")
+    .select("role, display_name, bio, skills, hourly_rate, avatar_url, handle, payout_method, payout_details, headline, linkedin_url, linkedin_name, linkedin_verified_at, talent_listed, cv_name, category, niches")
     .eq("id", user.id)
     .single();
 
@@ -83,6 +85,14 @@ export default async function ProfilePage({
     // Portfolio failed to load — page still renders, just without items
   }
 
+  let strength: Strength = null;
+  let tree: Awaited<ReturnType<typeof loadCategories>> | null = null;
+  if (profile?.role === "freelancer") {
+    tree = await loadCategories(supabase);
+    const { data } = await supabase.rpc("my_profile_strength").maybeSingle();
+    strength = (data as Strength) ?? null;
+  }
+
   return (
     <div className="min-h-screen">
       <div className="sticky top-0 z-30 hidden h-[72px] items-center border-b border-slate-200 bg-white pl-8 pr-16 lg:flex">
@@ -112,6 +122,18 @@ export default async function ProfilePage({
           <PortfolioSection items={itemsWithAttachments} />
         )}
 
+        {profile?.role === "freelancer" && tree && (
+          <>
+            <ProfileStrength strength={strength} />
+            <CategoryForm
+              mains={tree.mains}
+              nichesByMain={tree.nichesByMain}
+              category={profile.category ?? null}
+              niches={profile.niches ?? []}
+            />
+          </>
+        )}
+
         {profile?.role === "freelancer" && (
           <TalentListingForm
             headline={profile.headline ?? null}
@@ -122,6 +144,7 @@ export default async function ProfilePage({
             hasHandle={!!profile.handle}
             hasBio={!!profile.bio?.trim()}
             hasSkills={(profile.skills ?? []).length > 0}
+            hasCategory={!!profile.category}
             cvName={profile.cv_name ?? null}
             notice={linkedin ? { status: linkedin, msg } : null}
           />

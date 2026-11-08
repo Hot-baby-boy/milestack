@@ -7,7 +7,7 @@ import { saveTalentListing, uploadCv, removeCv } from "@/lib/talent/actions";
 const inputClass = "w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-emerald-500 focus:outline-none";
 
 export function TalentListingForm({
-  headline, linkedinUrl, linkedinName, verified, listed, hasHandle, hasBio, hasSkills, notice, cvName,
+  headline, linkedinUrl, linkedinName, verified, listed, hasHandle, hasBio, hasSkills, hasCategory, notice, cvName,
 }: {
   cvName: string | null;
   headline: string | null;
@@ -18,6 +18,7 @@ export function TalentListingForm({
   hasHandle: boolean;
   hasBio: boolean;
   hasSkills: boolean;
+  hasCategory: boolean;
   notice: { status: string; msg?: string } | null;
 }) {
   const [state, formAction, pending] = useActionState(saveTalentListing, null);
@@ -45,6 +46,7 @@ export function TalentListingForm({
     { ok: hasHandle, label: "Profile handle set" },
     { ok: hasBio, label: "Bio written" },
     { ok: hasSkills, label: "At least one skill added" },
+    { ok: hasCategory, label: "Category chosen" },
   ];
 
   return (

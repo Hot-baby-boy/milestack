@@ -3,19 +3,22 @@ import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import { ProposalList } from "./ProposalList";
+import { CategoryGrid } from "./CategoryGrid";
+import { loadCategories } from "@/lib/talent/categories";
 
 type Talent = {
   id: string; handle: string; display_name: string | null; headline: string | null;
   bio: string | null; skills: string[]; hourly_rate: number | null; avatar_url: string | null;
   linkedin_name: string | null; avg_rating: number | null; review_count: number;
+  category: string | null; niches: string[];
 };
 
 export default async function TalentPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; skill?: string }>;
+  searchParams: Promise<{ q?: string; skill?: string; category?: string; niche?: string }>;
 }) {
-  const { q, skill } = await searchParams;
+  const { q, skill, category, niche } = await searchParams;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
@@ -23,11 +26,34 @@ export default async function TalentPage({
   const { data: me } = await supabase.from("profiles").select("role").eq("id", user.id).single();
   if (me?.role !== "client") redirect("/dashboard");
 
+  const tree = await loadCategories(supabase);
+  const filtered = !!(q || skill || category || niche);
+
   const { data } = await supabase.rpc("list_talent", {
     p_search: q ?? null,
     p_skill: skill ?? null,
+    p_category: category ?? null,
+    p_niche: niche ?? null,
   });
   const talent = (data ?? []) as Talent[];
+
+  const { data: countRows } = await supabase.rpc("talent_category_counts");
+  const counts: Record<string, number> = {};
+  for (const r of (countRows ?? []) as { slug: string; listed_count: number }[]) {
+    counts[r.slug] = Number(r.listed_count);
+  }
+
+  const activeCategory = category ? tree.mains.find((c) => c.slug === category) : undefined;
+  const niches = activeCategory ? tree.nichesByMain[activeCategory.slug] ?? [] : [];
+  const chipHref = (nicheSlug?: string) => {
+    const p = new URLSearchParams();
+    if (category) p.set("category", category);
+    if (nicheSlug) p.set("niche", nicheSlug);
+    if (q) p.set("q", q);
+    if (skill) p.set("skill", skill);
+    const qs = p.toString();
+    return `/dashboard/talent${qs ? `?${qs}` : ""}`;
+  };
 
   const { data: proposals } = await supabase
     .from("project_proposals")
@@ -45,7 +71,9 @@ export default async function TalentPage({
           LinkedIn-verified freelancers. Find someone, contact them on LinkedIn, then send them a project link here.
         </p>
 
-        <form className="mb-6 flex flex-wrap gap-2">
+        <form className="mb-5 flex flex-wrap gap-2">
+          {category && <input type="hidden" name="category" value={category} />}
+          {niche && <input type="hidden" name="niche" value={niche} />}
           <input name="q" defaultValue={q ?? ""} placeholder="Search by name, headline or bio"
             className="min-w-[220px] flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none" />
           <input name="skill" defaultValue={skill ?? ""} placeholder="Skill (e.g. Figma)"
@@ -55,17 +83,62 @@ export default async function TalentPage({
           </button>
         </form>
 
-        {!talent.length ? (
-          <div className="rounded-2xl border-2 border-dashed border-slate-200 bg-white px-8 py-14 text-center">
-            <h3 className="mb-1 text-[15px] font-bold text-[#0F172A]">No freelancers found</h3>
-            <p className="text-sm text-slate-500">
-              {q || skill ? "Try a different search." : "Verified freelancers will appear here as they list themselves."}
-            </p>
+        {activeCategory && (
+          <div className="mb-5">
+            <div className="mb-3 flex items-center gap-2 text-[13px] text-slate-500">
+              <Link href="/dashboard/talent" className="hover:text-slate-700">All talent</Link>
+              <span>/</span>
+              <span className="font-medium text-slate-800">{activeCategory.label}</span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Link href={chipHref()}
+                className={`rounded-full border px-3 py-1.5 text-[13px] transition ${!niche ? "border-emerald-500 bg-emerald-50 font-medium text-emerald-700" : "border-slate-300 text-slate-600 hover:border-emerald-300"}`}>
+                All {activeCategory.label}
+              </Link>
+              {niches.map((n) => (
+                <Link key={n.slug} href={chipHref(n.slug)}
+                  className={`rounded-full border px-3 py-1.5 text-[13px] transition ${niche === n.slug ? "border-emerald-500 bg-emerald-50 font-medium text-emerald-700" : "border-slate-300 text-slate-600 hover:border-emerald-300"}`}>
+                  {n.label}
+                </Link>
+              ))}
+            </div>
           </div>
+        )}
+
+        {!filtered && (
+          <>
+            <h2 className="mb-3 text-[15px] font-bold text-[#0F172A]">Browse by category</h2>
+            <div className="mb-8">
+              <CategoryGrid mains={tree.mains} counts={counts} nichesByMain={tree.nichesByMain} />
+            </div>
+          </>
+        )}
+
+        {(!filtered ? talent.length > 0 : true) && (
+          <h2 className="mb-3 text-[15px] font-bold text-[#0F172A]">
+            {!filtered ? "Top talent" : activeCategory ? `${activeCategory.label} talent` : "Search results"}
+          </h2>
+        )}
+
+        {!talent.length ? (
+          filtered ? (
+            <div className="rounded-2xl border-2 border-dashed border-slate-200 bg-white px-8 py-14 text-center">
+              <h3 className="mb-1 text-[15px] font-bold text-[#0F172A]">No freelancers found</h3>
+              <p className="text-sm text-slate-500">Try a different search or niche, or browse another category.</p>
+            </div>
+          ) : (
+            <div className="rounded-2xl border-2 border-dashed border-slate-200 bg-white px-8 py-14 text-center">
+              <h3 className="mb-1 text-[15px] font-bold text-[#0F172A]">No freelancers listed yet</h3>
+              <p className="text-sm text-slate-500">Verified freelancers will appear here as they list themselves.</p>
+            </div>
+          )
         ) : (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
-            {talent.map((t) => {
+            {(filtered ? talent : talent.slice(0, 6)).map((t) => {
               const name = t.display_name ?? t.handle;
+              const tags = (t.niches ?? []).length
+                ? t.niches.slice(0, 3).map((n) => tree.labelOf(n))
+                : (t.skills ?? []).slice(0, 3);
               return (
                 <Link key={t.id} href={`/dashboard/talent/${t.handle}`}
                   className="flex flex-col gap-3 rounded-[14px] border border-slate-200 bg-white p-5 transition hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(15,23,42,0.08)]"
@@ -85,8 +158,11 @@ export default async function TalentPage({
                       <p className="truncate text-[12.5px] text-slate-500">{t.headline}</p>
                     </div>
                   </div>
+                  {t.category && (
+                    <p className="text-[11.5px] font-semibold uppercase tracking-wide text-slate-400">{tree.labelOf(t.category)}</p>
+                  )}
                   <div className="flex flex-wrap gap-1.5">
-                    {(t.skills ?? []).slice(0, 4).map((s) => (
+                    {tags.map((s) => (
                       <span key={s} className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11.5px] font-medium text-emerald-700">{s}</span>
                     ))}
                   </div>
