@@ -3,7 +3,6 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { loadPortfolioWithFiles, type PortfolioItemWithFiles } from "@/lib/portfolio/load";
 import { loadCategories } from "@/lib/talent/categories";
-import { ProfileForm } from "./ProfileForm";
 import { ProfileHeader } from "./ProfileHeader";
 import { AboutCard } from "./AboutCard";
 import { PortfolioGallery } from "./PortfolioGallery";
@@ -30,15 +29,43 @@ export default async function ProfilePage({
 
   const isFreelancer = profile?.role === "freelancer";
 
-  // Clients keep the simple profile form.
+  // Clients get the same style: header card, About, and a side column.
   if (!isFreelancer) {
+    const clientName = profile?.display_name ?? user.email?.split("@")[0] ?? "Your name";
     return (
       <div className="min-h-screen">
         <div className="sticky top-0 z-30 hidden h-[72px] items-center border-b border-slate-200 bg-white pl-8 pr-16 lg:flex">
           <h1 className="text-[19px] font-bold tracking-tight text-[#0F172A]">Profile</h1>
         </div>
-        <div className="mx-auto max-w-2xl px-4 py-8 sm:px-8">
-          <ProfileForm profile={profile ?? null} email={user.email ?? ""} />
+        <div className="mx-auto max-w-[1180px] px-4 py-6 sm:px-8 sm:py-8">
+          <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+            <div className="space-y-6">
+              <ProfileHeader
+                variant="client"
+                name={clientName}
+                handle={profile?.handle ?? null}
+                headline={null}
+                avatarUrl={profile?.avatar_url ?? null}
+                bannerUrl={null}
+                hourlyRate={null}
+                rating={null}
+              />
+              <AboutCard bio={profile?.bio ?? null} />
+            </div>
+            <aside className="space-y-6 lg:sticky lg:top-24 lg:self-start">
+              <section className="rounded-2xl border border-slate-200 bg-white p-6">
+                <h2 className="mb-3 text-[18px] font-bold text-[#0F172A]">Quick links</h2>
+                <ul className="space-y-2 text-[14.5px]">
+                  <li>
+                    <Link href="/dashboard/talent" className="font-medium text-emerald-700 hover:underline">Find talent →</Link>
+                  </li>
+                  <li>
+                    <Link href="/dashboard/settings" className="font-medium text-emerald-700 hover:underline">Account settings →</Link>
+                  </li>
+                </ul>
+              </section>
+            </aside>
+          </div>
         </div>
       </div>
     );

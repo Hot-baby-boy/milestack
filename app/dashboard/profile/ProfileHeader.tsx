@@ -8,7 +8,7 @@ import { ProfileCover } from "@/components/profile/ProfileCover";
 import { PencilButton, SaveButton, inputClass } from "./ui";
 
 export function ProfileHeader({
-  name, handle, headline, avatarUrl, bannerUrl, hourlyRate, rating,
+  name, handle, headline, avatarUrl, bannerUrl, hourlyRate, rating, variant = "freelancer",
 }: {
   name: string;
   handle: string | null;
@@ -17,7 +17,9 @@ export function ProfileHeader({
   bannerUrl: string | null;
   hourlyRate: number | null;
   rating: { avg: number; count: number } | null;
+  variant?: "freelancer" | "client";
 }) {
+  const isClient = variant === "client";
   const [editing, setEditing] = useState(false);
   const [copied, setCopied] = useState(false);
   const [avatarState, avatarAction, avatarPending] = useActionState(uploadAvatar, null);
@@ -45,7 +47,8 @@ export function ProfileHeader({
 
   return (
     <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
-      <ProfileCover bannerUrl={bannerUrl} className="h-36 sm:h-48">
+      <ProfileCover bannerUrl={isClient ? null : bannerUrl} className={isClient ? "h-24 sm:h-32" : "h-36 sm:h-48"}>
+        {!isClient && (<>
         <div className="absolute left-3 top-3 max-w-[70%] space-y-1.5 sm:left-4 sm:top-4">
           {bannerState && "error" in bannerState && (
             <p className="rounded-lg bg-red-50/95 px-3 py-1.5 text-[12.5px] font-medium text-red-700 shadow-sm">{bannerState.error}</p>
@@ -74,6 +77,7 @@ export function ProfileHeader({
             {bannerPending ? "Uploading…" : bannerUrl ? "Change banner" : "Add banner"}
           </button>
         </form>
+        </>)}
       </ProfileCover>
       <div className="px-6 pb-6 sm:px-8 sm:pb-8">
       <div className="-mt-12 flex flex-col gap-6 sm:-mt-14 sm:flex-row sm:items-start">
@@ -105,7 +109,7 @@ export function ProfileHeader({
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-3">
                 <h2 className="truncate text-[26px] font-bold leading-tight text-[#0F172A]">{name}</h2>
-                <PencilButton onClick={() => setEditing(true)} label="Edit name, headline and rate" />
+                <PencilButton onClick={() => setEditing(true)} label={isClient ? "Edit name and handle" : "Edit name, headline and rate"} />
               </div>
               <p className="mt-1 text-[14px] text-slate-500">{handle ? `@${handle}` : "Add a handle to get your public link"}</p>
             </div>
@@ -125,14 +129,20 @@ export function ProfileHeader({
             </div>
           </div>
 
-          <p className={`mt-4 text-[17px] font-semibold leading-snug ${headline ? "text-[#0F172A]" : "text-slate-400"}`}>
-            {headline || "Add a headline so clients know what you do"}
-          </p>
+          {isClient ? (
+            <p className="mt-4 text-[15px] text-slate-500">Client account</p>
+          ) : (
+            <>
+              <p className={`mt-4 text-[17px] font-semibold leading-snug ${headline ? "text-[#0F172A]" : "text-slate-400"}`}>
+                {headline || "Add a headline so clients know what you do"}
+              </p>
 
-          <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1 text-[14px] text-slate-600">
-            {rating && <span><span className="text-amber-400">★</span> {rating.avg.toFixed(1)} ({rating.count} review{rating.count === 1 ? "" : "s"})</span>}
-            {hourlyRate ? <span>USD {Number(hourlyRate).toLocaleString()}/hr</span> : <span className="text-slate-400">No hourly rate set</span>}
-          </div>
+              <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1 text-[14px] text-slate-600">
+                {rating && <span><span className="text-amber-400">★</span> {rating.avg.toFixed(1)} ({rating.count} review{rating.count === 1 ? "" : "s"})</span>}
+                {hourlyRate ? <span>USD {Number(hourlyRate).toLocaleString()}/hr</span> : <span className="text-slate-400">No hourly rate set</span>}
+              </div>
+            </>
+          )}
           {avatarState && "error" in avatarState && <p className="mt-2 text-[13px] text-red-600">{avatarState.error}</p>}
         </div>
       </div>
@@ -152,15 +162,19 @@ export function ProfileHeader({
             </div>
             <p className="mt-1 text-xs text-slate-400">3–30 lowercase letters, numbers, hyphens</p>
           </div>
-          <div>
-            <label className="mb-1.5 block text-[13px] font-medium text-slate-700">Headline</label>
-            <input name="headline" defaultValue={headline ?? ""} maxLength={120} className={inputClass}
-              placeholder="e.g. Brand designer for fintech startups" />
-          </div>
-          <div>
-            <label className="mb-1.5 block text-[13px] font-medium text-slate-700">Hourly rate (USD)</label>
-            <input name="hourly_rate" type="number" min="0" step="0.01" defaultValue={hourlyRate ?? ""} className={inputClass} placeholder="50" />
-          </div>
+          {!isClient && (
+            <>
+              <div>
+                <label className="mb-1.5 block text-[13px] font-medium text-slate-700">Headline</label>
+                <input name="headline" defaultValue={headline ?? ""} maxLength={120} className={inputClass}
+                  placeholder="e.g. Brand designer for fintech startups" />
+              </div>
+              <div>
+                <label className="mb-1.5 block text-[13px] font-medium text-slate-700">Hourly rate (USD)</label>
+                <input name="hourly_rate" type="number" min="0" step="0.01" defaultValue={hourlyRate ?? ""} className={inputClass} placeholder="50" />
+              </div>
+            </>
+          )}
           {state && "error" in state && <p className="text-[13px] text-red-600">{state.error}</p>}
           <SaveButton pending={pending} />
         </form>
