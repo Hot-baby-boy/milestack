@@ -30,7 +30,7 @@ export function CvButton({ freelancerId, cvName }: { freelancerId: string; cvNam
   return (
     <div>
       <button onClick={onClick} disabled={pending} title={cvName ?? undefined}
-        className="rounded-xl border border-slate-300 bg-white px-5 py-2.5 text-[14px] font-semibold text-slate-800 hover:bg-slate-50 disabled:opacity-60">
+        className="w-full rounded-xl border border-slate-300 bg-white px-5 py-3 text-[15px] font-semibold text-slate-800 hover:bg-slate-50 disabled:opacity-60">
         {pending ? "Preparing…" : "Download CV"}
       </button>
       {error && <p className="mt-2 text-[13px] text-red-600">{error}</p>}

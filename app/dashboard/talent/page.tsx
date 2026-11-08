@@ -10,7 +10,7 @@ type Talent = {
   id: string; handle: string; display_name: string | null; headline: string | null;
   bio: string | null; skills: string[]; hourly_rate: number | null; avatar_url: string | null;
   linkedin_name: string | null; avg_rating: number | null; review_count: number;
-  category: string | null; niches: string[]; category_other: string | null;
+  category: string | null; niches: string[]; category_other: string | null; banner_url: string | null;
 };
 
 export default async function TalentPage({
@@ -145,36 +145,44 @@ export default async function TalentPage({
                   : (t.skills ?? []).slice(0, 3);
               return (
                 <Link key={t.id} href={`/dashboard/talent/${t.handle}`}
-                  className="flex flex-col gap-3 rounded-[14px] border border-slate-200 bg-white p-5 transition hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(15,23,42,0.08)]"
+                  className="group flex flex-col overflow-hidden rounded-[14px] border border-slate-200 bg-white transition hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(15,23,42,0.10)]"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-full bg-slate-200">
-                      {t.avatar_url ? (
-                        <Image src={t.avatar_url} alt={name} fill className="object-cover" />
-                      ) : (
-                        <span className="flex h-full w-full items-center justify-center text-lg text-slate-500">
-                          {name[0]?.toUpperCase()}
-                        </span>
-                      )}
-                    </div>
-                    <div className="min-w-0">
-                      <h3 className="truncate text-[15px] font-semibold text-[#0F172A]">{name}</h3>
-                      <p className="truncate text-[12.5px] text-slate-500">{t.headline}</p>
-                    </div>
+                  <div className="relative aspect-[16/7] w-full overflow-hidden bg-gradient-to-br from-emerald-100 via-emerald-50 to-slate-100">
+                    {t.banner_url && (
+                      <Image src={t.banner_url} alt="" fill className="object-cover transition group-hover:scale-[1.03]"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw" />
+                    )}
                   </div>
-                  {t.category && (
-                    <p className="text-[11.5px] font-semibold uppercase tracking-wide text-slate-400">{tree.labelOf(t.category)}</p>
-                  )}
-                  <div className="flex flex-wrap gap-1.5">
-                    {tags.map((s) => (
-                      <span key={s} className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11.5px] font-medium text-emerald-700">{s}</span>
-                    ))}
-                  </div>
-                  <div className="flex items-center justify-between text-[12px] text-slate-500">
-                    <span className="font-medium text-[#0A66C2]">✓ LinkedIn verified</span>
-                    <span>
-                      {t.avg_rating ? `★ ${t.avg_rating} (${t.review_count})` : "No reviews yet"}
-                    </span>
+                  <div className="flex flex-1 flex-col gap-3 p-5 pt-0">
+                    <div className="-mt-7 flex items-end gap-3">
+                      <div className="relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-full border-[3px] border-white bg-slate-200 shadow-sm">
+                        {t.avatar_url ? (
+                          <Image src={t.avatar_url} alt={name} fill className="object-cover" sizes="56px" />
+                        ) : (
+                          <span className="flex h-full w-full items-center justify-center text-lg text-slate-500">
+                            {name[0]?.toUpperCase()}
+                          </span>
+                        )}
+                      </div>
+                      <div className="min-w-0 pb-0.5">
+                        <h3 className="truncate text-[15px] font-semibold text-[#0F172A]">{name}</h3>
+                      </div>
+                    </div>
+                    <p className="line-clamp-2 text-[13.5px] leading-snug text-slate-600">{t.headline}</p>
+                    {t.category && (
+                      <p className="text-[11.5px] font-semibold uppercase tracking-wide text-slate-400">{tree.labelOf(t.category)}</p>
+                    )}
+                    <div className="flex flex-wrap gap-1.5">
+                      {tags.map((s) => (
+                        <span key={s} className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11.5px] font-medium text-emerald-700">{s}</span>
+                      ))}
+                    </div>
+                    <div className="mt-auto flex items-center justify-between pt-1 text-[12px] text-slate-500">
+                      <span className="font-medium text-[#0A66C2]">✓ LinkedIn verified</span>
+                      <span>
+                        {t.avg_rating ? `★ ${t.avg_rating} (${t.review_count})` : "No reviews yet"}
+                      </span>
+                    </div>
                   </div>
                 </Link>
               );

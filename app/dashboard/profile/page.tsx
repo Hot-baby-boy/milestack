@@ -24,7 +24,7 @@ export default async function ProfilePage({
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role, display_name, bio, skills, hourly_rate, avatar_url, handle, headline, linkedin_url, linkedin_name, linkedin_verified_at, talent_listed, cv_name, category, niches, category_other")
+    .select("role, display_name, bio, skills, hourly_rate, avatar_url, handle, headline, linkedin_url, linkedin_name, linkedin_verified_at, talent_listed, cv_name, category, niches, category_other, banner_url")
     .eq("id", user.id)
     .single();
 
@@ -78,6 +78,7 @@ export default async function ProfilePage({
               handle={profile?.handle ?? null}
               headline={profile?.headline ?? null}
               avatarUrl={profile?.avatar_url ?? null}
+              bannerUrl={profile?.banner_url ?? null}
               hourlyRate={profile?.hourly_rate ?? null}
               rating={rating}
             />

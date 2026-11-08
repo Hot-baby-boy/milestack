@@ -1,18 +1,20 @@
 "use client";
 
-import { useActionState, useRef, useState } from "react";
+import { useActionState, useRef, useState, useTransition } from "react";
 import Image from "next/image";
 import { Modal } from "@/components/Modal";
-import { saveBasics, uploadAvatar } from "./actions";
+import { removeBanner, saveBasics, uploadAvatar, uploadBanner } from "./actions";
+import { ProfileCover } from "@/components/profile/ProfileCover";
 import { PencilButton, SaveButton, inputClass } from "./ui";
 
 export function ProfileHeader({
-  name, handle, headline, avatarUrl, hourlyRate, rating,
+  name, handle, headline, avatarUrl, bannerUrl, hourlyRate, rating,
 }: {
   name: string;
   handle: string | null;
   headline: string | null;
   avatarUrl: string | null;
+  bannerUrl: string | null;
   hourlyRate: number | null;
   rating: { avg: number; count: number } | null;
 }) {
@@ -20,6 +22,9 @@ export function ProfileHeader({
   const [copied, setCopied] = useState(false);
   const [avatarState, avatarAction, avatarPending] = useActionState(uploadAvatar, null);
   const avatarRef = useRef<HTMLInputElement>(null);
+  const bannerRef = useRef<HTMLInputElement>(null);
+  const [bannerState, bannerAction, bannerPending] = useActionState(uploadBanner, null);
+  const [removing, startRemoving] = useTransition();
   const [state, formAction, pending] = useActionState(
     async (prev: unknown, formData: FormData) => {
       const result = await saveBasics(prev, formData);
@@ -39,10 +44,33 @@ export function ProfileHeader({
   }
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8">
-      <div className="flex flex-col gap-6 sm:flex-row sm:items-start">
+    <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+      <ProfileCover bannerUrl={bannerUrl} className="h-36 sm:h-48">
+        <form action={bannerAction} className="absolute bottom-3 right-3 flex items-center gap-2">
+          <input ref={bannerRef} type="file" name="banner" accept="image/jpeg,image/png,image/webp" className="hidden"
+            onChange={(e) => { if (e.target.files?.[0]) e.target.form?.requestSubmit(); }} />
+          {bannerUrl && (
+            <button type="button" disabled={removing}
+              onClick={() => startRemoving(async () => { await removeBanner(); })}
+              className="rounded-lg bg-white/90 px-3 py-1.5 text-[13px] font-semibold text-slate-700 shadow-sm hover:bg-white disabled:opacity-50">
+              {removing ? "Removing…" : "Remove"}
+            </button>
+          )}
+          <button type="button" onClick={() => bannerRef.current?.click()} disabled={bannerPending}
+            className="flex items-center gap-1.5 rounded-lg bg-white/90 px-3 py-1.5 text-[13px] font-semibold text-slate-800 shadow-sm hover:bg-white disabled:opacity-50">
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/>
+            </svg>
+            {bannerPending ? "Uploading…" : bannerUrl ? "Change banner" : "Add banner"}
+          </button>
+        </form>
+      </ProfileCover>
+      <div className="px-6 pb-6 sm:px-8 sm:pb-8">
+      {bannerState && "error" in bannerState && <p className="pt-2 text-[13px] text-red-600">{bannerState.error}</p>}
+      {!bannerUrl && <p className="pt-3 text-[12.5px] text-slate-400">Add a banner so clients notice you. Best size 1600 × 400, JPG, PNG or WebP, up to 4 MB.</p>}
+      <div className="-mt-12 flex flex-col gap-6 sm:-mt-14 sm:flex-row sm:items-start">
         <div className="relative h-28 w-28 flex-shrink-0 sm:h-32 sm:w-32">
-          <div className="relative h-full w-full overflow-hidden rounded-full bg-slate-100">
+          <div className="relative h-full w-full overflow-hidden rounded-full border-4 border-white bg-slate-100 shadow-sm">
             {avatarUrl ? (
               <Image src={avatarUrl} alt={name} fill className="object-cover" sizes="128px" />
             ) : (
@@ -64,7 +92,7 @@ export function ProfileHeader({
           </form>
         </div>
 
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1 sm:pt-16">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-3">
@@ -99,6 +127,7 @@ export function ProfileHeader({
           </div>
           {avatarState && "error" in avatarState && <p className="mt-2 text-[13px] text-red-600">{avatarState.error}</p>}
         </div>
+      </div>
       </div>
 
       <Modal open={editing} onClose={() => setEditing(false)} title="Edit your details">

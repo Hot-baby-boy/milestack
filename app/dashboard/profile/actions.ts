@@ -242,3 +242,65 @@ export async function saveBasics(_prev: unknown, formData: FormData): Promise<Ac
   revalidatePath("/dashboard/profile");
   return { success: true };
 }
+
+// ---- Banner: a wide cover image shown to clients on the profile and Talent Space card.
+const BANNER_TYPES: Record<string, string> = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" };
+const BANNER_MAX_BYTES = 4 * 1024 * 1024;
+
+// Banners live in the public "avatars" bucket, in the owner's own folder.
+function bannerPathFromUrl(url: string | null): string | null {
+  if (!url) return null;
+  const i = url.indexOf("/object/public/avatars/");
+  return i === -1 ? null : decodeURIComponent(url.slice(i + "/object/public/avatars/".length));
+}
+
+export async function uploadBanner(_prev: unknown, formData: FormData): Promise<ActionResult> {
+  const file = formData.get("banner") as File | null;
+  if (!file || file.size === 0) return { error: "No file selected." };
+  if (!BANNER_TYPES[file.type]) return { error: "Use a JPG, PNG or WebP image." };
+  if (file.size > BANNER_MAX_BYTES) return { error: "Banner must be under 4 MB." };
+
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Not authenticated." };
+
+  const { data: profile } = await supabase
+    .from("profiles").select("role, banner_url").eq("id", user.id).single();
+  if (profile?.role !== "freelancer") return { error: "Only freelancers can add a banner." };
+
+  const path = `${user.id}/banner-${Date.now()}.${BANNER_TYPES[file.type]}`;
+  const { error: uploadError } = await supabase.storage
+    .from("avatars")
+    .upload(path, await file.arrayBuffer(), { contentType: file.type });
+  if (uploadError) return { error: uploadError.message };
+
+  const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(path);
+  const { error: updateError } = await supabase.from("profiles").update({ banner_url: publicUrl }).eq("id", user.id);
+  if (updateError) {
+    await supabase.storage.from("avatars").remove([path]);
+    return { error: updateError.message };
+  }
+
+  // Remove the previous banner so old files do not pile up.
+  const oldPath = bannerPathFromUrl(profile.banner_url);
+  if (oldPath && oldPath.startsWith(`${user.id}/`)) await supabase.storage.from("avatars").remove([oldPath]);
+
+  revalidatePath("/dashboard/profile");
+  return { success: true };
+}
+
+export async function removeBanner(): Promise<ActionResult> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Not authenticated." };
+
+  const { data: profile } = await supabase.from("profiles").select("banner_url").eq("id", user.id).single();
+  const { error } = await supabase.from("profiles").update({ banner_url: null }).eq("id", user.id);
+  if (error) return { error: error.message };
+
+  const oldPath = bannerPathFromUrl(profile?.banner_url ?? null);
+  if (oldPath && oldPath.startsWith(`${user.id}/`)) await supabase.storage.from("avatars").remove([oldPath]);
+
+  revalidatePath("/dashboard/profile");
+  return { success: true };
+}

@@ -34,7 +34,7 @@ export function ContactButton({ freelancerId }: { freelancerId: string }) {
   return (
     <div>
       <button onClick={onClick} disabled={pending}
-        className="rounded-xl bg-[#0A66C2] px-5 py-2.5 text-[14px] font-semibold text-white hover:bg-[#0958a8] disabled:opacity-60">
+        className="w-full rounded-xl bg-[#0A66C2] px-5 py-3 text-[15px] font-semibold text-white hover:bg-[#0958a8] disabled:opacity-60">
         {pending ? "Opening LinkedIn…" : "Contact on LinkedIn"}
       </button>
       {error && <p className="mt-2 text-[13px] text-red-600">{error}</p>}
