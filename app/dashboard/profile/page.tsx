@@ -1,11 +1,16 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { ProfileForm } from "./ProfileForm";
-import { PortfolioSection } from "./PortfolioSection";
-import { PayoutMethodForm } from "./PayoutMethodForm";
-import { TalentListingForm } from "./TalentListingForm";
-import { CategoryForm, ProfileStrength, type Strength } from "./CategoryForm";
+import { loadPortfolioWithFiles, type PortfolioItemWithFiles } from "@/lib/portfolio/load";
 import { loadCategories } from "@/lib/talent/categories";
+import { ProfileForm } from "./ProfileForm";
+import { ProfileHeader } from "./ProfileHeader";
+import { AboutCard } from "./AboutCard";
+import { PortfolioGallery } from "./PortfolioGallery";
+import { SkillsCard } from "./SkillsCard";
+import { CategoryCard } from "./CategoryCard";
+import { StrengthCard, type Strength } from "./StrengthCard";
+import { TalentCard } from "./TalentCard";
 
 export default async function ProfilePage({
   searchParams,
@@ -19,144 +24,108 @@ export default async function ProfilePage({
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role, display_name, bio, skills, hourly_rate, avatar_url, handle, payout_method, payout_details, headline, linkedin_url, linkedin_name, linkedin_verified_at, talent_listed, cv_name, category, niches, category_other")
+    .select("role, display_name, bio, skills, hourly_rate, avatar_url, handle, headline, linkedin_url, linkedin_name, linkedin_verified_at, talent_listed, cv_name, category, niches, category_other")
     .eq("id", user.id)
     .single();
 
-  // Load portfolio items — skip gracefully on any DB error
-  let itemsWithAttachments: {
-    id: string;
-    title: string;
-    description: string | null;
-    external_url: string | null;
-    attachments: {
-      id: string;
-      portfolio_item_id: string;
-      attachment_type: string;
-      name: string;
-      url: string | null;
-      storage_path: string | null;
-      mime: string | null;
-      signedUrl: string | null;
-    }[];
-  }[] = [];
+  const isFreelancer = profile?.role === "freelancer";
 
-  try {
-    const { data: portfolioItems } = await supabase
-      .from("portfolio_items")
-      .select("id, title, description, external_url, created_at")
-      .eq("user_id", user.id)
-      .order("position", { ascending: true });
-
-    const itemIds = (portfolioItems ?? []).map((i) => i.id);
-
-    const { data: allAttachments } = itemIds.length
-      ? await supabase
-          .from("portfolio_attachments")
-          .select("id, portfolio_item_id, attachment_type, name, url, storage_path, mime")
-          .in("portfolio_item_id", itemIds)
-      : { data: [] as {
-          id: string; portfolio_item_id: string; attachment_type: string;
-          name: string; url: string | null; storage_path: string | null; mime: string | null;
-        }[] };
-
-    // Build signed URLs — skip any that fail
-    const attachmentsWithUrls = await Promise.all(
-      (allAttachments ?? []).map(async (a) => {
-        if (a.storage_path) {
-          try {
-            const { data } = await supabase.storage
-              .from("portfolio")
-              .createSignedUrl(a.storage_path, 3600);
-            return { ...a, signedUrl: data?.signedUrl ?? null };
-          } catch {
-            return { ...a, signedUrl: null };
-          }
-        }
-        return { ...a, signedUrl: a.url };
-      })
+  // Clients keep the simple profile form.
+  if (!isFreelancer) {
+    return (
+      <div className="min-h-screen">
+        <div className="sticky top-0 z-30 hidden h-[72px] items-center border-b border-slate-200 bg-white pl-8 pr-16 lg:flex">
+          <h1 className="text-[19px] font-bold tracking-tight text-[#0F172A]">Profile</h1>
+        </div>
+        <div className="mx-auto max-w-2xl px-4 py-8 sm:px-8">
+          <ProfileForm profile={profile ?? null} email={user.email ?? ""} />
+        </div>
+      </div>
     );
+  }
 
-    itemsWithAttachments = (portfolioItems ?? []).map((item) => ({
-      ...item,
-      attachments: attachmentsWithUrls.filter((a) => a.portfolio_item_id === item.id),
-    }));
+  // Freelancer data: portfolio (skipped quietly on any error), categories,
+  // profile strength and review summary.
+  let portfolio: PortfolioItemWithFiles[] = [];
+  try {
+    portfolio = await loadPortfolioWithFiles(supabase, user.id);
   } catch {
-    // Portfolio failed to load — page still renders, just without items
+    // The page still renders without the gallery.
   }
 
-  let strength: Strength = null;
-  let tree: Awaited<ReturnType<typeof loadCategories>> | null = null;
-  if (profile?.role === "freelancer") {
-    tree = await loadCategories(supabase);
-    const { data } = await supabase.rpc("my_profile_strength").maybeSingle();
-    strength = (data as Strength) ?? null;
-  }
+  const tree = await loadCategories(supabase);
+  const { data: strengthData } = await supabase.rpc("my_profile_strength").maybeSingle();
+  const strength = (strengthData as Strength) ?? null;
+
+  const { data: reviewRows } = await supabase.from("reviews").select("rating").eq("freelancer_id", user.id);
+  const rating = reviewRows?.length
+    ? { avg: reviewRows.reduce((s, r) => s + r.rating, 0) / reviewRows.length, count: reviewRows.length }
+    : null;
+
+  const name = profile?.display_name ?? user.email?.split("@")[0] ?? "Your name";
 
   return (
     <div className="min-h-screen">
       <div className="sticky top-0 z-30 hidden h-[72px] items-center border-b border-slate-200 bg-white pl-8 pr-16 lg:flex">
-        <h1 className="text-[19px] font-bold tracking-tight text-[#0F172A]">Portfolio &amp; Settings</h1>
+        <h1 className="text-[19px] font-bold tracking-tight text-[#0F172A]">Talent profile</h1>
       </div>
-      <div className="mx-auto max-w-2xl px-4 py-8 sm:px-8">
-        <div className="mb-6 flex items-center justify-between">
-          <h1 className="text-xl font-semibold text-slate-900">Your profile</h1>
-          {profile?.role === "freelancer" && profile?.handle && (
-            <a
-              href={`/p/${profile.handle}`}
-              className="text-sm font-medium text-emerald-600 hover:underline"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              View public profile →
-            </a>
-          )}
-          {profile?.role === "freelancer" && !profile?.handle && (
-            <span className="text-sm text-slate-400">Set a handle to get your public profile link</span>
-          )}
-        </div>
 
-        <ProfileForm profile={profile ?? null} email={user.email ?? ""} />
-
-        {profile?.role === "freelancer" && (
-          <PortfolioSection items={itemsWithAttachments} />
-        )}
-
-        {profile?.role === "freelancer" && tree && (
-          <>
-            <ProfileStrength strength={strength} />
-            <CategoryForm
+      <div className="mx-auto max-w-[1180px] px-4 py-6 sm:px-8 sm:py-8">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+          <div className="space-y-6">
+            <ProfileHeader
+              name={name}
+              handle={profile?.handle ?? null}
+              headline={profile?.headline ?? null}
+              avatarUrl={profile?.avatar_url ?? null}
+              hourlyRate={profile?.hourly_rate ?? null}
+              rating={rating}
+            />
+            <AboutCard bio={profile?.bio ?? null} />
+            <PortfolioGallery items={portfolio} />
+            <SkillsCard skills={profile?.skills ?? []} />
+            <CategoryCard
               mains={tree.mains}
               nichesByMain={tree.nichesByMain}
-              category={profile.category ?? null}
-              niches={profile.niches ?? []}
-              categoryOther={profile.category_other ?? null}
+              category={profile?.category ?? null}
+              niches={profile?.niches ?? []}
+              categoryOther={profile?.category_other ?? null}
             />
-          </>
-        )}
+          </div>
 
-        {profile?.role === "freelancer" && (
-          <TalentListingForm
-            headline={profile.headline ?? null}
-            linkedinUrl={profile.linkedin_url ?? null}
-            linkedinName={profile.linkedin_name ?? null}
-            verified={!!profile.linkedin_verified_at}
-            listed={!!profile.talent_listed}
-            hasHandle={!!profile.handle}
-            hasBio={!!profile.bio?.trim()}
-            hasSkills={(profile.skills ?? []).length > 0}
-            hasCategory={!!profile.category && (profile.category !== "other" || !!profile.category_other?.trim())}
-            cvName={profile.cv_name ?? null}
-            notice={linkedin ? { status: linkedin, msg } : null}
-          />
-        )}
-
-        {profile?.role === "freelancer" && (
-          <PayoutMethodForm
-            initialMethod={profile?.payout_method ?? null}
-            initialDetails={profile?.payout_details ?? null}
-          />
-        )}
+          <aside className="space-y-6 lg:sticky lg:top-24 lg:self-start">
+            <StrengthCard strength={strength} />
+            <TalentCard
+              headline={profile?.headline ?? null}
+              linkedinUrl={profile?.linkedin_url ?? null}
+              linkedinName={profile?.linkedin_name ?? null}
+              verified={!!profile?.linkedin_verified_at}
+              listed={!!profile?.talent_listed}
+              hasHandle={!!profile?.handle}
+              hasBio={!!profile?.bio?.trim()}
+              hasSkills={(profile?.skills ?? []).length > 0}
+              hasCategory={!!profile?.category && (profile.category !== "other" || !!profile.category_other?.trim())}
+              cvName={profile?.cv_name ?? null}
+              notice={linkedin ? { status: linkedin, msg } : null}
+            />
+            <section className="rounded-2xl border border-slate-200 bg-white p-6">
+              <h2 className="mb-3 text-[18px] font-bold text-[#0F172A]">Quick links</h2>
+              <ul className="space-y-2 text-[14.5px]">
+                {profile?.handle && (
+                  <li>
+                    <a href={`/p/${profile.handle}`} target="_blank" rel="noopener noreferrer"
+                      className="font-medium text-emerald-700 hover:underline">View my public profile →</a>
+                  </li>
+                )}
+                <li>
+                  <Link href="/dashboard/settings" className="font-medium text-emerald-700 hover:underline">
+                    Payout and account settings →
+                  </Link>
+                </li>
+              </ul>
+            </section>
+          </aside>
+        </div>
       </div>
     </div>
   );

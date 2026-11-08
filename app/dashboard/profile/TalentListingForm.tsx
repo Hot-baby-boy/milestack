@@ -50,13 +50,10 @@ export function TalentListingForm({
   ];
 
   return (
-    <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-6">
-      <div className="mb-5">
-        <h2 className="text-[15px] font-bold text-[#0F172A]">Talent Space</h2>
-        <p className="mt-1 text-[13px] text-slate-500">
-          Get found by clients. Only clients can see your listing, and they reach you through your LinkedIn profile.
-        </p>
-      </div>
+    <div>
+      <p className="mb-5 text-[13px] text-slate-500">
+        Get found by clients. Only clients can see your listing, and they reach you through your LinkedIn profile.
+      </p>
 
       {notice?.status === "verified" && (
         <p className="mb-4 rounded-lg bg-emerald-50 px-3 py-2 text-[13px] text-emerald-700">LinkedIn verified.</p>

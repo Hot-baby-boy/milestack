@@ -30,14 +30,14 @@ const NAV = [
     icon: <><path d="M21 11.5a8.5 8.5 0 11-3.8-7.1"/><path d="M3 21l1.6-4A8.5 8.5 0 0121 11.5"/></> },
   { href: "/dashboard/files", label: "Files",
     icon: <><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></> },
-  { href: "/dashboard/profile", label: "Portfolio",
+  { href: "/dashboard/profile", label: "Profile",
     icon: <><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"/></> },
 ];
 
 const NAV_BOTTOM = [
   { href: "/dashboard/disputes", label: "Disputes",
     icon: <><path d="M12 3v18M5 7l-2 5a3 3 0 006 0L7 7H5zM19 7l-2 5a3 3 0 006 0l-2-5h-2z"/><path d="M5 7h14"/></> },
-  { href: "/dashboard/profile", label: "Settings",
+  { href: "/dashboard/settings", label: "Settings",
     icon: <><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.9l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.9-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1-1.6 1.7 1.7 0 00-1.9.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.9 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.6-1 1.7 1.7 0 00-.3-1.9l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.9.3h.1a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5h.1a1.7 1.7 0 001.9-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.9v.1a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></> },
 ];
 
@@ -79,7 +79,7 @@ function SidebarContent({ displayName, role, initials, unreadCount, disputeCount
       <nav className="flex flex-1 flex-col gap-[2px]">
         {NAV.filter(item => item.href !== "/dashboard/talent" || role === "client").map(item => (
           <NavItem key={item.href + item.label} {...item}
-            label={item.label === "Portfolio" && role === "client" ? "Profile" : item.label}
+            label={item.label === "Profile" && role === "freelancer" ? "Talent profile" : item.label}
             badge={item.label === "Messages" ? unreadCount : undefined}
             onClick={onClose}
           />

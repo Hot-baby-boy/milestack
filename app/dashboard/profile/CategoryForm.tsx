@@ -6,40 +6,24 @@ import { MAX_NICHES, type Category } from "@/lib/talent/categories";
 
 const selectClass = "w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-emerald-500 focus:outline-none";
 
-export type Strength = { points: number; max_points: number; missing: string[] } | null;
-
-export function ProfileStrength({ strength }: { strength: Strength }) {
-  if (!strength) return null;
-  const pct = Math.round((strength.points / strength.max_points) * 100);
-  const bar = pct >= 90 ? "bg-emerald-500" : pct >= 60 ? "bg-amber-400" : "bg-rose-400";
-  return (
-    <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-6">
-      <div className="mb-2 flex items-center justify-between">
-        <h2 className="text-[15px] font-bold text-[#0F172A]">Profile strength</h2>
-        <span className="text-[13px] font-semibold text-slate-700">{pct}%</span>
-      </div>
-      <div className="h-2 overflow-hidden rounded-full bg-slate-100">
-        <div className={`h-full rounded-full ${bar}`} style={{ width: `${pct}%` }} />
-      </div>
-      <p className="mt-3 text-[13px] text-slate-500">
-        {strength.missing.length === 0
-          ? "Your profile is complete. Clients see complete profiles first."
-          : `Complete profiles and good reviews are shown to clients first. Add: ${strength.missing.join(", ")}.`}
-      </p>
-    </div>
-  );
-}
-
 export function CategoryForm({
-  mains, nichesByMain, category: initialCategory, niches: initialNiches, categoryOther: initialOther,
+  mains, nichesByMain, category: initialCategory, niches: initialNiches, categoryOther: initialOther, onSaved,
 }: {
   mains: Category[];
   nichesByMain: Record<string, Category[]>;
   category: string | null;
   niches: string[];
   categoryOther: string | null;
+  onSaved?: () => void;
 }) {
-  const [state, formAction, pending] = useActionState(saveCategory, null);
+  const [state, formAction, pending] = useActionState(
+    async (prev: unknown, formData: FormData) => {
+      const result = await saveCategory(prev, formData);
+      if ("success" in result) onSaved?.();
+      return result;
+    },
+    null,
+  );
   const [category, setCategory] = useState(initialCategory ?? "");
   const [niches, setNiches] = useState<string[]>(initialNiches);
   const [other, setOther] = useState(initialOther ?? "");
@@ -53,13 +37,10 @@ export function CategoryForm({
   }
 
   return (
-    <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-6">
-      <div className="mb-5">
-        <h2 className="text-[15px] font-bold text-[#0F172A]">Category &amp; niches</h2>
-        <p className="mt-1 text-[13px] text-slate-500">
-          Clients browse the Talent Space by category. Pick your main category, then up to {MAX_NICHES} niches.
-        </p>
-      </div>
+    <div>
+      <p className="mb-5 text-[13px] text-slate-500">
+        Clients browse the Talent Space by category. Pick your main category, then up to {MAX_NICHES} niches.
+      </p>
 
       <form action={formAction} className="space-y-4">
         <div>

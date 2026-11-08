@@ -206,3 +206,39 @@ export async function deletePortfolioItem(formData: FormData): Promise<void> {
 
   revalidatePath("/dashboard/profile");
 }
+
+// Header edit: name, handle, hourly rate and headline in one save.
+export async function saveBasics(_prev: unknown, formData: FormData): Promise<ActionResult> {
+  const display_name = String(formData.get("display_name") ?? "").trim() || null;
+  const handle = String(formData.get("handle") ?? "").trim().toLowerCase() || null;
+  const rateRaw = String(formData.get("hourly_rate") ?? "").trim();
+  const hourly_rate = rateRaw ? parseFloat(rateRaw) : null;
+  const headline = formData.get("headline");
+
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Not authenticated." };
+
+  const { error } = await supabase.rpc("update_profile", {
+    p_display_name: display_name,
+    p_hourly_rate: hourly_rate,
+    p_handle: handle,
+  });
+  if (error) return { error: error.message };
+
+  if (headline !== null) {
+    // The headline is saved by the Talent Space function, which also takes the
+    // LinkedIn link and the listed flag, so pass the current values back in.
+    const { data: current } = await supabase
+      .from("profiles").select("linkedin_url, talent_listed").eq("id", user.id).single();
+    const { error: headlineError } = await supabase.rpc("update_talent_listing", {
+      p_headline: String(headline),
+      p_linkedin_url: current?.linkedin_url ?? "",
+      p_listed: current?.talent_listed ?? false,
+    });
+    if (headlineError) return { error: headlineError.message };
+  }
+
+  revalidatePath("/dashboard/profile");
+  return { success: true };
+}
