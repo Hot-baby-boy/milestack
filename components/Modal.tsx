@@ -1,9 +1,13 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 
 // A simple pop-up: dark overlay, centred card (a bottom sheet on phones).
 // Closes on Escape, on clicking the overlay, and with the X button.
+// Drawn at the top level of the page (a portal) so it always sits above the
+// sticky page header, the notification bell and any sticky columns.
+const noopSubscribe = () => () => {};
 export function Modal({
   open, onClose, title, children, wide,
 }: {
@@ -14,6 +18,7 @@ export function Modal({
   wide?: boolean;
 }) {
   const panelRef = useRef<HTMLDivElement>(null);
+  const isClient = useSyncExternalStore(noopSubscribe, () => true, () => false);
 
   useEffect(() => {
     if (!open) return;
@@ -28,10 +33,10 @@ export function Modal({
     };
   }, [open, onClose]);
 
-  if (!open) return null;
+  if (!open || !isClient) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-label={title}>
+  return createPortal(
+    <div className="fixed inset-0 z-[100] flex items-end justify-center sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-label={title}>
       <div className="absolute inset-0 bg-slate-900/50" onClick={onClose} />
       <div
         ref={panelRef}
@@ -47,6 +52,7 @@ export function Modal({
         </div>
         <div className="overflow-y-auto px-6 pb-6">{children}</div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
