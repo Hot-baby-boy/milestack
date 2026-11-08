@@ -28,11 +28,13 @@ export async function saveTalentListing(_prev: unknown, formData: FormData): Pro
 export async function saveCategory(_prev: unknown, formData: FormData): Promise<TalentResult> {
   const category = String(formData.get("category") ?? "").trim();
   const niches = formData.getAll("niches").map((n) => String(n));
+  const other = String(formData.get("category_other") ?? "").trim();
 
   const supabase = await createClient();
   const { error } = await supabase.rpc("set_talent_category", {
     p_category: category || null,
     p_niches: niches,
+    p_other: other || null,
   });
 
   if (error) return { error: error.message };

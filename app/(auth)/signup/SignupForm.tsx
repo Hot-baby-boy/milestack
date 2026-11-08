@@ -23,6 +23,7 @@ export function SignupForm({ categories }: { categories: Category[] }) {
   const next = searchParams.get("next") ?? "";
   const [role, setRole] = useState<"freelancer" | "client">("freelancer");
   const [category, setCategory] = useState("");
+  const [categoryOther, setCategoryOther] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -35,10 +36,12 @@ export function SignupForm({ categories }: { categories: Category[] }) {
   async function onSubmit(formData: FormData) {
     if (password !== confirm) { setError("Passwords do not match."); return; }
     if (role === "freelancer" && categories.length > 0 && !category) { setError("Choose what kind of work you do."); return; }
+    if (role === "freelancer" && category === "other" && categoryOther.trim().length < 2) { setError("Describe what you do in a few words."); return; }
     setError(null);
     setPending(true);
     formData.set("role", role);
     formData.set("category", role === "freelancer" ? category : "");
+    formData.set("category_other", role === "freelancer" && category === "other" ? categoryOther.trim() : "");
     const result = await signup(formData);
     setPending(false);
     if (result?.error) setError(result.error);
@@ -76,7 +79,16 @@ export function SignupForm({ categories }: { categories: Category[] }) {
               <option value="">Choose your main category</option>
               {categories.map((c) => <option key={c.slug} value={c.slug}>{c.label}</option>)}
             </select>
-            <p className="mt-1 text-[11px] text-slate-400">Clients browse the Talent Space by category. You can add niches later.</p>
+            {category === "other" ? (
+              <input value={categoryOther} onChange={(e) => setCategoryOther(e.target.value)} maxLength={60} required
+                placeholder="Describe what you do, e.g. Podcast production"
+                className="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500" />
+            ) : null}
+            <p className="mt-1 text-[11px] text-slate-400">
+              {category === "other"
+                ? "Clients will see this description. Up to 60 characters."
+                : "Clients browse the Talent Space by category. You can add niches later."}
+            </p>
           </div>
         )}
 

@@ -10,7 +10,7 @@ type Talent = {
   id: string; handle: string; display_name: string | null; headline: string | null;
   bio: string | null; skills: string[]; hourly_rate: number | null; avatar_url: string | null;
   linkedin_name: string | null; avg_rating: number | null; review_count: number;
-  category: string | null; niches: string[];
+  category: string | null; niches: string[]; category_other: string | null;
 };
 
 export default async function TalentPage({
@@ -90,6 +90,7 @@ export default async function TalentPage({
               <span>/</span>
               <span className="font-medium text-slate-800">{activeCategory.label}</span>
             </div>
+            {niches.length > 0 && (
             <div className="flex flex-wrap gap-2">
               <Link href={chipHref()}
                 className={`rounded-full border px-3 py-1.5 text-[13px] transition ${!niche ? "border-emerald-500 bg-emerald-50 font-medium text-emerald-700" : "border-slate-300 text-slate-600 hover:border-emerald-300"}`}>
@@ -102,6 +103,7 @@ export default async function TalentPage({
                 </Link>
               ))}
             </div>
+            )}
           </div>
         )}
 
@@ -136,9 +138,11 @@ export default async function TalentPage({
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {(filtered ? talent : talent.slice(0, 6)).map((t) => {
               const name = t.display_name ?? t.handle;
-              const tags = (t.niches ?? []).length
-                ? t.niches.slice(0, 3).map((n) => tree.labelOf(n))
-                : (t.skills ?? []).slice(0, 3);
+              const tags = t.category === "other" && t.category_other
+                ? [t.category_other]
+                : (t.niches ?? []).length
+                  ? t.niches.slice(0, 3).map((n) => tree.labelOf(n))
+                  : (t.skills ?? []).slice(0, 3);
               return (
                 <Link key={t.id} href={`/dashboard/talent/${t.handle}`}
                   className="flex flex-col gap-3 rounded-[14px] border border-slate-200 bg-white p-5 transition hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(15,23,42,0.08)]"

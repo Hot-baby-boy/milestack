@@ -12,7 +12,7 @@ type TalentProfile = {
   bio: string | null; skills: string[]; hourly_rate: number | null; avatar_url: string | null;
   linkedin_name: string | null; linkedin_url: string; avg_rating: number | null; review_count: number;
   has_cv: boolean; cv_name: string | null;
-  category: string | null; niches: string[];
+  category: string | null; niches: string[]; category_other: string | null;
 };
 
 export default async function TalentProfilePage({ params }: { params: Promise<{ handle: string }> }) {
@@ -75,6 +75,13 @@ export default async function TalentProfilePage({ params }: { params: Promise<{ 
       </div>
 
       {t.bio && <p className="mb-4 text-sm leading-relaxed text-slate-600">{t.bio}</p>}
+      {t.category === "other" && t.category_other && (
+        <div className="mb-3 flex flex-wrap gap-2">
+          <span className="rounded-full border border-slate-300 px-3 py-0.5 text-xs font-medium text-slate-700">
+            {t.category_other}
+          </span>
+        </div>
+      )}
       {(t.niches ?? []).length > 0 && (
         <div className="mb-3 flex flex-wrap gap-2">
           {t.niches.map((n) => (

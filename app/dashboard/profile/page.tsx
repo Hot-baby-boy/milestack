@@ -19,7 +19,7 @@ export default async function ProfilePage({
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role, display_name, bio, skills, hourly_rate, avatar_url, handle, payout_method, payout_details, headline, linkedin_url, linkedin_name, linkedin_verified_at, talent_listed, cv_name, category, niches")
+    .select("role, display_name, bio, skills, hourly_rate, avatar_url, handle, payout_method, payout_details, headline, linkedin_url, linkedin_name, linkedin_verified_at, talent_listed, cv_name, category, niches, category_other")
     .eq("id", user.id)
     .single();
 
@@ -130,6 +130,7 @@ export default async function ProfilePage({
               nichesByMain={tree.nichesByMain}
               category={profile.category ?? null}
               niches={profile.niches ?? []}
+              categoryOther={profile.category_other ?? null}
             />
           </>
         )}
@@ -144,7 +145,7 @@ export default async function ProfilePage({
             hasHandle={!!profile.handle}
             hasBio={!!profile.bio?.trim()}
             hasSkills={(profile.skills ?? []).length > 0}
-            hasCategory={!!profile.category}
+            hasCategory={!!profile.category && (profile.category !== "other" || !!profile.category_other?.trim())}
             cvName={profile.cv_name ?? null}
             notice={linkedin ? { status: linkedin, msg } : null}
           />

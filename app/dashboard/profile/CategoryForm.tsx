@@ -31,16 +31,18 @@ export function ProfileStrength({ strength }: { strength: Strength }) {
 }
 
 export function CategoryForm({
-  mains, nichesByMain, category: initialCategory, niches: initialNiches,
+  mains, nichesByMain, category: initialCategory, niches: initialNiches, categoryOther: initialOther,
 }: {
   mains: Category[];
   nichesByMain: Record<string, Category[]>;
   category: string | null;
   niches: string[];
+  categoryOther: string | null;
 }) {
   const [state, formAction, pending] = useActionState(saveCategory, null);
   const [category, setCategory] = useState(initialCategory ?? "");
   const [niches, setNiches] = useState<string[]>(initialNiches);
+  const [other, setOther] = useState(initialOther ?? "");
 
   const options = category ? nichesByMain[category] ?? [] : [];
 
@@ -63,12 +65,22 @@ export function CategoryForm({
         <div>
           <label className="mb-1.5 block text-[13px] font-medium text-slate-700">Main category</label>
           <select name="category" value={category} required
-            onChange={(e) => { setCategory(e.target.value); setNiches([]); }}
+            onChange={(e) => { setCategory(e.target.value); setNiches([]); setOther(""); }}
             className={selectClass}>
             <option value="">Choose your main category</option>
             {mains.map((c) => <option key={c.slug} value={c.slug}>{c.label}</option>)}
           </select>
         </div>
+
+        {category === "other" && (
+          <div>
+            <label className="mb-1.5 block text-[13px] font-medium text-slate-700">What do you do?</label>
+            <input name="category_other" value={other} onChange={(e) => setOther(e.target.value)}
+              maxLength={60} required placeholder="e.g. Podcast production"
+              className={selectClass} />
+            <p className="mt-1 text-[12px] text-slate-400">Clients will see this description. Up to 60 characters.</p>
+          </div>
+        )}
 
         {options.length > 0 && (
           <div>

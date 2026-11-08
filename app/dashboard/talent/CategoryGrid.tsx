@@ -24,7 +24,9 @@ export function CategoryGrid({
               </span>
             </div>
             <p className="line-clamp-2 text-[12.5px] leading-relaxed text-slate-500">
-              {(nichesByMain[c.slug] ?? []).slice(0, 4).map((x) => x.label).join(" · ")}
+              {c.slug === "other"
+                ? "Something different? Browse freelancers with other specialties."
+                : (nichesByMain[c.slug] ?? []).slice(0, 4).map((x) => x.label).join(" · ")}
             </p>
           </Link>
         );

@@ -17,6 +17,7 @@ export async function signup(formData: FormData): Promise<ActionResult> {
   const password = String(formData.get("password") ?? "");
   const role = String(formData.get("role") ?? "client");
   const category = String(formData.get("category") ?? "").trim();
+  const categoryOther = String(formData.get("category_other") ?? "").trim().slice(0, 60);
   const next = safeNext(String(formData.get("next") ?? ""));
 
   if (!fullName || !email || !password) {
@@ -33,6 +34,9 @@ export async function signup(formData: FormData): Promise<ActionResult> {
       .from("talent_categories").select("slug").is("parent_slug", null).limit(1);
     if (mains?.length) return { error: "Choose what kind of work you do." };
   }
+  if (role === "freelancer" && category === "other" && categoryOther.length < 2) {
+    return { error: "Describe what you do in a few words." };
+  }
 
   const confirmUrl = new URL(`${process.env.NEXT_PUBLIC_SITE_URL}/auth/confirm`);
   if (next) confirmUrl.searchParams.set("next", next);
@@ -42,7 +46,12 @@ export async function signup(formData: FormData): Promise<ActionResult> {
     password,
     options: {
       // The database checks the category again; it only keeps a valid one.
-      data: { full_name: fullName, role, category: role === "freelancer" ? category : "" },
+      data: {
+        full_name: fullName,
+        role,
+        category: role === "freelancer" ? category : "",
+        category_other: role === "freelancer" && category === "other" ? categoryOther : "",
+      },
       emailRedirectTo: confirmUrl.toString(),
     },
   });
