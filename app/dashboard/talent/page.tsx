@@ -76,9 +76,9 @@ export default async function TalentPage({
           {category && <input type="hidden" name="category" value={category} />}
           {niche && <input type="hidden" name="niche" value={niche} />}
           <input name="q" defaultValue={q ?? ""} placeholder="Search by name, headline or bio"
-            className="min-w-[220px] flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none" />
+            className="min-w-[220px] flex-1 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-emerald-500 focus:outline-none" />
           <input name="skill" defaultValue={skill ?? ""} placeholder="Skill (e.g. Figma)"
-            className="w-48 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none" />
+            className="w-48 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-emerald-500 focus:outline-none" />
           <button className="rounded-lg bg-emerald-500 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-600">
             Search
           </button>
