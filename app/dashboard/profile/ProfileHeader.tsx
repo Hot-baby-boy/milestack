@@ -46,6 +46,16 @@ export function ProfileHeader({
   return (
     <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
       <ProfileCover bannerUrl={bannerUrl} className="h-36 sm:h-48">
+        <div className="absolute left-3 top-3 max-w-[70%] space-y-1.5 sm:left-4 sm:top-4">
+          {bannerState && "error" in bannerState && (
+            <p className="rounded-lg bg-red-50/95 px-3 py-1.5 text-[12.5px] font-medium text-red-700 shadow-sm">{bannerState.error}</p>
+          )}
+          {!bannerUrl && (
+            <p className="rounded-lg bg-white/90 px-3 py-1.5 text-[12px] font-medium text-slate-600 shadow-sm">
+              Add a banner so clients notice you · best size 1600 × 400 · JPG, PNG or WebP · up to 4 MB
+            </p>
+          )}
+        </div>
         <form action={bannerAction} className="absolute bottom-3 right-3 flex items-center gap-2">
           <input ref={bannerRef} type="file" name="banner" accept="image/jpeg,image/png,image/webp" className="hidden"
             onChange={(e) => { if (e.target.files?.[0]) e.target.form?.requestSubmit(); }} />
@@ -66,8 +76,6 @@ export function ProfileHeader({
         </form>
       </ProfileCover>
       <div className="px-6 pb-6 sm:px-8 sm:pb-8">
-      {bannerState && "error" in bannerState && <p className="pt-2 text-[13px] text-red-600">{bannerState.error}</p>}
-      {!bannerUrl && <p className="pt-3 text-[12.5px] text-slate-400">Add a banner so clients notice you. Best size 1600 × 400, JPG, PNG or WebP, up to 4 MB.</p>}
       <div className="-mt-12 flex flex-col gap-6 sm:-mt-14 sm:flex-row sm:items-start">
         <div className="relative h-28 w-28 flex-shrink-0 sm:h-32 sm:w-32">
           <div className="relative h-full w-full overflow-hidden rounded-full border-4 border-white bg-slate-100 shadow-sm">
